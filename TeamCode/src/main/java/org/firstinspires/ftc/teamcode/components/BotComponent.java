@@ -68,7 +68,7 @@ public class BotComponent {
 
             return (motor);
 
-        } catch (IllegalArgumentException err) {
+        } catch (NullPointerException | IllegalArgumentException err) {
             if (opMode.telemetry != null) {
                 opMode.telemetry.addData("Error", err.getMessage());
             }
@@ -84,7 +84,7 @@ public class BotComponent {
 
             return (servo);
 
-        } catch (IllegalArgumentException err) {
+        } catch (NullPointerException | IllegalArgumentException err) {
             if (opMode.telemetry != null) {
                 opMode.telemetry.addData("Error", err.getMessage());
             }

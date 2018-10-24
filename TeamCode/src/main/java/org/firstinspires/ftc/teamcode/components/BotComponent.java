@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -49,6 +50,21 @@ public class BotComponent {
 
     public BotComponent(OpMode aOpMode) {
         opMode = aOpMode;
+    }
+
+    private LinearOpMode getLinearOpMode() throws ClassCastException {
+        LinearOpMode op = (LinearOpMode) opMode;
+        return op;
+    }
+
+    public boolean opModeIsActive() {
+        LinearOpMode op = null;
+        try {
+            op = getLinearOpMode();
+        } catch (ClassCastException err) {
+            return true;
+        }
+        return op.opModeIsActive();
     }
 
     public DcMotor initMotor(String motorName) {

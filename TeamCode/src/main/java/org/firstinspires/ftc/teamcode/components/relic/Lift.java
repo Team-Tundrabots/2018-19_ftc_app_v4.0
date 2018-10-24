@@ -27,79 +27,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.components.relic;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class BotComponent {
+import org.firstinspires.ftc.teamcode.components.BotComponent;
 
-    public OpMode opMode = null;
+public class Lift extends BotComponent {
 
-    private ElapsedTime period = new ElapsedTime();
+
+    public DcMotor arm = null;
 
     /* Constructor */
-    public BotComponent() {
+    public Lift() {
 
     }
 
-    public BotComponent(OpMode aOpMode) {
-        opMode = aOpMode;
+    public Lift(OpMode aOpMode, String armName) {
+        super(aOpMode);
+
+        // Define and Initialize Motors
+        arm = initMotor(armName);
+
     }
 
-    public DcMotor initMotor(String motorName) {
-        return(initMotor(motorName, DcMotor.Direction.FORWARD));
-    }
-
-    public DcMotor initMotor(String motorName, DcMotorSimple.Direction direction) {
-
-        try {
-            HardwareMap ahwMap = opMode.hardwareMap;
-            DcMotor motor = ahwMap.get(DcMotor.class, motorName);
-
-            motor.setDirection(direction);
-            motor.setPower(0);
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            return (motor);
-
-        } catch (NullPointerException | IllegalArgumentException err) {
-            if (opMode.telemetry != null) {
-                opMode.telemetry.addData("Error", err.getMessage());
-            }
-            return null;
+    public void setArmPower(double power){
+        if (arm != null) {
+            arm.setPower(power);
         }
     }
 
-    public Servo initServo(String servoName, double position) {
-        try {
-            HardwareMap ahwMap = opMode.hardwareMap;
-            Servo servo = ahwMap.get(Servo.class, servoName);
-            servo.setPosition(position);
+    public void move(double seconds, double power) {
 
-            return (servo);
+        ElapsedTime runtime = new ElapsedTime();
 
-        } catch (NullPointerException | IllegalArgumentException err) {
-            if (opMode.telemetry != null) {
-                opMode.telemetry.addData("Error", err.getMessage());
-            }
-            return null;
+        setArmPower(power);
+        runtime.reset();
+        while(runtime.seconds() < seconds) {
+            opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
+            opMode.telemetry.update();
         }
+        setArmPower(0.0);
+
     }
 
-    public void pause(double seconds) {
-        long milliseconds = (long)seconds * 1000;
+    public void armUp()
+    {
+        setArmPower(-0.5);
+        pause(2);
+        setArmPower(0);
+    }
 
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
 
+    public void armDown()
+    {
+        setArmPower(0.5);
+        pause(1.5);
+        setArmPower(0);
     }
 
 }

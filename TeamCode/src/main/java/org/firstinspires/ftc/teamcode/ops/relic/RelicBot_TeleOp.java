@@ -1,20 +1,23 @@
 
 
-package org.firstinspires.ftc.teamcode.ops.relicrecovery;
+package org.firstinspires.ftc.teamcode.ops.relic;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.bots.*;
 
 
-@TeleOp(name="CompetitionBot_TeleOp", group="competition")
-//@Disabled
+@TeleOp(name="RelicBot_TeleOp", group="relic")
+@Disabled
 
-public class CompetitionBot_TeleOp extends OpMode{
+public class
+RelicBot_TeleOp extends OpMode{
 
     /* Declare OpMode members. */
-    CompetitionBot robot       = new CompetitionBot(this);
+    RelicBot robot       = null;
 
 
     double          clawOffset      = 0;                       // Servo mid position
@@ -30,6 +33,7 @@ public class CompetitionBot_TeleOp extends OpMode{
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
+        robot = new RelicBot(this);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //

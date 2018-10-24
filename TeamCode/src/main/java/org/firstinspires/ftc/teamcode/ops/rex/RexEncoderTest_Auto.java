@@ -27,64 +27,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class Lift extends BotComponent {
+import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-    public DcMotor arm = null;
+@Autonomous(name="RexEncoderTest_Auto", group="rex")
+//@Disabled
+public class RexEncoderTest_Auto extends LinearOpMode {
 
-    /* Constructor */
-    public Lift() {
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private TestBot robot = null;
 
-    }
+    @Override
+    public void runOpMode() {
+        robot = new TestBot(this);
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-    public Lift(OpMode aOpMode, String armName) {
-        super(aOpMode);
-
-        // Define and Initialize Motors
-        arm = initMotor(armName);
-
-    }
-
-    public void setArmPower(double power){
-        if (arm != null) {
-            arm.setPower(power);
-        }
-    }
-
-    public void move(double seconds, double power) {
-
-        ElapsedTime runtime = new ElapsedTime();
-
-        setArmPower(power);
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
         runtime.reset();
-        while(runtime.seconds() < seconds) {
-            opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
-            opMode.telemetry.update();
-        }
-        setArmPower(0.0);
+
+
+        double power = .5;
+
+        // move forward for a number of seconds at specific power
+        robot.driveTrain.moveForward(.5, power);
+        robot.driveTrain.turnLeft(.5, power);
+        robot.driveTrain.turnRight(.5, power);
+        robot.driveTrain.moveBackward(.5, power);
+
+        robot.driveTrain.resetEncoders();
+        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
+        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
+        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
+        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
+        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
+        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
+        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
+        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
+
+        // Show the elapsed game time.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
 
     }
-
-    public void armUp()
-    {
-        setArmPower(-0.5);
-        pause(2);
-        setArmPower(0);
-    }
-
-
-    public void armDown()
-    {
-        setArmPower(0.5);
-        pause(1.5);
-        setArmPower(0);
-    }
-
 }
-

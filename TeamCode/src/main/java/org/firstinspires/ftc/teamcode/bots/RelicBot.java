@@ -32,9 +32,12 @@ package org.firstinspires.ftc.teamcode.bots;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.components.*;
+import org.firstinspires.ftc.teamcode.components.relic.Claw;
+import org.firstinspires.ftc.teamcode.components.relic.Lift;
+import org.firstinspires.ftc.teamcode.components.relic.Tail;
 
 
-public class CompetitionBot extends Bot {
+public class RelicBot extends Bot {
 
     public DriveTrain driveTrain = null;
     public Lift lift = null;
@@ -42,11 +45,11 @@ public class CompetitionBot extends Bot {
     public Claw claw = null;
 
     /* Constructor */
-    public CompetitionBot() {
+    public RelicBot() {
 
     }
 
-    public CompetitionBot(OpMode aOpMode) {
+    public RelicBot(OpMode aOpMode) {
         driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
         lift = new Lift(aOpMode, "left_arm");
         tail = new Tail(aOpMode, "tail");

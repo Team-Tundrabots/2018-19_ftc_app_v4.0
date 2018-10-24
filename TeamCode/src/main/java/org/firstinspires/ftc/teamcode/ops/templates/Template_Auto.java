@@ -27,26 +27,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.bots;
+package org.firstinspires.ftc.teamcode.ops.templates;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.components.*;
-import org.firstinspires.ftc.teamcode.components.relic.Lift;
+import org.firstinspires.ftc.teamcode.bots.TestBot;
 
-public class TestBot extends Bot {
 
-    public DriveTrain driveTrain = null;
-    public Lift lift = null;
+@Autonomous(name="Template_Auto", group="templates")
+@Disabled
+public class Template_Auto extends LinearOpMode {
 
-    /* Constructor */
-    public TestBot() {
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private TestBot robot = null;
+
+    @Override
+    public void runOpMode() {
+        robot = new TestBot(this);
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        runtime.reset();
+
+/**  REPLACE THIS SECTION WITH YOUR CODE
+
+        double power = .5;
+
+        // move forward for a number of seconds at specific power
+        robot.driveTrain.moveForward(.5, power);
+
+        // turn for a number of seconds by applying opposite power #'s for left and right motors
+        robot.driveTrain.turnLeft(.5, power);
+
+        // turn for a number of seconds by applying opposite power #'s for left and right motors
+        robot.driveTrain.turnRight(.5, power);
+
+        // move backward for a number of seconds at specific power
+        robot.driveTrain.moveBackward(.5, power);
+
+***/
+
+        // Show the elapsed game time.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
 
     }
-
-    public TestBot(OpMode aOpMode) {
-        driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
-    }
-
 }
-

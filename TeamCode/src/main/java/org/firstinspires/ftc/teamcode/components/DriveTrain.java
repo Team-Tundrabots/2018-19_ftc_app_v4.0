@@ -198,9 +198,9 @@ public class DriveTrain extends BotComponent {
         ElapsedTime runtime = new ElapsedTime();
 
         // Ensure that the opmode is still active - ToDo: Need to pull this from the opmode
-        boolean opModeIsActive = true;
+        // boolean opModeIsActive = true;
 
-        if (opModeIsActive) {
+        if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
             newLeftTarget = frontLeftMotor.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
@@ -223,7 +223,7 @@ public class DriveTrain extends BotComponent {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive &&
+            while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (frontLeftMotor.isBusy() && frontRightMotor.isBusy())) {
 

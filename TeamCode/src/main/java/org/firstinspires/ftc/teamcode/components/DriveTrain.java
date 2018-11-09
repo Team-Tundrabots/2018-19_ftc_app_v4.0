@@ -129,6 +129,47 @@ public class DriveTrain extends BotComponent {
 
     }
 
+    public void stop() {
+        setLeftMotorsPower(0.0);
+        setRightMotorsPower(0.0);
+    }
+
+    public void crabLeft(double seconds) {
+
+
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        updateMotorsMechanumDrive(-1, 0, 0, -1);
+
+        runtime.reset();
+        while(runtime.seconds() < seconds) {
+            opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
+            opMode.telemetry.update();
+        }
+        setLeftMotorsPower(0.0);
+        setRightMotorsPower(0.0);
+
+    }
+
+    public void crabRight(double seconds) {
+
+
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        updateMotorsMechanumDrive(0, -1, 1, 0);
+
+        runtime.reset();
+        while(runtime.seconds() < seconds) {
+            opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
+            opMode.telemetry.update();
+        }
+        setLeftMotorsPower(0.0);
+        setRightMotorsPower(0.0);
+
+    }
+
     public void updateMotorsMechanumDrive(double leftX, double leftY, double rightX, double rightY) {
 
         // reverse Y coordinates

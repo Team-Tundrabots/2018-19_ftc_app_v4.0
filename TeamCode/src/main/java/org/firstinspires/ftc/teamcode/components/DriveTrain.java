@@ -87,12 +87,11 @@ public class DriveTrain extends BotComponent {
         setRightMotorsPower(rightPower);
 
         runtime.reset();
-        while(runtime.seconds() < seconds) {
+        while(runtime.seconds() < seconds && opModeIsActive()) {
             opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
             opMode.telemetry.update();
         }
-        setLeftMotorsPower(0.0);
-        setRightMotorsPower(0.0);
+        stop();
 
     }
 
@@ -129,6 +128,41 @@ public class DriveTrain extends BotComponent {
 
     }
 
+    public void stop() {
+        setLeftMotorsPower(0.0);
+        setRightMotorsPower(0.0);
+    }
+
+    public void crabLeft(double seconds) {
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        // leftX -1, rightY -1
+        updateMotorsMechanumDrive(-1, 0, 0, -1);
+
+        runtime.reset();
+        while(runtime.seconds() < seconds && opModeIsActive()) {
+            opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
+            opMode.telemetry.update();
+        }
+        stop();
+    }
+
+    public void crabRight(double seconds) {
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        // crabRight = lefty -1, rightX 1
+        updateMotorsMechanumDrive(1, 0, 0, -1);
+
+        runtime.reset();
+        while(runtime.seconds() < seconds && opModeIsActive()) {
+            opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
+            opMode.telemetry.update();
+        }
+        stop();
+    }
+
     public void updateMotorsMechanumDrive(double leftX, double leftY, double rightX, double rightY) {
 
         // reverse Y coordinates
@@ -149,6 +183,8 @@ public class DriveTrain extends BotComponent {
         frontRightMotor.setPower(v2);
         backLeftMotor.setPower(v3);
         backRightMotor.setPower(v4);
+
+        if (!opModeIsActive()) { stop(); }
 
     }
 
@@ -236,8 +272,7 @@ public class DriveTrain extends BotComponent {
             }
 
             // Stop all motion;
-            frontLeftMotor.setPower(0);
-            frontRightMotor.setPower(0);
+            stop();
 
             // Turn off RUN_TO_POSITION
             frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -330,10 +365,7 @@ public class DriveTrain extends BotComponent {
 
         // Stop all motion;
         //Note: This is outside our while statement, this will only activate once the time, or distance has been met
-        frontLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        backRightMotor.setPower(0);
+        stop();
 
         // show the driver how close they got to the last target
         opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);

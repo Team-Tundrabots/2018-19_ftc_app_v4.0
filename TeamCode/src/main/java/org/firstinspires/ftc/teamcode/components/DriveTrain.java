@@ -41,14 +41,14 @@ public class DriveTrain extends BotComponent {
 
     public DcMotor backLeftMotor = null;
     public DcMotor backRightMotor = null;
-
+    
     /* Constructor */
     public DriveTrain() {
 
     }
 
     public DriveTrain(OpMode aOpMode, String frontLeftMotorName, String frontRightMotorName,
-                      String backLeftMotorName, String backRightMotorName)
+                                      String backLeftMotorName, String backRightMotorName)
     {
         super(aOpMode);
 
@@ -280,12 +280,12 @@ public class DriveTrain extends BotComponent {
 
             //  sleep(250);   // optional pause after each move
         }
-
-
+        
+        
     }
 
     private int getFrontLeftPosition() {
-        return frontLeftMotor.getCurrentPosition();
+        return frontLeftMotor.getCurrentPosition();        
     }
 
     private int getFrontRightPosition() {
@@ -397,3 +397,4 @@ public class DriveTrain extends BotComponent {
     }
 
 }
+

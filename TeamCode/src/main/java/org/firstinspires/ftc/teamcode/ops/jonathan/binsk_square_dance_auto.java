@@ -56,13 +56,13 @@ public class binsk_square_dance_auto extends LinearOpMode {
         runtime.reset();
 
         robot.driveTrain.encoderDrive(.5, 7.5, 8.5, 5);
-        robot.driveTrain.encoderDrive(.5,-6,6,5);
+        robot.driveTrain.encoderDrive(.5,-5.5,5.5,5);
         robot.driveTrain.encoderDrive(.5, 6.5, 7.5, 5);
-        robot.driveTrain.encoderDrive(.5, -6, 6, 5);
+        robot.driveTrain.encoderDrive(.5, -5.5, 5.5, 5);
         robot.driveTrain.encoderDrive(.5, 5, 6, 5);
-        robot.driveTrain.encoderDrive(.5,-6,6,5);
+        robot.driveTrain.encoderDrive(.5,-5.5,5.5,5);
         robot.driveTrain.encoderDrive(.5,6.5,7.5,5);
-        robot.driveTrain.encoderDrive(.5,-6,6,5);
+        robot.driveTrain.encoderDrive(.5,-5.5,5.5,5);
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

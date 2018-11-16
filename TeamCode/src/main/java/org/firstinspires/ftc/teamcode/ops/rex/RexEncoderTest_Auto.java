@@ -58,6 +58,9 @@ public class RexEncoderTest_Auto extends LinearOpMode {
 
         double power = .5;
 
+        robot.driveTrain.crabLeft(1);
+        robot.driveTrain.crabRight(1);
+
         // move forward for a number of seconds at specific power
         robot.driveTrain.moveForward(.5, power);
         robot.driveTrain.turnLeft(.5, power);

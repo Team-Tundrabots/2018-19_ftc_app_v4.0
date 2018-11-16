@@ -41,14 +41,14 @@ public class DriveTrain extends BotComponent {
 
     public DcMotor backLeftMotor = null;
     public DcMotor backRightMotor = null;
-    
+
     /* Constructor */
     public DriveTrain() {
 
     }
 
     public DriveTrain(OpMode aOpMode, String frontLeftMotorName, String frontRightMotorName,
-                                      String backLeftMotorName, String backRightMotorName)
+                      String backLeftMotorName, String backRightMotorName)
     {
         super(aOpMode);
 
@@ -87,12 +87,11 @@ public class DriveTrain extends BotComponent {
         setRightMotorsPower(rightPower);
 
         runtime.reset();
-        while(runtime.seconds() < seconds) {
+        while(runtime.seconds() < seconds && opModeIsActive()) {
             opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
             opMode.telemetry.update();
         }
-        setLeftMotorsPower(0.0);
-        setRightMotorsPower(0.0);
+        stop();
 
     }
 
@@ -136,29 +135,28 @@ public class DriveTrain extends BotComponent {
 
     public void crabLeft(double seconds) {
 
+        ElapsedTime runtime = new ElapsedTime();
+
         // leftX -1, rightY -1
         updateMotorsMechanumDrive(-1, 0, 0, -1);
 
-        ElapsedTime runtime = new ElapsedTime();
-
         runtime.reset();
-        while(runtime.seconds() < seconds) {
+        while(runtime.seconds() < seconds && opModeIsActive()) {
             opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
             opMode.telemetry.update();
         }
         stop();
-
     }
 
     public void crabRight(double seconds) {
 
-        // leftX -1, rightY -1
-        updateMotorsMechanumDrive(1, 0, 0, -1);
-
         ElapsedTime runtime = new ElapsedTime();
 
+        // crabRight = lefty -1, rightX 1
+        updateMotorsMechanumDrive(1, 0, 0, -1);
+
         runtime.reset();
-        while(runtime.seconds() < seconds) {
+        while(runtime.seconds() < seconds && opModeIsActive()) {
             opMode.telemetry.addData("Path", "Time: %2.5f S Elapsed", runtime.seconds());
             opMode.telemetry.update();
         }
@@ -185,6 +183,8 @@ public class DriveTrain extends BotComponent {
         frontRightMotor.setPower(v2);
         backLeftMotor.setPower(v3);
         backRightMotor.setPower(v4);
+
+        if (!opModeIsActive()) { stop(); }
 
     }
 
@@ -234,9 +234,9 @@ public class DriveTrain extends BotComponent {
         ElapsedTime runtime = new ElapsedTime();
 
         // Ensure that the opmode is still active - ToDo: Need to pull this from the opmode
-        boolean opModeIsActive = true;
+        // boolean opModeIsActive = true;
 
-        if (opModeIsActive) {
+        if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
             newLeftTarget = frontLeftMotor.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
@@ -259,7 +259,7 @@ public class DriveTrain extends BotComponent {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive &&
+            while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (frontLeftMotor.isBusy() && frontRightMotor.isBusy())) {
 
@@ -272,8 +272,7 @@ public class DriveTrain extends BotComponent {
             }
 
             // Stop all motion;
-            frontLeftMotor.setPower(0);
-            frontRightMotor.setPower(0);
+            stop();
 
             // Turn off RUN_TO_POSITION
             frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -281,12 +280,12 @@ public class DriveTrain extends BotComponent {
 
             //  sleep(250);   // optional pause after each move
         }
-        
-        
+
+
     }
 
     private int getFrontLeftPosition() {
-        return frontLeftMotor.getCurrentPosition();        
+        return frontLeftMotor.getCurrentPosition();
     }
 
     private int getFrontRightPosition() {
@@ -366,10 +365,7 @@ public class DriveTrain extends BotComponent {
 
         // Stop all motion;
         //Note: This is outside our while statement, this will only activate once the time, or distance has been met
-        frontLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        backRightMotor.setPower(0);
+        stop();
 
         // show the driver how close they got to the last target
         opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
@@ -401,4 +397,3 @@ public class DriveTrain extends BotComponent {
     }
 
 }
-

@@ -37,7 +37,8 @@ import org.firstinspires.ftc.teamcode.components.relic.Lift;
 public class TestBot extends Bot {
 
     public DriveTrain driveTrain = null;
-    public Lift lift = null;
+    public Navigator navigator = null;
+    public TestComponent testComponent = null;
 
     /* Constructor */
     public TestBot() {
@@ -46,6 +47,8 @@ public class TestBot extends Bot {
 
     public TestBot(OpMode aOpMode) {
         driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
+        navigator = new Navigator(aOpMode, driveTrain);
+        testComponent = new TestComponent(aOpMode, "testMotor", "testSwitch");
     }
 
 }

@@ -30,16 +30,15 @@
 package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@Autonomous(name="RexEncoderTest_Auto", group="rex")
+@Autonomous(name="RexSwitchTest_Auto", group="rex")
 //@Disabled
-public class RexEncoderTest_Auto extends LinearOpMode {
+public class RexSwitchTest_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -48,7 +47,7 @@ public class RexEncoderTest_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new TestBot(this);
-        robot.navigator.init();
+        //robot.navigator.init();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -57,40 +56,25 @@ public class RexEncoderTest_Auto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        double power = 0;
 
-        double power = .25;
-/*
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-*/
-        robot.driveTrain.crabLeft(1);
-        robot.driveTrain.crabRight(1);
-/*
-        // move forward for a number of seconds at specific power
-        robot.driveTrain.moveForward(.5, power);
-        robot.driveTrain.turnLeft(.5, power);
-        robot.driveTrain.turnRight(.5, power);
-        robot.driveTrain.moveBackward(.5, power);
 
-        robot.driveTrain.resetEncoders();
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-*/
-        // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.update();
+        robot.testComponent.reset();
+        robot.testComponent.setTarget(100);
+
+        while (opModeIsActive()) {
+
+            if (robot.testComponent.testSwitch.isPressed() == true) {
+                power = 1;
+                robot.testComponent.runToTarget(100, power, 1);
+            } else {
+                telemetry.addData("Position", robot.testComponent.testMotor.getCurrentPosition());
+                telemetry.update();
+                power = 0;
+            }
+
+
+        }
 
     }
 }

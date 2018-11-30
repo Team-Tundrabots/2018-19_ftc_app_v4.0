@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@Autonomous(name="Template_Auto", group="templates")
+@Autonomous(name="Dat_Square_Dance", group="gameguy")
 // @Disabled
 public class Dat_Square_Dance extends LinearOpMode {
 
@@ -56,13 +56,13 @@ public class Dat_Square_Dance extends LinearOpMode {
         runtime.reset();
 
         robot.driveTrain.encoderDrive(.5, 7, 7, 5);
-        robot.driveTrain.encoderDrive(.5, -5, 5, 5);
+        robot.driveTrain.encoderDrive(.5, -7, 7, 5);
         robot.driveTrain.encoderDrive(.5, 7, 7, 5);
-        robot.driveTrain.encoderDrive(.5, -5, 5, 5);
+        robot.driveTrain.encoderDrive(.5, -7, 7, 5);
         robot.driveTrain.encoderDrive(.5, 7, 7, 5);
-        robot.driveTrain.encoderDrive(.5, -5, 5, 5);
+        robot.driveTrain.encoderDrive(.5, -7, 7, 5);
         robot.driveTrain.encoderDrive(.5, 7, 7, 5);
-        robot.driveTrain.encoderDrive(.5, -5, 5, 5);
+        robot.driveTrain.encoderDrive(.5, -7, 7, 5);
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

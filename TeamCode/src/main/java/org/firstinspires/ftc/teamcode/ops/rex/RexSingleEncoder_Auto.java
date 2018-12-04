@@ -31,14 +31,16 @@ package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@Autonomous(name="RexSwitchTest_Auto", group="rex")
+@Autonomous(name="RexSingleEncoder_Auto", group="rex")
 //@Disabled
-public class RexSwitchTest_Auto extends LinearOpMode {
+public class RexSingleEncoder_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -56,26 +58,22 @@ public class RexSwitchTest_Auto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        double power = 0;
+        double power = 0.25;
 
+        robot.testComponent.testMotor.setDirection(DcMotor.Direction.REVERSE);
+        robot.testComponent.testMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.testComponent.testMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.testComponent.testMotor.setTargetPosition(1505);
+        robot.testComponent.testMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        robot.testComponent.reset();
-        robot.testComponent.setTarget(100);
+        while (opModeIsActive() && robot.testComponent.testMotor.isBusy()) {
+            robot.testComponent.testMotor.setPower(power);
 
-        while (opModeIsActive()) {
-
-            if (robot.testComponent.testSwitch.isPressed() == true) {
-                power = 1;
-                robot.testComponent.runToTarget(100, power, 1);
-            } else {
-                telemetry.addData("Position A", robot.testComponent.testMotor.getCurrentPosition());
-                telemetry.addData("Position B", "Running at %7d", robot.testComponent.testMotor.getCurrentPosition());
-                telemetry.update();
-                power = 0;
-            }
-
-
+            telemetry.addData("Position B", "Running at %7d", robot.testComponent.testMotor.getCurrentPosition());
+            telemetry.update();
         }
+
+        robot.testComponent.testMotor.setPower(0);
 
     }
 }

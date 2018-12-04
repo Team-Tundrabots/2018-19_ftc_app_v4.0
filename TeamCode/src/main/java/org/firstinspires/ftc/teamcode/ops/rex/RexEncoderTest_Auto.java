@@ -77,7 +77,7 @@ public class RexEncoderTest_Auto extends LinearOpMode {
         robot.driveTrain.turnLeft(.5, power);
         robot.driveTrain.turnRight(.5, power);
         robot.driveTrain.moveBackward(.5, power);
-
+*/
         robot.driveTrain.resetEncoders();
         robot.driveTrain.encoderDrive(.25, 5, 5, 5);
         robot.driveTrain.encoderDrive(.25, -5, 5, 5);
@@ -87,7 +87,7 @@ public class RexEncoderTest_Auto extends LinearOpMode {
         robot.driveTrain.encoderDrive(.25, -5, 5, 5);
         robot.driveTrain.encoderDrive(.25, 5, 5, 5);
         robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-*/
+
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();

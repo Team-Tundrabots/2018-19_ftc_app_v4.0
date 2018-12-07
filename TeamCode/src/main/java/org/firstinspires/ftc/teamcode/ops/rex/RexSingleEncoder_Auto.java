@@ -75,5 +75,12 @@ public class RexSingleEncoder_Auto extends LinearOpMode {
 
         robot.testComponent.testMotor.setPower(0);
 
+        robot.testComponent.waitForSwitch();
+
+        robot.testComponent.reset();
+        robot.testComponent.runToTarget(1200, .25, 5);
+
+        robot.testComponent.waitForSwitch();
+
     }
 }

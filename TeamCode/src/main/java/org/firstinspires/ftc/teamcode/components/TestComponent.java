@@ -60,27 +60,27 @@ public class TestComponent extends BotComponent {
 
     }
 
+    public void outputPositions() {
+        opMode.telemetry.addData("Target",  "%7d", testMotor.getTargetPosition());
+        opMode.telemetry.addData("Current", "%7d", testMotor.getCurrentPosition());
+        opMode.telemetry.update();
+    }
 
     public void reset() {
         testMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         testMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        opMode.telemetry.addData("Start:", testMotor.getCurrentPosition());
-        opMode.telemetry.update();
-
+        outputPositions();
     }
 
     public void setTarget(int targetPosition) {
         testMotor.setTargetPosition(targetPosition);
-        // Turn On RUN_TO_POSITION
         testMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        outputPositions();
     }
 
-    public void runToTarget(int targetPosition, double power, double timeoutS) {
-        testMotor.setTargetPosition(targetPosition);
+    public void runToTarget(int targetPosition, double power, double timeoutSeconds) {
 
-        // Turn On RUN_TO_POSITION
-        testMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setTarget(targetPosition);
 
         // reset the timeout time and start motion.
         runtime.reset();
@@ -93,22 +93,25 @@ public class TestComponent extends BotComponent {
         // However, if you require that BOTH motors have finished their moves before the robot continues
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
         while (opModeIsActive() &&
-                (runtime.seconds() < timeoutS) &&
+                (runtime.seconds() < timeoutSeconds) &&
                 (testMotor.isBusy())) {
 
-            // Display it for the driver.
-            opMode.telemetry.addData("Path1",  "Running to %7d", targetPosition);
-            opMode.telemetry.addData("Path2",  "Running at %7d",
-                    testMotor.getCurrentPosition());
-            opMode.telemetry.update();
+            outputPositions();
         }
 
         // Stop all motion;
         testMotor.setPower(0);
+        outputPositions();
 
         // Turn off RUN_TO_POSITION
         testMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+    }
+
+    public void waitForSwitch() {
+        while (opModeIsActive() && !testSwitch.isPressed()) {
+            idle();
+        }
     }
 
 }

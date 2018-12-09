@@ -59,7 +59,7 @@ public class RexEncoderTest_Auto extends LinearOpMode {
 
 
         double power = .25;
-/*
+
         robot.driveTrain.moveForward(.5, power);
         robot.navigator.rotate(-90, power);
         robot.driveTrain.moveForward(.5, power);
@@ -68,7 +68,7 @@ public class RexEncoderTest_Auto extends LinearOpMode {
         robot.navigator.rotate(-90, power);
         robot.driveTrain.moveForward(.5, power);
         robot.navigator.rotate(-90, power);
-*/
+
         robot.driveTrain.crabLeft(1);
         robot.driveTrain.crabRight(1);
 /*

@@ -94,7 +94,8 @@ public class TestComponent extends BotComponent {
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
         while (opModeIsActive() &&
                 (runtime.seconds() < timeoutSeconds) &&
-                (testMotor.isBusy())) {
+                (testMotor.isBusy()) &&
+                (!testSwitch.isPressed())) {
 
             outputPositions();
         }

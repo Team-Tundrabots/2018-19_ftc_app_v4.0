@@ -163,6 +163,5 @@ public class BotComponent {
         // our priority level a chance to run
         Thread.yield();
     }
-
 }
 

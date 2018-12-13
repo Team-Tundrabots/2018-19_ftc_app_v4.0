@@ -27,31 +27,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.bots;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.components.*;
+import org.firstinspires.ftc.teamcode.bots.TestBot;
 
-public class TestBot extends Bot {
 
-    public DriveTrain driveTrain = null;
-    public Navigator navigator = null;
-    public Hoist hoist = null;
-    public Logger logger = null;
+@TeleOp(name="RexHoistTest_TeleOp", group="rex")
+//@Disabled
+public class RexHoistTest_TeleOp extends LinearOpMode {
 
-    /* Constructor */
-    public TestBot() {
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private TestBot robot = null;
+    private boolean logEnableTrace = true;
+
+    @Override
+    public void runOpMode() {
+        robot = new TestBot(this);
+        robot.logger.open(logEnableTrace);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        runtime.reset();
+
+        robot.hoist.raisedPosition = 0;
+        robot.hoist.loweredPosition = 5000;
+        robot.hoist.rampUpDownThreshold = 1000;
+        robot.hoist.power = 1;
+
+        while (opModeIsActive()) {
+
+            if (gamepad1.dpad_down) {
+                robot.logger.logDebug("runOpMode", "dpad_down");
+                robot.hoist.lower();
+            }
+
+            if (gamepad1.dpad_up) {
+                robot.logger.logDebug("runOpMode", "dpad_up");
+                robot.hoist.raise();
+            }
+        }
+
+        // Show the elapsed game time.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
 
     }
-
-    public TestBot(OpMode aOpMode) {
-        driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
-        navigator = new Navigator(aOpMode, driveTrain);
-        logger = new Logger("TestBot");
-        driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
-        hoist = new Hoist(logger, aOpMode, "hoistCrank", "hoistGuardSwitch");
-    }
-
 }
-

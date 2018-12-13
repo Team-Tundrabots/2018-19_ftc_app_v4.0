@@ -29,77 +29,54 @@
 
 package org.firstinspires.ftc.teamcode.ops.templates;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
+
 @TeleOp(name="Template_TeleOp", group="templates")
 @Disabled
-public class Template_TeleOp extends OpMode
-{
-    // Declare OpMode members.
-    private TestBot robot       = null;
-    private ElapsedTime runtime = new ElapsedTime();
+public class Template_TeleOp extends LinearOpMode {
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private TestBot robot = null;
+
     @Override
-    public void init() {
+    public void runOpMode() {
         robot = new TestBot(this);
         telemetry.addData("Status", "Initialized");
-    }
+        telemetry.update();
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
-    }
-
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
         runtime.reset();
-    }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
+/**  REPLACE THIS SECTION WITH YOUR CODE
 
-        double leftX = gamepad1.left_stick_x;
-        double leftY = gamepad1.left_stick_y;
-        double rightX = gamepad1.right_stick_x;
-        double rightY = gamepad1.right_stick_y;
+        double power = .5;
 
+        // move forward for a number of seconds at specific power
+        robot.driveTrain.moveForward(.5, power);
 
+        // turn for a number of seconds by applying opposite power #'s for left and right motors
+        robot.driveTrain.turnLeft(.5, power);
 
-        /*** REPLACE THIS SECTION WITH YOUR CODE
+        // turn for a number of seconds by applying opposite power #'s for left and right motors
+        robot.driveTrain.turnRight(.5, power);
 
-        robot.driveTrain.updateMotorsTankDrive(leftY, rightY);
+        // move backward for a number of seconds at specific power
+        robot.driveTrain.moveBackward(.5, power);
 
-        ***/
+***/
 
-
-
+        // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
-        telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
+        telemetry.update();
 
     }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
-    }
-
 }

@@ -41,8 +41,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class BotComponent {
 
     public OpMode opMode = null;
+    public Logger logger = null;
 
-    private ElapsedTime period = new ElapsedTime();
+    private boolean checkedOpMode = false;
+    private LinearOpMode linearOpMode = null;
 
     /* Constructor */
     public BotComponent() {
@@ -53,31 +55,46 @@ public class BotComponent {
         opMode = aOpMode;
     }
 
+    public BotComponent(Logger aLogger, OpMode aOpMode) {
+            logger = aLogger;
+            opMode = aOpMode;
+    }
+
     private LinearOpMode getLinearOpMode() throws ClassCastException {
         LinearOpMode op = (LinearOpMode) opMode;
         return op;
     }
 
     public boolean opModeIsActive() {
-        LinearOpMode op = null;
-        try {
-            op = getLinearOpMode();
-        } catch (ClassCastException err) {
-            return true;
+        if (!checkedOpMode) {
+            try {
+                linearOpMode = getLinearOpMode();
+            } catch (ClassCastException err) {
+                linearOpMode = null;
+            }
+            checkedOpMode = true;
         }
-        return op.opModeIsActive();
+
+        if (linearOpMode == null) {
+            return true;
+            // return !(Thread.currentThread().isInterrupted());
+        } else {
+            return linearOpMode.opModeIsActive();
+
+        }
     }
+
 
     public DcMotor initMotor(String motorName) {
         return(initMotor(motorName, DcMotor.Direction.FORWARD));
     }
+
 
     public DcMotor initMotor(String motorName, DcMotorSimple.Direction direction) {
         return initMotor(motorName, direction, false);
     }
 
     public DcMotor initMotor(String motorName, DcMotorSimple.Direction direction, boolean resetEncoder) {
-
         try {
             HardwareMap ahwMap = opMode.hardwareMap;
             DcMotor motor = ahwMap.get(DcMotor.class, motorName);
@@ -121,9 +138,7 @@ public class BotComponent {
         try {
             HardwareMap ahwMap = opMode.hardwareMap;
             TouchSensor touchSensor = ahwMap.get(TouchSensor.class, sensorName);
-
             return (touchSensor);
-
         } catch (NullPointerException | IllegalArgumentException err) {
             if (opMode.telemetry != null) {
                 opMode.telemetry.addData("Error", err.getMessage());

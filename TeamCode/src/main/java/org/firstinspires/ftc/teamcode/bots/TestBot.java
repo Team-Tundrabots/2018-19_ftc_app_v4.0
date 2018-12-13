@@ -37,6 +37,8 @@ public class TestBot extends Bot {
 
     public DriveTrain driveTrain = null;
     public Navigator navigator = null;
+    public Hoist hoist = null;
+    public Logger logger = null;
 
     /* Constructor */
     public TestBot() {
@@ -46,6 +48,9 @@ public class TestBot extends Bot {
     public TestBot(OpMode aOpMode) {
         // driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
         navigator = new Navigator(aOpMode, driveTrain);
+        logger = new Logger("TestBot");
+        driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
+        hoist = new Hoist(logger, aOpMode, "hoistCrank", "hoistGuardSwitch");
     }
 
 }

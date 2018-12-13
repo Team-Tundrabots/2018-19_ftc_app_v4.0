@@ -27,9 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.templates;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,17 +37,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@TeleOp(name="Template_TeleOp", group="templates")
-@Disabled
-public class Template_TeleOp extends LinearOpMode {
+@TeleOp(name="RexHoistTest_TeleOp", group="rex")
+//@Disabled
+public class RexHoistTest_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private TestBot robot = null;
+    private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
         robot = new TestBot(this);
+        robot.logger.open(logEnableTrace);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -56,23 +58,23 @@ public class Template_TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-/**  REPLACE THIS SECTION WITH YOUR CODE
+        robot.hoist.raisedPosition = 0;
+        robot.hoist.loweredPosition = 5000;
+        robot.hoist.rampUpDownThreshold = 1000;
+        robot.hoist.power = 1;
 
-        double power = .5;
+        while (opModeIsActive()) {
 
-        // move forward for a number of seconds at specific power
-        robot.driveTrain.moveForward(.5, power);
+            if (gamepad1.dpad_down) {
+                robot.logger.logDebug("runOpMode", "dpad_down");
+                robot.hoist.lower();
+            }
 
-        // turn for a number of seconds by applying opposite power #'s for left and right motors
-        robot.driveTrain.turnLeft(.5, power);
-
-        // turn for a number of seconds by applying opposite power #'s for left and right motors
-        robot.driveTrain.turnRight(.5, power);
-
-        // move backward for a number of seconds at specific power
-        robot.driveTrain.moveBackward(.5, power);
-
-***/
+            if (gamepad1.dpad_up) {
+                robot.logger.logDebug("runOpMode", "dpad_up");
+                robot.hoist.raise();
+            }
+        }
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

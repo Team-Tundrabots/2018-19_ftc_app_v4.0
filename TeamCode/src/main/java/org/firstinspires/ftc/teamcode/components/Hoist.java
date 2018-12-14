@@ -33,7 +33,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 public class Hoist extends BotComponent {
@@ -41,13 +40,13 @@ public class Hoist extends BotComponent {
     public DcMotor crank = null;
     public TouchSensor guardSwitch = null;
 
-    private int DEFAULT_LOWERED_POSITION = 3000;
-    private int DEFAULT_RAISED_POSITION = 0;
+    private int DEFAULT_EXTENDED_POSITION = 3000;
+    private int DEFAULT_CONTRACTED_POSITION = 0;
     private int DEFAULT_RAMP_UP_DOWN_THRESHOLD = 200;
     private double DEFAULT_POWER = 0.25;
 
-    public int loweredPosition = DEFAULT_LOWERED_POSITION;
-    public int raisedPosition = DEFAULT_RAISED_POSITION;
+    public int extendedPosition = DEFAULT_EXTENDED_POSITION;
+    public int contractedPosition = DEFAULT_CONTRACTED_POSITION;
     public int rampUpDownThreshold = DEFAULT_RAMP_UP_DOWN_THRESHOLD;
     public double power = DEFAULT_POWER;
 
@@ -84,9 +83,13 @@ public class Hoist extends BotComponent {
     }
 
     public void reset() {
-        crank.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outputCrankPositions("Hoist.reset");
+        try {
+            crank.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            outputCrankPositions("Hoist.reset");
+        } catch (NullPointerException err) {
+            opMode.telemetry.addData("Error", err.getMessage());
+        }
     }
 
     public void setTarget(int targetPosition) {
@@ -95,16 +98,16 @@ public class Hoist extends BotComponent {
         outputCrankPositions();
     }
 
-    public void lower() {
-        logger.logDebug("Hoist.lower", "");
+    public void extend() {
+        logger.logDebug("Hoist.extend", "");
         crank.setDirection(DcMotorSimple.Direction.FORWARD);
-        runToTarget(loweredPosition, power, rampUpDownThreshold);
+        runToTarget(extendedPosition, power, rampUpDownThreshold);
     }
 
-    public void raise() {
-        logger.logDebug("Hoist.raise", "");
+    public void contract() {
+        logger.logDebug("Hoist.contract", "");
         crank.setDirection(DcMotorSimple.Direction.REVERSE);
-        runToTarget(raisedPosition, power,  rampUpDownThreshold);
+        runToTarget(contractedPosition, power,  rampUpDownThreshold);
     }
 
     // Simple version - no ramp up or down
@@ -151,51 +154,6 @@ public class Hoist extends BotComponent {
             idle();
         }
         crank.setPower(0);
-        // Turn off RUN_TO_POSITION
-        crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void runToTarget(int targetPosition, double power, double timeoutSeconds) {
-
-        int startPosition = crank.getCurrentPosition();
-        setTarget(targetPosition);
-        double setPower = power;
-
-        // reset the timeout time and start motion.
-        //runtime.reset();
-        crank.setPower(power);
-
-        while (opModeIsActive()
-                && (crank.isBusy())
-//                && (runtime.seconds() < timeoutSeconds)
-//                && (!guardSwitch.isPressed())
-                ) {
-
-            int diffStart = Math.abs(startPosition - crank.getCurrentPosition()) + 1;
-            int diffTarget = Math.abs(targetPosition - crank.getCurrentPosition()) + 1;
-/*
-            if ( diffTarget < rampUpDownThreshold ) {
-                setPower = DEFAULT_RAMP_DOWN_POWER;
-                crank.setPower(setPower);
-                outputCrankPositions("Ramp Down");
-            } else if ( diffStart < rampUpDownThreshold ) {
-                setPower = DEFAULT_RAMP_UP_POWER;
-                crank.setPower(setPower);
-                outputCrankPositions("Ramp Up");
-            } else {
-                setPower = power;
-                crank.setPower(setPower);
-                outputCrankPositions("Running");
-            }
-*/
-            outputCrankPositions("Crank Running");
-            idle();
-        }
-
-        // Stop all motion;
-        crank.setPower(0);
-        //outputCrankPositions();
-
         // Turn off RUN_TO_POSITION
         crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }

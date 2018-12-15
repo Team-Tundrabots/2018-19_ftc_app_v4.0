@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.ops.rex;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -58,21 +57,21 @@ public class RexHoistTest_TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        robot.hoist.raisedPosition = 0;
-        robot.hoist.loweredPosition = 5000;
+        robot.hoist.contractedPosition = 0;
+        robot.hoist.extendedPosition = 5000;
         robot.hoist.rampUpDownThreshold = 1000;
-        robot.hoist.power = 1;
+        robot.hoist.power = .25;
 
         while (opModeIsActive()) {
 
             if (gamepad1.dpad_down) {
                 robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.lower();
+                robot.hoist.extend();
             }
 
             if (gamepad1.dpad_up) {
                 robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.raise();
+                robot.hoist.contract();
             }
         }
 

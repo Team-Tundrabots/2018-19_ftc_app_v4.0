@@ -243,16 +243,20 @@ public class DriveTrain extends BotComponent {
             newRightTarget = frontRightMotor.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
             frontLeftMotor.setTargetPosition(newLeftTarget);
             frontRightMotor.setTargetPosition(newRightTarget);
+            backLeftMotor.setTargetPosition(newLeftTarget);
+            backRightMotor.setTargetPosition(newRightTarget);
 
             // Turn On RUN_TO_POSITION
             frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+            backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             // reset the timeout time and start motion.
             runtime.reset();
             frontLeftMotor.setPower(Math.abs(speed));
             frontRightMotor.setPower(Math.abs(speed));
-
+            backLeftMotor.setPower(Math.abs(speed));
+            backRightMotor.setPower(Math.abs(speed));
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
             // its target position, the motion will stop.  This is "safer" in the event that the robot will
@@ -261,13 +265,16 @@ public class DriveTrain extends BotComponent {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
-                    (frontLeftMotor.isBusy() && frontRightMotor.isBusy())) {
+                    (frontLeftMotor.isBusy() && frontRightMotor.isBusy() && backLeftMotor.isBusy() && backRightMotor.isBusy())) {
 
                 // Display it for the driver.
                 opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
                 opMode.telemetry.addData("Path2",  "Running at %7d :%7d",
                         frontLeftMotor.getCurrentPosition(),
                         frontRightMotor.getCurrentPosition());
+                opMode.telemetry.addData("Path2",  "Running at %7d :%7d",
+                        backLeftMotor.getCurrentPosition(),
+                        backRightMotor.getCurrentPosition());
                 opMode.telemetry.update();
             }
 
@@ -277,6 +284,8 @@ public class DriveTrain extends BotComponent {
             // Turn off RUN_TO_POSITION
             frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //  sleep(250);   // optional pause after each move
         }

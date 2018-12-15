@@ -49,6 +49,7 @@ public class Hoist extends BotComponent {
     public int contractedPosition = DEFAULT_CONTRACTED_POSITION;
     public int rampUpDownThreshold = DEFAULT_RAMP_UP_DOWN_THRESHOLD;
     public double power = DEFAULT_POWER;
+    private boolean isGuardSwitchEnabled = true;
 
     /* Constructor */
     public Hoist() {
@@ -67,6 +68,15 @@ public class Hoist extends BotComponent {
 
         reset();
 
+    }
+
+    public boolean isGuardSwitchPressed (){
+        if (isGuardSwitchEnabled){
+            return guardSwitch.isPressed();
+        }
+        else {
+            return false;
+        }
     }
 
     public void outputCrankPositions() {
@@ -100,13 +110,15 @@ public class Hoist extends BotComponent {
 
     public void extend() {
         logger.logDebug("Hoist.extend", "");
-        crank.setDirection(DcMotorSimple.Direction.FORWARD);
+        crank.setDirection(DcMotorSimple.Direction.REVERSE);
+        isGuardSwitchEnabled = false;
         runToTarget(extendedPosition, power, rampUpDownThreshold);
     }
 
     public void contract() {
         logger.logDebug("Hoist.contract", "");
-        crank.setDirection(DcMotorSimple.Direction.REVERSE);
+        crank.setDirection(DcMotorSimple.Direction.FORWARD);
+        isGuardSwitchEnabled = true;
         runToTarget(contractedPosition, power,  rampUpDownThreshold);
     }
 
@@ -115,7 +127,7 @@ public class Hoist extends BotComponent {
         int startPosition = crank.getCurrentPosition();
         setTarget(targetPosition);
         crank.setPower(power);
-        while (opModeIsActive() && crank.isBusy() && !guardSwitch.isPressed()) {
+        while (opModeIsActive() && crank.isBusy() && !isGuardSwitchPressed()) {
             outputCrankPositions("Hoist.runToTarget");
             idle();
         }
@@ -131,28 +143,37 @@ public class Hoist extends BotComponent {
 
         double calcPower = 0;
 
-        while (opModeIsActive() && crank.isBusy() && !guardSwitch.isPressed()) {
+        while (opModeIsActive() && (crank.isBusy() || opMode.gamepad1.x) && !isGuardSwitchPressed()) {
 
             int diffStart = Math.abs(startPosition - crank.getCurrentPosition()) + 1;
             int diffTarget = Math.abs(targetPosition - crank.getCurrentPosition()) + 1;
 
-            if ( diffTarget < rampUpDownThreshold && calcPower > .01) {
-                calcPower = power * ((double)diffTarget / rampUpDownThreshold ); // calcPower - .01;
-                logger.logDebug("outputCrankPositions", "Status: %s, diffTarget: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Down", diffTarget, rampUpDownThreshold, calcPower);
-                crank.setPower(calcPower);
-                outputCrankPositions("Hoist.runToTarget:Ramp Down");
-            } else if ( diffStart < rampUpDownThreshold && calcPower < power) {
-                calcPower = power * ((double)diffStart / rampUpDownThreshold) + 0.01; // calcPower + .01;
-                logger.logDebug("outputCrankPositions", "Status: %s, diffStart: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Up", diffStart, rampUpDownThreshold, calcPower);
-                crank.setPower(calcPower);
-                outputCrankPositions("Hoist.runToTarget:Ramp Up");
+            if (! opMode.gamepad1.x) {
+                crank.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                if (diffTarget < rampUpDownThreshold && calcPower > .01) {
+                    calcPower = power * ((double) diffTarget / rampUpDownThreshold); // calcPower - .01;
+                    logger.logDebug("outputCrankPositions", "Status: %s, diffTarget: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Down", diffTarget, rampUpDownThreshold, calcPower);
+                    crank.setPower(calcPower);
+                    outputCrankPositions("Hoist.runToTarget:Ramp Down");
+                } else if (diffStart < rampUpDownThreshold && calcPower < power) {
+                    calcPower = power * ((double) diffStart / rampUpDownThreshold) + 0.01; // calcPower + .01;
+                    logger.logDebug("outputCrankPositions", "Status: %s, diffStart: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Up", diffStart, rampUpDownThreshold, calcPower);
+                    crank.setPower(calcPower);
+                    outputCrankPositions("Hoist.runToTarget:Ramp Up");
+                } else {
+                    crank.setPower(power);
+                    outputCrankPositions("Hoist.runToTarget:Running");
+                }
             } else {
+                crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 crank.setPower(power);
-                outputCrankPositions("Hoist.runToTarget:Running");
+                outputCrankPositions("Hoist.runToTarget:OVERRIDE");
             }
 
             idle();
+
         }
+
         crank.setPower(0);
         // Turn off RUN_TO_POSITION
         crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

@@ -38,7 +38,8 @@ import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 @TeleOp(name="RexHoistTest_TeleOp", group="rex")
 //@Disabled
-public class RexHoistTest_TeleOp extends LinearOpMode {
+public class
+RexHoistTest_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -58,9 +59,9 @@ public class RexHoistTest_TeleOp extends LinearOpMode {
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 5000;
-        robot.hoist.rampUpDownThreshold = 1000;
-        robot.hoist.power = .25;
+        robot.hoist.extendedPosition = 20000;
+        robot.hoist.rampUpDownThreshold = 500;
+        robot.hoist.power = .50;
 
         while (opModeIsActive()) {
 

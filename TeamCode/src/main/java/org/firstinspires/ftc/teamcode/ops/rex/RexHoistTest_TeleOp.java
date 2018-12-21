@@ -61,7 +61,7 @@ RexHoistTest_TeleOp extends LinearOpMode {
         robot.hoist.contractedPosition = 0;
         robot.hoist.extendedPosition = 20000;
         robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = .50;
+        robot.hoist.power = 9.9;
 
         while (opModeIsActive()) {
 

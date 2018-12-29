@@ -61,9 +61,8 @@ public class RexHoistTest_TeleOp extends LinearOpMode {
         robot.hoist.raisedPosition = 0;
         robot.hoist.loweredPosition = 5000;
         robot.hoist.rampUpDownThreshold = 1000;
-        robot.hoist.power = 0.25;
-
-        while (opModeIsActive()) {
+        robot.hoist.power = 0.25
+7k0/-';= 6xZ~14cyGFA
 
             if (gamepad1.dpad_down) {
                 robot.logger.logDebug("runOpMode", "dpad_down");

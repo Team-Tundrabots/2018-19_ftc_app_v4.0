@@ -27,32 +27,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.bots;
+package org.firstinspires.ftc.teamcode.ops.jonathan;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.components.*;
+import org.firstinspires.ftc.teamcode.bots.TestBot;
 
-public class TestBot extends Bot {
 
-    public Logger logger = null;
-    public DriveTrain driveTrain = null;
-    public Navigator navigator = null;
-    public Hoist hoist = null;
-    public Arm arm = null;
+@TeleOp(name="Template_TeleOp", group="templates")
+@Disabled
+public class JonathanArmTest_TeleOp extends LinearOpMode {
 
-    /* Constructor */
-    public TestBot() {
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private TestBot robot = null;
+
+    @Override
+    public void runOpMode() {
+        robot = new TestBot(this);
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        runtime.reset();
+
+
+        while (opModeIsActive()) {
+            if(gamepad1.right_bumper) {
+                robot.arm.crankForward(.25);
+            }else if(gamepad1.left_bumper){
+                robot.arm.crankBackward(.25);
+            }
+        }
+
+        // Show the elapsed game time.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.update();
 
     }
-
-    public TestBot(OpMode aOpMode) {
-        logger = new Logger("TestBot");
-        driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
-        navigator = new Navigator(aOpMode, driveTrain);
-        hoist = new Hoist(logger, aOpMode, "hoistCrank", "hoistGuardSwitch");
-        arm = new Arm(logger, aOpMode, "arm.crank", "arm.forwardGuardSwitch", "arm.backwardGuardSwitch");
-    }
-
 }
-

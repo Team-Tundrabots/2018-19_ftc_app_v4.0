@@ -58,9 +58,9 @@ public class JonathanArmTest_TeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             if(gamepad1.right_bumper) {
-                robot.arm.crankForward(.25);
+                robot.arm.crankForward(.5);
             }else if(gamepad1.left_bumper){
-                robot.arm.crankBackward(.25);
+                robot.arm.crankBackward(.5);
             }
         }
 

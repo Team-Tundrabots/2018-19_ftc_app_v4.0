@@ -56,28 +56,17 @@ public class Hoist extends BotComponent {
 
     }
 
-    public Hoist(Logger aLogger, OpMode aOpMode, String crankName, String guardSwitchName)
-    {
+    public Hoist(Logger aLogger, OpMode aOpMode, String crankName) {
         super(aLogger, aOpMode);
 
         // Define and Initialize Motors
         crank = initMotor(crankName, DcMotor.Direction.FORWARD, true);
 
-        // get a reference to our digitalTouch object.
-        guardSwitch = initTouchSensor(guardSwitchName);
 
         reset();
 
     }
 
-    public boolean isGuardSwitchPressed (){
-        if (isGuardSwitchEnabled){
-            return guardSwitch.isPressed();
-        }
-        else {
-            return false;
-        }
-    }
 
     public void outputCrankPositions() {
         outputCrankPositions("Crank Positions");
@@ -86,7 +75,7 @@ public class Hoist extends BotComponent {
     public void outputCrankPositions(String label) {
         logger.logDebug("outputCrankPositions", "Status: %s, Target: %7d, Current: %7d, Power: %f", label, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
         opMode.telemetry.addData("Status", label);
-        opMode.telemetry.addData("Target",  "%7d", crank.getTargetPosition());
+        opMode.telemetry.addData("Target", "%7d", crank.getTargetPosition());
         opMode.telemetry.addData("Current", "%7d", crank.getCurrentPosition());
         opMode.telemetry.addData("Power", crank.getPower());
         opMode.telemetry.update();
@@ -111,15 +100,13 @@ public class Hoist extends BotComponent {
     public void extend() {
         logger.logDebug("Hoist.extend", "");
         crank.setDirection(DcMotorSimple.Direction.REVERSE);
-        isGuardSwitchEnabled = false;
         runToTarget(extendedPosition, power, rampUpDownThreshold);
     }
 
     public void contract() {
         logger.logDebug("Hoist.contract", "");
         crank.setDirection(DcMotorSimple.Direction.FORWARD);
-        isGuardSwitchEnabled = true;
-        runToTarget(contractedPosition, power,  rampUpDownThreshold);
+        runToTarget(contractedPosition, power, rampUpDownThreshold);
     }
 
     // Simple version - no ramp up or down
@@ -127,7 +114,7 @@ public class Hoist extends BotComponent {
         int startPosition = crank.getCurrentPosition();
         setTarget(targetPosition);
         crank.setPower(power);
-        while (opModeIsActive() && crank.isBusy() && !isGuardSwitchPressed()) {
+        while (opModeIsActive() && crank.isBusy()) {
             outputCrankPositions("Hoist.runToTarget");
             idle();
         }
@@ -143,12 +130,12 @@ public class Hoist extends BotComponent {
 
         double calcPower = 0;
 
-        while (opModeIsActive() && (crank.isBusy() || opMode.gamepad1.x) && !isGuardSwitchPressed()) {
+        while (opModeIsActive() && (crank.isBusy() || opMode.gamepad1.x)) {
 
             int diffStart = Math.abs(startPosition - crank.getCurrentPosition()) + 1;
             int diffTarget = Math.abs(targetPosition - crank.getCurrentPosition()) + 1;
 
-            if (! opMode.gamepad1.x) {
+            if (!opMode.gamepad1.x) {
                 crank.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 if (diffTarget < rampUpDownThreshold && calcPower > .01) {
                     calcPower = power * ((double) diffTarget / rampUpDownThreshold); // calcPower - .01;
@@ -178,12 +165,7 @@ public class Hoist extends BotComponent {
         // Turn off RUN_TO_POSITION
         crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-    public void waitForSwitch() {
-        while (opModeIsActive() && !guardSwitch.isPressed()) {
-            idle();
-        }
-    }
-
 }
+
+
 

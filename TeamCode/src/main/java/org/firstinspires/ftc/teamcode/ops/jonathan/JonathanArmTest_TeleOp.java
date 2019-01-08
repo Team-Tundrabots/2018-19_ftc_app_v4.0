@@ -37,8 +37,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@TeleOp(name="Template_TeleOp", group="templates")
-@Disabled
+@TeleOp(name="JonathanArmTest_TeleOp", group="jonathan")
+//*@Disabled
 public class JonathanArmTest_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.

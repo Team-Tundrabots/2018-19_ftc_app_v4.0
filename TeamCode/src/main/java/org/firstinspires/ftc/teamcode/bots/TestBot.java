@@ -49,7 +49,7 @@ public class TestBot extends Bot {
         logger = new Logger("TestBot");
         driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
         navigator = new Navigator(aOpMode, driveTrain);
-        hoist = new Hoist(logger, aOpMode, "hoistCrank", "hoistGuardSwitch");
+        hoist = new Hoist(logger, aOpMode, "hoistCrank");
     }
 
 }

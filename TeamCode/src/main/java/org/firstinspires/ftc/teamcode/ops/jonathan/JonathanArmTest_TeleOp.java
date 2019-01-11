@@ -57,16 +57,20 @@ public class JonathanArmTest_TeleOp extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            if(gamepad1.right_bumper) {
+            telemetry.addData("right_trigger", gamepad1.right_trigger);
+            telemetry.addData("left_trigger", gamepad1.left_trigger);
+            telemetry.update();
+          /*  if(gamepad1.right_trigger > 0) {
                 robot.arm.crankForward(.5);
-            }else if(gamepad1.left_bumper){
+            }else if(gamepad1.left_trigger > 0) {
                 robot.arm.crankBackward(.5);
             }
-        }
+        }*/
+          robot.arm.crank.setPower(-gamepad1.left_trigger+gamepad1.right_trigger);
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();
 
     }
-}
+}}

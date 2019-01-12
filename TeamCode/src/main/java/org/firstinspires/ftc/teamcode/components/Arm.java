@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-
+// test - adding a comment
 public class Arm extends BotComponent {
 
     public DcMotor crank = null;

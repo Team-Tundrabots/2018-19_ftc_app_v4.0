@@ -27,51 +27,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.scrimmage;
+package org.firstinspires.ftc.teamcode.bots;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.bots.ScrimmageBot;
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.Hoist;
+import org.firstinspires.ftc.teamcode.components.Logger;
+import org.firstinspires.ftc.teamcode.components.Navigator;
 
+public class ScrimmageBot extends Bot {
 
-@Autonomous(name="Scrimmage_Auto", group="scrimmage")
-//@Disabled
-public class Scrimmage_Auto extends LinearOpMode {
+    public Logger logger = null;
+    public DriveTrain driveTrain = null;
+    public Navigator navigator = null;
+    public Hoist hoist = null;
 
-    // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private ScrimmageBot robot = null;
-    private boolean logEnableTrace = true;
-
-    @Override
-    public void runOpMode() {
-        robot = new ScrimmageBot(this);
-        robot.logger.open(logEnableTrace);
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
-
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 250;
-        robot.hoist.rampUpDownThreshold = 100;
-        robot.hoist.power = .50;
-
-
-        robot.hoist.extend();
-        robot.driveTrain.crabRight(1.5);
-
-
-        // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.update();
+    /* Constructor */
+    public ScrimmageBot() {
 
     }
+
+    public ScrimmageBot(OpMode aOpMode) {
+        logger = new Logger("TestBot");
+        driveTrain = new DriveTrain(aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
+        navigator = new Navigator(aOpMode, driveTrain);
+        hoist = new Hoist(logger, aOpMode, "hoistCrank");
+    }
+
 }
+

@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.bots.ScrimmageBot;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
@@ -42,12 +43,12 @@ public class Scrimmage_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private ScrimmageBot robot = null;
     private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
+        robot = new ScrimmageBot(this);
         robot.logger.open(logEnableTrace);
 
         telemetry.addData("Status", "Initialized");

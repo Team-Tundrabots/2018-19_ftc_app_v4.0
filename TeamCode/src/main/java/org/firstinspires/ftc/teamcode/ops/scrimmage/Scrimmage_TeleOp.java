@@ -91,13 +91,5 @@ public class Scrimmage_TeleOp extends LinearOpMode {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();
 
-        while (opModeIsActive()) {
-            telemetry.addData("right_trigger", gamepad1.right_trigger);
-            telemetry.addData("left_trigger", gamepad1.left_trigger);
-            telemetry.update();
-
-            robot.arm.crank.setPower(-gamepad1.left_trigger+gamepad1.right_trigger);
-        }
-
     }
 }

@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode.bots;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.components.Arm;
 import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.Hoist;
 import org.firstinspires.ftc.teamcode.components.Logger;
@@ -43,7 +42,6 @@ public class ScrimmageBot extends Bot {
     public DriveTrain driveTrain = null;
     public Navigator navigator = null;
     public Hoist hoist = null;
-    public Arm arm = null;
 
     /* Constructor */
     public ScrimmageBot() {

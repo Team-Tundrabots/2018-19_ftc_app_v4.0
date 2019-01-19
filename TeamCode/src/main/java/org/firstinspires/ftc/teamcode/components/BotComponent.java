@@ -42,7 +42,7 @@ public class BotComponent {
 
     public OpMode opMode = null;
     public Logger logger = null;
-    public boolean isAvailable = false;
+    public Boolean isAvailable = null;
 
     private boolean checkedOpMode = false;
     private LinearOpMode linearOpMode = null;
@@ -59,6 +59,7 @@ public class BotComponent {
     public BotComponent(Logger aLogger, OpMode aOpMode) {
             logger = aLogger;
             opMode = aOpMode;
+            isAvailable = false;
     }
 
     private LinearOpMode getLinearOpMode() throws ClassCastException {

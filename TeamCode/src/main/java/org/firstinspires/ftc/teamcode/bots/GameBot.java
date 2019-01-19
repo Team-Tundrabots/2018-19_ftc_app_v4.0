@@ -27,57 +27,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.bots;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
-// test - adding a comment
-public class Arm extends BotComponent {
+import org.firstinspires.ftc.teamcode.components.Arm;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.GoldSensor;
+import org.firstinspires.ftc.teamcode.components.Hoist;
+import org.firstinspires.ftc.teamcode.components.Logger;
+import org.firstinspires.ftc.teamcode.components.Navigator;
 
-    public DcMotor crank = null;
-    public TouchSensor forwardGuardSwitch = null;
-    public TouchSensor backwardGuardSwitch = null;
+
+public class GameBot extends Bot {
+
+    public Logger logger = null;
+    public DriveTrain driveTrain = null;
+    public Navigator navigator = null;
+    public Hoist hoist = null;
+    public GoldSensor goldSensor = null;
+    public Arm arm = null;
 
     /* Constructor */
-    public Arm() {
+    public GameBot() {
 
     }
 
-    public Arm(Logger aLogger, OpMode aOpMode, String crankName, String switch1Name, String switch2Name)
-    {
-        super(aLogger, aOpMode);
-
-        // Define and Initialize Motors
-        crank = initMotor(crankName, DcMotor.Direction.FORWARD);
-
-        // get a reference to our digitalTouch object.
-        forwardGuardSwitch = initTouchSensor(switch1Name);
-        backwardGuardSwitch = initTouchSensor(switch2Name);
-
-        if (crank != null) {
-            isAvailable = true;
-        }
-    }
-
-    public void crankForward(double power) {
-        while (opModeIsActive() && !forwardGuardSwitch.isPressed() && opMode.gamepad1.right_bumper) {
-            crank.setDirection(DcMotorSimple.Direction.FORWARD);
-            crank.setPower(power);
-            idle();
-        }
-        crank.setPower(0.0);
-    }
-
-    public void crankBackward(double power) {
-        while (opModeIsActive() && !backwardGuardSwitch.isPressed() && opMode.gamepad1.left_bumper) {
-            crank.setDirection(DcMotorSimple.Direction.REVERSE);
-            crank.setPower(power);
-            idle();
-        }
-        crank.setPower(0.0);
+    public GameBot(OpMode aOpMode) {
+        logger = new Logger("TestBot");
+        driveTrain = new DriveTrain(aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
+        navigator = new Navigator(aOpMode, driveTrain);
+        hoist = new Hoist(logger, aOpMode, "hoistCrank");
+        goldSensor = new GoldSensor(logger, aOpMode, "Webcam 1");
+        arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
     }
 
 }

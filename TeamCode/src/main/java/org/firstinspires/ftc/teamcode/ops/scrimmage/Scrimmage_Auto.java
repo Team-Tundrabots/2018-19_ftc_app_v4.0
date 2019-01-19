@@ -60,7 +60,7 @@ public class Scrimmage_Auto extends LinearOpMode {
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 7;
+        robot.hoist.extendedPosition = 11000;
         robot.hoist.rampUpDownThreshold = 1;
         robot.hoist.power = .50;
 

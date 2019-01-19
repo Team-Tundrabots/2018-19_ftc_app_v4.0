@@ -166,9 +166,9 @@ public class DriveTrain extends BotComponent {
     public void updateMotorsMechanumDrive(double leftX, double leftY, double rightX, double rightY) {
 
 
-        double lX = leftX;
+        double lX = -leftX;
         double lY = leftY;
-        double rX = rightX;
+        double rX = -rightX;
         double rY = rightY;
 
         double r = Math.hypot(lX, lY);

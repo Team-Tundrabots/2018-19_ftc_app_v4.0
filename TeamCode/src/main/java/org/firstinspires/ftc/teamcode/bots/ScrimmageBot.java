@@ -50,7 +50,7 @@ public class ScrimmageBot extends Bot {
     }
 
     public ScrimmageBot(OpMode aOpMode) {
-        logger = new Logger("TestBot");
+        logger = new Logger("ScrimmageBot");
         driveTrain = new DriveTrain(aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         navigator = new Navigator(aOpMode, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");

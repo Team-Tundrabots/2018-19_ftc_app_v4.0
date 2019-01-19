@@ -27,29 +27,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.game;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.*;
 
 
-@Autonomous(name="LowerRobot_Auto", group="game")
+@Autonomous(name="RexCameraTest_Auto", group="rex")
 //@Disabled
-public class
-LowerRobot_Auto extends LinearOpMode {
+public class RexCameraTest_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
     private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
+        robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
 
         telemetry.addData("Status", "Initialized");
@@ -58,24 +56,30 @@ LowerRobot_Auto extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-
+/*
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 20000;
-        robot.hoist.rampUpDownThreshold = 500;
+        robot.hoist.extendedPosition = 11000;
+        robot.hoist.rampUpDownThreshold = 1;
         robot.hoist.power = .50;
 
-        while (opModeIsActive()) {
 
-            if (gamepad1.dpad_down) {
-                robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.extend();
-            }
+        robot.hoist.extend();
+        robot.driveTrain.crabRight(0.5);
+*/
 
-            if (gamepad1.dpad_up) {
-                robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.contract();
-            }
+        switch(robot.goldSensor.goldFind())
+        {
+
+            case "Right" :
+
+            case "Center" :
+
+            case "Left" :
+
+            default :
+
         }
+
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

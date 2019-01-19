@@ -27,29 +27,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.scrimmage;
+package org.firstinspires.ftc.teamcode.ops.game;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.ScrimmageBot;
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.*;
 
 
-@Autonomous(name="Scrimmage_Auto", group="scrimmage")
+@TeleOp(name="Game_TeleOp", group="game")
 //@Disabled
-public class Scrimmage_Auto extends LinearOpMode {
+public class Game_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private ScrimmageBot robot = null;
+    private GameBot robot = null;
     private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new ScrimmageBot(this);
+        robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
 
         telemetry.addData("Status", "Initialized");
@@ -60,14 +58,42 @@ public class Scrimmage_Auto extends LinearOpMode {
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 11000;
-        robot.hoist.rampUpDownThreshold = 1;
+        robot.hoist.extendedPosition = 20000;
+        robot.hoist.rampUpDownThreshold = 500;
         robot.hoist.power = .50;
 
+        while (opModeIsActive()) {
 
-        robot.hoist.extend();
-        robot.driveTrain.crabRight(1.0);
+            if (gamepad1.dpad_down) {
+                robot.logger.logDebug("runOpMode", "dpad_down");
+                robot.hoist.extend();
+            }
 
+            if (gamepad1.dpad_up) {
+                robot.logger.logDebug("runOpMode", "dpad_up");
+                robot.hoist.contract();
+            }
+
+            double leftX = gamepad1.left_stick_x;
+            double leftY = gamepad1.left_stick_y;
+            double rightX = gamepad1.right_stick_x;
+            double rightY = gamepad1.right_stick_y;
+
+            robot.driveTrain.updateMotorsMechanumDrive(leftX,leftY,rightX,rightY);
+
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
+            telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
+
+            if (robot.goldSensor.isAvailable) {
+                telemetry.addData("Gold Position:", robot.goldSensor.goldFind());
+            }
+
+            if (robot.arm.isAvailable) {
+                robot.arm.crank.setPower(-gamepad1.left_trigger + gamepad1.right_trigger);
+            }
+
+        }
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

@@ -100,6 +100,7 @@ public class GoldSensor extends BotComponent {
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
+            isAvailable = true;
         } else {
             opMode.telemetry.addData("Sorry!", "This device is not compatible with TFOD");
         }
@@ -116,6 +117,8 @@ public class GoldSensor extends BotComponent {
 
 
     public String goldFind() {
+        if (!isAvailable) {return "Unknown";}
+
         // getUpdatedRecognitions() will return null if no new information is available since
         // the last time that call was made.
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();

@@ -165,11 +165,11 @@ public class DriveTrain extends BotComponent {
 
     public void updateMotorsMechanumDrive(double leftX, double leftY, double rightX, double rightY) {
 
-        // reverse Y coordinates
+
         double lX = leftX;
-        double lY = -leftY;
+        double lY = leftY;
         double rX = rightX;
-        double rY = -rightY;
+        double rY = rightY;
 
         double r = Math.hypot(lX, lY);
         double robotAngle = Math.atan2(lY, lX) - Math.PI / 4;

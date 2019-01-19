@@ -42,6 +42,7 @@ public class BotComponent {
 
     public OpMode opMode = null;
     public Logger logger = null;
+    public boolean isAvailable = false;
 
     private boolean checkedOpMode = false;
     private LinearOpMode linearOpMode = null;

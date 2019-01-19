@@ -59,6 +59,11 @@ public class DriveTrain extends BotComponent {
         backLeftMotor = initMotor(backLeftMotorName, DcMotor.Direction.REVERSE);
         backRightMotor = initMotor(backRightMotorName);
 
+        // as long as front motors are configured - assume DriveTrain is available
+        if ((frontLeftMotor != null) && (frontRightMotor != null)) {
+            isAvailable = true;
+        }
+
     }
 
     public void setLeftMotorsPower(double power){

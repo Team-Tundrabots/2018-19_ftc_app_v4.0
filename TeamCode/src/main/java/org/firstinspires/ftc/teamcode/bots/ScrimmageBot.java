@@ -41,6 +41,7 @@ public class ScrimmageBot extends Bot {
     public DriveTrain driveTrain = null;
     public Navigator navigator = null;
     public Hoist hoist = null;
+    public GoldSensor goldSensor = null;
     public Arm arm = null;
 
     /* Constructor */
@@ -53,6 +54,7 @@ public class ScrimmageBot extends Bot {
         driveTrain = new DriveTrain(aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         navigator = new Navigator(aOpMode, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
+        goldSensor = new GoldSensor(logger, aOpMode, "Webcam 1");
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
     }
 

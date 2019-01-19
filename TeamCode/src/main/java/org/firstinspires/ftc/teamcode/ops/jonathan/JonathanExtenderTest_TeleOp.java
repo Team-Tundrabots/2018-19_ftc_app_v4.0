@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.ops.jonathan;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -37,18 +36,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@TeleOp(name="JonathanArmTest_TeleOp", group="jonathan")
-//*@Disabled
-public class JonathanArmTest_TeleOp extends LinearOpMode {
+@TeleOp(name="JonathanExtenderTest_TeleOp", group="jonathan")
+//@Disabled
+public class
+JonathanExtenderTest_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private TestBot robot = null;
-
+    private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
         robot = new TestBot(this);
+        robot.logger.open(logEnableTrace);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -56,18 +58,23 @@ public class JonathanArmTest_TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-      /*  while (opModeIsActive()) {
+        robot.extender.contractedPosition = 0;
+        robot.extender.extendedPosition = 500;
+        robot.extender.rampUpDownThreshold = 20;
+        robot.extender.power = 9.9;
 
-            if(gamepad1.right_bumper) {
-                robot.arm.crankForward(.5);
-            }else if(gamepad1.left_bumper) {
-                robot.arm.crankBackward(.5);
+        while (opModeIsActive()) {
+
+            if (gamepad1.right_stick_y > 0) {
+                robot.logger.logDebug("runOpMode", "dpad_down");
+                robot.extender.extend();
             }
-        } */
 
-      while(opModeIsActive()) {
-          robot.arm.crank.setPower(-gamepad1.left_trigger+gamepad1.right_trigger);
-      }
+            if (gamepad1.right_stick_y < 0) {
+                robot.logger.logDebug("runOpMode", "dpad_up");
+                robot.extender.contract();
+            }
+        }
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

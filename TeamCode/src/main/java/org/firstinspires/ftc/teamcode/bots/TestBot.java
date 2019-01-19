@@ -40,6 +40,7 @@ public class TestBot extends Bot {
     public Navigator navigator = null;
     public Hoist hoist = null;
     public Arm arm = null;
+    public Extender extender = null;
 
     /* Constructor */
     public TestBot() {
@@ -52,6 +53,7 @@ public class TestBot extends Bot {
         navigator = new Navigator(aOpMode, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "arm.forwardGuardSwitch", "arm.backwardGuardSwitch");
+        extender = new Extender(logger, aOpMode, "PNP");
     }
 
 }

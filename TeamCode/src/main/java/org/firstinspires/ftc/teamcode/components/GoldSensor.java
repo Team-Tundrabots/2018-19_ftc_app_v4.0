@@ -54,7 +54,6 @@ public class GoldSensor extends BotComponent {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
-    private TestBot robot=null;
 
     private static final String VUFORIA_KEY = "AYb6Z43/////AAABmUDTPvzNUErvv+V5mxyyLy5xIbXbTnWaz/luHdMrGjmXWTa49gQSiDxm1hnzzQVmlkAh/5PCeNEicf28nm7T31+td8OKFeU4C4iu/aQ7HXEv74/NRf38ixE2iYmLLPrPApWBKRrUnuz7v4wsZdXZwIZzgHI0S0t4T4cX34ppylT72P+GXG9U48f7qr5x0KZpn+WgkiSMVQ2r0KvSGTAvU7Sx5y69teWPt+NdHwkes7vpnOQyOXn9NvVSuDgByMcGKbTEScLa9L4zyyRLrBIK9fSIxrRFDNbVGojzcu8+70TuZuyjx+2u/9OzuK4mMDdpqL/46aXinDXqNuSj/BZsPcDCaPsG7R5oxpp9zdfhIwiO";
 
@@ -116,7 +115,7 @@ public class GoldSensor extends BotComponent {
 
 
 
-    private void goldFind() {
+    public String goldFind() {
         // getUpdatedRecognitions() will return null if no new information is available since
         // the last time that call was made.
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -138,24 +137,19 @@ public class GoldSensor extends BotComponent {
                 if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                     if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                         opMode.telemetry.addData("Gold Mineral Position", "Left");
-                        robot.driveTrain.turnLeft(1, 0.5);
-                        robot.driveTrain.pause(1);
+                        return "Left";
                     } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                         opMode.telemetry.addData("Gold Mineral Position", "Right");
-                        robot.driveTrain.turnRight(1, 0.5);
-                        robot.driveTrain.pause(1);
+                        return "Right";
                     } else {
                         opMode.telemetry.addData("Gold Mineral Position", "Center");
-                        robot.driveTrain.moveForward(1, 0.5);
-                        robot.driveTrain.pause(1);
-
+                        return "Center";
                     }
                 }
             }
 
         }
-
-
+        return "None";
     }
 
     /**

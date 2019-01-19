@@ -85,6 +85,8 @@ public class Scrimmage_TeleOp extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
             telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
+
+            telemetry.addData("Gold Position:", robot.goldSensor.goldFind());
         }
 
         // Show the elapsed game time.

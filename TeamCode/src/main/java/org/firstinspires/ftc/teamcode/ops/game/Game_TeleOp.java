@@ -89,7 +89,7 @@ public class Game_TeleOp extends LinearOpMode {
                 telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
             }
 
-
+            telemetry.update();
         }
 
         // Show the elapsed game time.

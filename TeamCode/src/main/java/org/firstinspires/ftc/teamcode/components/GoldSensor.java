@@ -55,7 +55,10 @@ public class GoldSensor extends BotComponent {
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
+
     private static final String VUFORIA_KEY = "AYb6Z43/////AAABmUDTPvzNUErvv+V5mxyyLy5xIbXbTnWaz/luHdMrGjmXWTa49gQSiDxm1hnzzQVmlkAh/5PCeNEicf28nm7T31+td8OKFeU4C4iu/aQ7HXEv74/NRf38ixE2iYmLLPrPApWBKRrUnuz7v4wsZdXZwIZzgHI0S0t4T4cX34ppylT72P+GXG9U48f7qr5x0KZpn+WgkiSMVQ2r0KvSGTAvU7Sx5y69teWPt+NdHwkes7vpnOQyOXn9NvVSuDgByMcGKbTEScLa9L4zyyRLrBIK9fSIxrRFDNbVGojzcu8+70TuZuyjx+2u/9OzuK4mMDdpqL/46aXinDXqNuSj/BZsPcDCaPsG7R5oxpp9zdfhIwiO";
+
+    private String goldPosition = "Unknown";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -146,15 +149,15 @@ public class GoldSensor extends BotComponent {
                         if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                             opMode.telemetry.addData("Gold Mineral Position", "Left");
                             opMode.telemetry.update();
-                            return("Left");
+                            goldPosition = "Left";
                         } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                             opMode.telemetry.addData("Gold Mineral Position", "Right");
                             opMode.telemetry.update();
-                            return("Right");
+                            goldPosition = "Right";
                         } else {
                             opMode.telemetry.addData("Gold Mineral Position", "Center");
                             opMode.telemetry.update();
-                            return("Center");
+                            goldPosition = "Center";
                         }
                     }
                 }
@@ -162,7 +165,7 @@ public class GoldSensor extends BotComponent {
             }
         }
 
-        return "None";
+        return goldPosition;
     }
 
     /**

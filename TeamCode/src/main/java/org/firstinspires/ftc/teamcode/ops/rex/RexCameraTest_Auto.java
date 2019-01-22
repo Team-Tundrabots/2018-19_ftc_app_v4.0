@@ -66,20 +66,32 @@ public class RexCameraTest_Auto extends LinearOpMode {
         robot.hoist.extend();
         robot.driveTrain.crabRight(0.5);
 */
+        boolean foundGold = false;
 
-        switch(robot.goldSensor.goldFind())
-        {
+        while (opModeIsActive() && !foundGold) {
+            switch (robot.goldSensor.goldFind()) {
 
-            case "Right" :
+                case "Right":
+                    foundGold = true;
+                    robot.navigator.rotate(90, .25);
+                    telemetry.addData("Gold:", "Right");
 
-            case "Center" :
+                case "Center":
+                    foundGold = true;
+                    robot.driveTrain.moveForward(.5, .25);
+                    telemetry.addData("Gold:", "Center");
 
-            case "Left" :
+                case "Left":
+                    foundGold = true;
+                    robot.navigator.rotate(90, .25);
+                    telemetry.addData("Gold:", "Left");
 
-            default :
+                default:
+                    telemetry.addData("Gold:", "???");
+                    telemetry.addData("findGold:", robot.goldSensor.goldFind());
 
+            }
         }
-
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

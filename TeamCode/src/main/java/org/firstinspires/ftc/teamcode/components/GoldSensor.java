@@ -161,6 +161,8 @@ public class GoldSensor extends BotComponent {
                         }
                     }
                 }
+
+                logger.logDebug("goldFind", goldPosition);
                 opMode.telemetry.update();
             }
         }

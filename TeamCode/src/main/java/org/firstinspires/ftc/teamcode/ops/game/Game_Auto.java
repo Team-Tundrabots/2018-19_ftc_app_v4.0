@@ -69,31 +69,24 @@ public class Game_Auto extends LinearOpMode {
 
 
         String goldPosition = robot.goldSensor.goldFind();
-
-        if (robot.goldSensor.isAvailable) {
-
-            while(opModeIsActive() && goldPosition == "Unknown") {
-                goldPosition = robot.goldSensor.goldFind();
-            }
-            telemetry.addData("goldDirection:", goldPosition);
+        while(opModeIsActive() && goldPosition == "Unknown") {
+            goldPosition = robot.goldSensor.goldFind();
         }
+
+        telemetry.addData("goldDirection:", goldPosition);
 
         switch (goldPosition) {
             case "Right":
                 robot.navigator.rotate(90, .25);
-                telemetry.addData("Gold:", "Right");
 
             case "Center":
                 robot.driveTrain.moveForward(.5, .25);
-                telemetry.addData("Gold:", "Center");
 
             case "Left":
                 robot.navigator.rotate(-90, .25);
-                telemetry.addData("Gold:", "Left");
 
             default:
                 telemetry.addData("Gold:", "???");
-                telemetry.addData("findGold:", goldPosition);
 
         }
 

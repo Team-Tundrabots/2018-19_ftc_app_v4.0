@@ -86,6 +86,7 @@ public class Hoist extends BotComponent {
             crank.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             outputCrankPositions("Hoist.reset");
+            isAvailable = true;
         } catch (NullPointerException err) {
             opMode.telemetry.addData("Error", err.getMessage());
         }

@@ -82,6 +82,8 @@ public class Navigator extends BotComponent {
             driveTrain.idle();
         }
 
+        isAvailable = true;
+
         opMode.telemetry.addData("Mode", "waiting for start");
         opMode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
 

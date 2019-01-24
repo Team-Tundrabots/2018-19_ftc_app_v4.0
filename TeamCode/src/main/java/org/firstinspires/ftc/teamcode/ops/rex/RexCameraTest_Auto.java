@@ -30,25 +30,25 @@
 package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.*;
 
 
-@Autonomous(name="RexEncoderTest_Auto", group="rex")
+@Autonomous(name="RexCameraTest_Auto", group="rex")
 //@Disabled
-public class RexEncoderTest_Auto extends LinearOpMode {
+public class RexCameraTest_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
+    private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
-        robot.navigator.init();
+        robot = new GameBot(this);
+        robot.logger.open(logEnableTrace);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -56,38 +56,42 @@ public class RexEncoderTest_Auto extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-
-
-        double power = .25;
 /*
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
+        robot.hoist.contractedPosition = 0;
+        robot.hoist.extendedPosition = 11000;
+        robot.hoist.rampUpDownThreshold = 1;
+        robot.hoist.power = .50;
 
-        robot.driveTrain.crabLeft(1);
-        robot.driveTrain.crabRight(1);
+
+        robot.hoist.extend();
+        robot.driveTrain.crabRight(0.5);
 */
-/*
-        // move forward for a number of seconds at specific power
-        robot.driveTrain.moveForward(.5, power);
-        robot.driveTrain.turnLeft(.5, power);
-        robot.driveTrain.turnRight(.5, power);
-        robot.driveTrain.moveBackward(.5, power);
-*/
-        robot.driveTrain.resetEncoders();
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
+        boolean foundGold = false;
+
+        while (opModeIsActive() && !foundGold) {
+            switch (robot.goldSensor.goldFind()) {
+
+                case "Right":
+                    foundGold = true;
+                    robot.navigator.rotate(90, .25);
+                    telemetry.addData("Gold:", "Right");
+
+                case "Center":
+                    foundGold = true;
+                    robot.driveTrain.moveForward(.5, .25);
+                    telemetry.addData("Gold:", "Center");
+
+                case "Left":
+                    foundGold = true;
+                    robot.navigator.rotate(90, .25);
+                    telemetry.addData("Gold:", "Left");
+
+                default:
+                    telemetry.addData("Gold:", "???");
+                    telemetry.addData("findGold:", robot.goldSensor.goldFind());
+
+            }
+        }
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

@@ -85,14 +85,11 @@ public class Game_TeleOp extends LinearOpMode {
             telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
             telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
 
-            if (robot.goldSensor.isAvailable) {
-                telemetry.addData("Gold Position:", robot.goldSensor.goldFind());
+            if(robot.goldSensor.isAvailable) {
+                telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
             }
 
-            if (robot.arm.isAvailable) {
-                robot.arm.crank.setPower(-gamepad1.left_trigger + gamepad1.right_trigger);
-            }
-
+            telemetry.update();
         }
 
         // Show the elapsed game time.

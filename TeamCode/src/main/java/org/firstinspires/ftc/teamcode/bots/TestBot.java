@@ -48,7 +48,7 @@ public class TestBot extends Bot {
 
     public TestBot(OpMode aOpMode) {
         logger = new Logger("TestBot");
-        driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
+        driveTrain = new DriveTrain(aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         navigator = new Navigator(aOpMode, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "arm.forwardGuardSwitch", "arm.backwardGuardSwitch");

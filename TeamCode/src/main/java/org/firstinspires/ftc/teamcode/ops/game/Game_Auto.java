@@ -34,22 +34,21 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
-@Autonomous(name="LowerRobot_Auto", group="game")
+@Autonomous(name="Game_Auto", group="game")
 //@Disabled
-public class
-LowerRobot_Auto extends LinearOpMode {
+public class Game_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
     private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
+        robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
 
         telemetry.addData("Status", "Initialized");
@@ -60,21 +59,42 @@ LowerRobot_Auto extends LinearOpMode {
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 20000;
-        robot.hoist.rampUpDownThreshold = 500;
+        robot.hoist.extendedPosition = 11000;
+        robot.hoist.rampUpDownThreshold = 1;
         robot.hoist.power = .50;
 
-        while (opModeIsActive()) {
 
-            if (gamepad1.dpad_down) {
-                robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.extend();
-            }
+        robot.hoist.extend();
+        robot.driveTrain.crabRight(0.5);
 
-            if (gamepad1.dpad_up) {
-                robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.contract();
+
+        String goldPosition = robot.goldSensor.goldFind();
+
+        if (robot.goldSensor.isAvailable) {
+
+            while(opModeIsActive() && goldPosition == "Unknown") {
+                goldPosition = robot.goldSensor.goldFind();
             }
+            telemetry.addData("goldDirection:", goldPosition);
+        }
+
+        switch (goldPosition) {
+            case "Right":
+                robot.navigator.rotate(90, .25);
+                telemetry.addData("Gold:", "Right");
+
+            case "Center":
+                robot.driveTrain.moveForward(.5, .25);
+                telemetry.addData("Gold:", "Center");
+
+            case "Left":
+                robot.navigator.rotate(-90, .25);
+                telemetry.addData("Gold:", "Left");
+
+            default:
+                telemetry.addData("Gold:", "???");
+                telemetry.addData("findGold:", goldPosition);
+
         }
 
         // Show the elapsed game time.

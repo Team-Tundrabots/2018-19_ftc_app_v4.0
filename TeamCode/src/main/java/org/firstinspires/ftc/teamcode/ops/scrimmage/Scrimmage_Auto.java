@@ -66,7 +66,7 @@ public class Scrimmage_Auto extends LinearOpMode {
 
 
         robot.hoist.extend();
-        robot.driveTrain.crabRight(1.0);
+        robot.driveTrain.crabRight(0.5);
 
 
         // Show the elapsed game time.

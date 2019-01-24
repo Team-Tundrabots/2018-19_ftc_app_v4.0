@@ -64,27 +64,34 @@ public class Game_TeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (gamepad1.dpad_down) {
-                robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.extend();
+            // hoist controls
+            if (robot.hoist.isAvailable) {
+                if (gamepad1.dpad_down) {
+                    robot.logger.logDebug("runOpMode", "dpad_down");
+                    robot.hoist.extend();
+                }
+
+                if (gamepad1.dpad_up) {
+                    robot.logger.logDebug("runOpMode", "dpad_up");
+                    robot.hoist.contract();
+                }
             }
 
-            if (gamepad1.dpad_up) {
-                robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.contract();
+            // driveTrain controls
+            if (robot.driveTrain.isAvailable) {
+                double leftX = gamepad1.left_stick_x;
+                double leftY = gamepad1.left_stick_y;
+                double rightX = gamepad1.right_stick_x;
+                double rightY = gamepad1.right_stick_y;
+
+                robot.driveTrain.updateMotorsMechanumDrive(leftX, leftY, rightX, rightY);
+
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
+                telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
             }
 
-            double leftX = gamepad1.left_stick_x;
-            double leftY = gamepad1.left_stick_y;
-            double rightX = gamepad1.right_stick_x;
-            double rightY = gamepad1.right_stick_y;
-
-            robot.driveTrain.updateMotorsMechanumDrive(leftX,leftY,rightX,rightY);
-
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
-            telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
-
+            // goldSensor detection
             if(robot.goldSensor.isAvailable) {
                 telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
             }

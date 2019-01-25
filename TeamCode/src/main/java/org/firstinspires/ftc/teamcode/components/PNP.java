@@ -27,43 +27,52 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.bots;
+package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import org.firstinspires.ftc.teamcode.components.Arm;
-import org.firstinspires.ftc.teamcode.components.DriveTrain;
-import org.firstinspires.ftc.teamcode.components.GoldSensor;
-import org.firstinspires.ftc.teamcode.components.Hoist;
-import org.firstinspires.ftc.teamcode.components.Logger;
-import org.firstinspires.ftc.teamcode.components.Navigator;
-import org.firstinspires.ftc.teamcode.components.PNP;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 
-public class GameBot extends Bot {
+public class PNP extends BotComponent {
 
-    public Logger logger = null;
-    public DriveTrain driveTrain = null;
-    public Navigator navigator = null;
-    public Hoist hoist = null;
-    public GoldSensor goldSensor = null;
-    public Arm arm = null;
-    public PNP pnp = null;
+    public DcMotor pusher = null;
+
+
+    private double DEFAULT_POWER = 0.25;
+
+    public double power = DEFAULT_POWER;
 
     /* Constructor */
-    public GameBot() {
+    public PNP() {
 
     }
 
-    public GameBot(OpMode aOpMode) {
-        logger = new Logger("GameBot");
-        driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
-        navigator = new Navigator(aOpMode, driveTrain);
-        hoist = new Hoist(logger, aOpMode, "hoistCrank");
-        goldSensor = new GoldSensor(logger, aOpMode, "Webcam 1");
-        arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
-        pnp = new PNP(logger, aOpMode, "pusher");
+    public PNP(Logger aLogger, OpMode aOpMode, String pusherName) {
+        super(aLogger, aOpMode);
+        logger.logDebug("PNP.about_to_construct", "");
+        // Define and Initialize Motors
+        pusher = initMotor(pusherName, DcMotor.Direction.FORWARD, true);
+        logger.logDebug("PNP.construct", "");
+        isAvailable= true;
+    }
+
+
+
+    public void extend() {
+        logger.logDebug("PNP.extend", "");
+        pusher.setDirection(DcMotorSimple.Direction.REVERSE);
+        pusher.setPower(DEFAULT_POWER);
+    }
+
+    public void contract() {
+        logger.logDebug("PNP.contract", "");
+        pusher.setDirection(DcMotorSimple.Direction.FORWARD);
+        pusher.setPower(DEFAULT_POWER);
     }
 
 }
+
+
 

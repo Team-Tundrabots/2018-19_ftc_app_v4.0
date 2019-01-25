@@ -47,10 +47,11 @@ public class DriveTrain extends BotComponent {
 
     }
 
-    public DriveTrain(OpMode aOpMode, String frontLeftMotorName, String frontRightMotorName,
-                                      String backLeftMotorName, String backRightMotorName)
+    public DriveTrain(Logger aLogger, OpMode aOpMode,
+                String frontLeftMotorName, String frontRightMotorName,
+                String backLeftMotorName, String backRightMotorName)
     {
-        super(aOpMode);
+        super(aLogger, aOpMode);
 
         // Define and Initialize Motors
         frontLeftMotor = initMotor(frontLeftMotorName, DcMotor.Direction.REVERSE);
@@ -272,6 +273,11 @@ public class DriveTrain extends BotComponent {
                 opMode.telemetry.addData("Path2",  "Running at %7d :%7d",
                         frontLeftMotor.getCurrentPosition(),
                         frontRightMotor.getCurrentPosition());
+
+                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontLeftMotor", frontLeftMotor.getTargetPosition(), frontLeftMotor.getCurrentPosition(), frontLeftMotor.getPower());
+                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontRightMotor", frontRightMotor.getTargetPosition(), frontRightMotor.getCurrentPosition(), frontRightMotor.getPower());
+                logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
+
                 opMode.telemetry.update();
             }
 

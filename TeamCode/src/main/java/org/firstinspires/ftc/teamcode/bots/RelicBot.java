@@ -39,6 +39,7 @@ import org.firstinspires.ftc.teamcode.components.relic.Tail;
 
 public class RelicBot extends Bot {
 
+    public Logger logger = null;
     public DriveTrain driveTrain = null;
     public Lift lift = null;
     public Tail tail = null;
@@ -50,7 +51,8 @@ public class RelicBot extends Bot {
     }
 
     public RelicBot(OpMode aOpMode) {
-        driveTrain = new DriveTrain(aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
+        logger = new Logger("RelicBot");
+        driveTrain = new DriveTrain(logger, aOpMode, "left_drive", "right_drive", "left_drive2", "right_drive2");
         lift = new Lift(aOpMode, "left_arm");
         tail = new Tail(aOpMode, "tail");
         claw = new Claw(aOpMode, "left_claw", "right_claw");

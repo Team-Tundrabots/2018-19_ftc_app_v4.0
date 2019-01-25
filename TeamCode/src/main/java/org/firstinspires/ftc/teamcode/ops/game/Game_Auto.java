@@ -65,6 +65,7 @@ public class Game_Auto extends LinearOpMode {
 
 
         robot.hoist.extend();
+
         robot.driveTrain.crabRight(0.5);
 
 
@@ -77,16 +78,20 @@ public class Game_Auto extends LinearOpMode {
 
         switch (goldPosition) {
             case "Right":
-                robot.navigator.rotate(90, .25);
+                robot.driveTrain.encoderDrive(0.25, -0.4, 0.4, 2);
+                robot.driveTrain.encoderDrive(0.25, 3, 3, 2);
 
             case "Center":
-                robot.driveTrain.moveForward(.5, .25);
+                /*robot.driveTrain.encoderDrive(0.25, 2, 2, 2); */
+                robot.driveTrain.moveForward(3,0.25);
+                stop();
 
             case "Left":
-                robot.navigator.rotate(-90, .25);
+                robot.driveTrain.encoderDrive(0.25, 0.2, -0.2, 2);
+                robot.driveTrain.encoderDrive(0.25, 2, 2, 2);
 
             default:
-                telemetry.addData("Gold:", "???");
+//                telemetry.addData("Gold:", "???");
 
         }
 

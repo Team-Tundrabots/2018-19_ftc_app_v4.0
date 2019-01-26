@@ -59,15 +59,14 @@ public class Game_Auto extends LinearOpMode {
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 11000;
+        robot.hoist.extendedPosition = 22000;
         robot.hoist.rampUpDownThreshold = 1;
-        robot.hoist.power = .50;
+        robot.hoist.power = 1;
 
 
         robot.hoist.extend();
 
-        robot.driveTrain.crabRight(0.5);
-
+        robot.driveTrain.crabRight(0.35);
 
         String goldPosition = robot.goldSensor.goldFind();
         while(opModeIsActive() && goldPosition == "Unknown") {
@@ -78,8 +77,9 @@ public class Game_Auto extends LinearOpMode {
 
         switch (goldPosition) {
             case "Right":
-                robot.driveTrain.encoderDrive(0.25, -0.4, 0.4, 2);
-                robot.driveTrain.encoderDrive(0.25, 3, 3, 2);
+                robot.driveTrain.encoderDrive(0.25, 0.1, 0.10,2);
+                robot.driveTrain.encoderDrive(0.25, -0.2, 0.2, 2);
+                robot.driveTrain.encoderDrive(0.25, 1, 1, 2);
 
             case "Center":
                 /*robot.driveTrain.encoderDrive(0.25, 2, 2, 2); */

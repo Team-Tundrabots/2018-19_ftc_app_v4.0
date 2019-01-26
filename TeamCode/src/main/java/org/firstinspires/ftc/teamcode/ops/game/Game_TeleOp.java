@@ -60,7 +60,7 @@ public class Game_TeleOp extends LinearOpMode {
         robot.hoist.contractedPosition = 0;
         robot.hoist.extendedPosition = 20000;
         robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = .50;
+        robot.hoist.power = 1;
 
         while (opModeIsActive()) {
 
@@ -97,6 +97,21 @@ public class Game_TeleOp extends LinearOpMode {
             }
 
             telemetry.update();
+            //PNP controls
+            if (robot.pnp.isAvailable){
+                if (gamepad1.right_stick_y > 0){
+                    robot.pnp.extend();
+                }
+                else if(gamepad1.right_stick_y < 0) {
+                    robot.pnp.contract();
+                }
+                else{
+                    robot.pnp.pusher.setPower(0.0);
+                }
+            }
+            telemetry.addData("rightsticky", gamepad1.right_stick_y);
+
+            robot.arm.crank.setPower(-gamepad1.left_trigger+gamepad1.right_trigger);
         }
 
         // Show the elapsed game time.

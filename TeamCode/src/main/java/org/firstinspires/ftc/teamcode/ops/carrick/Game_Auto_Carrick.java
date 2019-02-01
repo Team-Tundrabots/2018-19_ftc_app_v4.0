@@ -27,19 +27,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.game;
+package org.firstinspires.ftc.teamcode.ops.carrick;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
-@Autonomous(name="Game_Auto", group="game")
+@Autonomous(name="Game_Auto_Carrick", group="game")
 //@Disabled
-public class Game_Auto extends LinearOpMode {
+public class Game_Auto_Carrick extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -59,7 +58,7 @@ public class Game_Auto extends LinearOpMode {
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 22000;
+        robot.hoist.extendedPosition = 24000;
         robot.hoist.rampUpDownThreshold = 1;
         robot.hoist.power = 1;
 
@@ -74,21 +73,23 @@ public class Game_Auto extends LinearOpMode {
         }
 
         telemetry.addData("goldDirection:", goldPosition);
-
         switch (goldPosition) {
             case "Right":
-                robot.driveTrain.encoderDrive(0.25, 0.1, 0.1,2);
-                robot.driveTrain.encoderDrive(0.25, -0.15, 0.15, 2);
-                robot.driveTrain.encoderDrive(0.25, 0.5, 0.5, 2);
+                robot.driveTrain.encoderDrive(0.25, 0.15, 0.15, 2);
+                robot.driveTrain.crabLeft(1.5);
+                robot.driveTrain.moveForward(1,0.25);
 
             case "Center":
                 /*robot.driveTrain.encoderDrive(0.25, 2, 2, 2); */
-                robot.driveTrain.moveForward(3,0.25);
+                robot.driveTrain.moveForward(0.75,0.25);
+                robot.driveTrain.crabLeft(0.4);
+                robot.driveTrain.moveForward(2,0.25);
                 stop();
 
             case "Left":
-                robot.driveTrain.encoderDrive(0.25, 0.1, -0.1, 2);
-                robot.driveTrain.encoderDrive(0.25, 2, 2, 2);
+                robot.driveTrain.encoderDrive(0.25, 0.12, 0.12, 2);
+                robot.driveTrain.crabRight(1);
+                robot.driveTrain.moveForward(1,0.25);
 
             default:
 //                telemetry.addData("Gold:", "???");

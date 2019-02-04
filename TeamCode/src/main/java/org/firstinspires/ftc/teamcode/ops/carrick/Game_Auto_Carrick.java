@@ -27,27 +27,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.jonathan;
+package org.firstinspires.ftc.teamcode.ops.carrick;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
-@TeleOp(name="JonathanArmTest_TeleOp", group="jonathan")
-//*@Disabled
-public class JonathanArmTest_TeleOp extends LinearOpMode {
+@Autonomous(name="Game_Auto_Carrick", group="game")
+//@Disabled
+public class Game_Auto_Carrick extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
+    private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
+        robot = new GameBot(this);
+        robot.logger.open(logEnableTrace);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -55,15 +57,42 @@ public class JonathanArmTest_TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        robot.hoist.contractedPosition = 0;
+        robot.hoist.extendedPosition = 24000;
+        robot.hoist.rampUpDownThreshold = 1;
+        robot.hoist.power = 1;
 
-        while (opModeIsActive()) {
 
-         /*   if(gamepad1.right_bumper) {
-                robot.arm.crankForward(.5);
-            }else if(gamepad1.left_bumper) {
-                robot.arm.crankBackward(.5);
-          } */
-            robot.arm.crank.setPower(-gamepad1.left_trigger+gamepad1.right_trigger);
+        robot.hoist.extend();
+
+        robot.driveTrain.crabRight(0.35);
+
+        String goldPosition = robot.goldSensor.goldFind();
+        while(opModeIsActive() && goldPosition == "Unknown") {
+            goldPosition = robot.goldSensor.goldFind();
+        }
+
+        telemetry.addData("goldDirection:", goldPosition);
+        switch (goldPosition) {
+            case "Right":
+                robot.driveTrain.encoderDrive(0.25, 0.15, 0.15, 2);
+                robot.driveTrain.crabLeft(1.5);
+                robot.driveTrain.moveForward(1,0.25);
+
+            case "Center":
+                /*robot.driveTrain.encoderDrive(0.25, 2, 2, 2); */
+                robot.driveTrain.moveForward(0.75,0.25);
+                robot.driveTrain.crabLeft(0.4);
+                robot.driveTrain.moveForward(2,0.25);
+                stop();
+
+            case "Left":
+                robot.driveTrain.encoderDrive(0.25, 0.12, 0.12, 2);
+                robot.driveTrain.crabRight(1);
+                robot.driveTrain.moveForward(1,0.25);
+
+            default:
+//                telemetry.addData("Gold:", "???");
 
         }
 

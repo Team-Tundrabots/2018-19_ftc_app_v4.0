@@ -27,58 +27,52 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.rex;
+package org.firstinspires.ftc.teamcode.components;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+
+public class PNP extends BotComponent {
+
+    public DcMotor pusher = null;
 
 
-@TeleOp(name="RexHoistTest_TeleOp", group="rex")
-//@Disabled
-public class
-RexHoistTest_TeleOp extends LinearOpMode {
+    private double DEFAULT_POWER = 0.25;
 
-    // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
-    private boolean logEnableTrace = true;
+    public double power = DEFAULT_POWER;
 
-    @Override
-    public void runOpMode() {
-        robot = new TestBot(this);
-        robot.logger.open(logEnableTrace);
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
-
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 20000;
-        robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = 9.9;
-
-        while (opModeIsActive()) {
-
-            if (gamepad1.dpad_down) {
-                robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.extend();
-            }
-
-            if (gamepad1.dpad_up) {
-                robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.contract();
-            }
-        }
-
-        // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.update();
+    /* Constructor */
+    public PNP() {
 
     }
+
+    public PNP(Logger aLogger, OpMode aOpMode, String pusherName) {
+        super(aLogger, aOpMode);
+        logger.logDebug("PNP.about_to_construct", "");
+        // Define and Initialize Motors
+        pusher = initMotor(pusherName, DcMotor.Direction.FORWARD, true);
+        logger.logDebug("PNP.construct", "");
+        isAvailable= true;
+    }
+
+
+
+    public void extend() {
+        logger.logDebug("PNP.extend", "");
+        pusher.setDirection(DcMotorSimple.Direction.REVERSE);
+        pusher.setPower(DEFAULT_POWER);
+    }
+
+    public void contract() {
+        logger.logDebug("PNP.contract", "");
+        pusher.setDirection(DcMotorSimple.Direction.FORWARD);
+        pusher.setPower(DEFAULT_POWER);
+    }
+
 }
+
+
+

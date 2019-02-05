@@ -27,28 +27,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.rex;
+package org.firstinspires.ftc.teamcode.ops.scrimmage;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.bots.ScrimmageBot;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@Autonomous(name="RexEncoderTest_Auto", group="rex")
+@TeleOp(name="Scrimmage_TeleOp", group="scrimmage")
 //@Disabled
-public class RexEncoderTest_Auto extends LinearOpMode {
+public class Scrimmage_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private ScrimmageBot robot = null;
+    private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
-        robot.navigator.init();
+        robot = new ScrimmageBot(this);
+        robot.logger.open(logEnableTrace);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -57,37 +58,35 @@ public class RexEncoderTest_Auto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        robot.hoist.contractedPosition = 0;
+        robot.hoist.extendedPosition = 20000;
+        robot.hoist.rampUpDownThreshold = 500;
+        robot.hoist.power = .50;
 
-        double power = .25;
-/*
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
+        while (opModeIsActive()) {
 
-        robot.driveTrain.crabLeft(1);
-        robot.driveTrain.crabRight(1);
-*/
-/*
-        // move forward for a number of seconds at specific power
-        robot.driveTrain.moveForward(.5, power);
-        robot.driveTrain.turnLeft(.5, power);
-        robot.driveTrain.turnRight(.5, power);
-        robot.driveTrain.moveBackward(.5, power);
-*/
-        robot.driveTrain.resetEncoders();
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
+            if (gamepad1.dpad_down) {
+                robot.logger.logDebug("runOpMode", "dpad_down");
+                robot.hoist.extend();
+            }
+
+            if (gamepad1.dpad_up) {
+                robot.logger.logDebug("runOpMode", "dpad_up");
+                robot.hoist.contract();
+            }
+
+            double leftX = gamepad1.left_stick_x;
+            double leftY = gamepad1.left_stick_y;
+            double rightX = gamepad1.right_stick_x;
+            double rightY = gamepad1.right_stick_y;
+
+            robot.driveTrain.updateMotorsMechanumDrive(leftX,leftY,rightX,rightY);
+
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
+            telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
+
+        }
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

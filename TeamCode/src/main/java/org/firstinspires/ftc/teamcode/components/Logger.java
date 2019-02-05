@@ -28,6 +28,12 @@ public class Logger {
         }
     }
 
+    public void logErr(final String funcName, final String format, Object... args) {
+        if (traceEnabled) {
+            tracer.traceErr(funcName, format, args);
+        }
+    }
+
     public void logInfo(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
             tracer.traceInfo(funcName, format, args);

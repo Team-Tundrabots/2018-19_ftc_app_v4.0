@@ -27,58 +27,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.rex;
+package org.firstinspires.ftc.teamcode.components;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+// test - adding a comment
+public class Arm extends BotComponent {
 
+    public DcMotor crank = null;
+    public TouchSensor forwardGuardSwitch = null;
+    public TouchSensor backwardGuardSwitch = null;
 
-@TeleOp(name="RexHoistTest_TeleOp", group="rex")
-//@Disabled
-public class
-RexHoistTest_TeleOp extends LinearOpMode {
-
-    // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
-    private boolean logEnableTrace = true;
-
-    @Override
-    public void runOpMode() {
-        robot = new TestBot(this);
-        robot.logger.open(logEnableTrace);
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
-
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 20000;
-        robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = 9.9;
-
-        while (opModeIsActive()) {
-
-            if (gamepad1.dpad_down) {
-                robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.extend();
-            }
-
-            if (gamepad1.dpad_up) {
-                robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.contract();
-            }
-        }
-
-        // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.update();
+    /* Constructor */
+    public Arm() {
 
     }
+
+    public Arm(Logger aLogger, OpMode aOpMode, String crankName, String switch1Name, String switch2Name)
+    {
+        super(aLogger, aOpMode);
+
+        // Define and Initialize Motors
+        crank = initMotor(crankName, DcMotor.Direction.FORWARD);
+
+        // get a reference to our digitalTouch object.
+        forwardGuardSwitch = initTouchSensor(switch1Name);
+        backwardGuardSwitch = initTouchSensor(switch2Name);
+
+        if (crank != null) {
+            isAvailable = true;
+        }
+    }
+
+    public void crankForward(double power) {
+        while (opModeIsActive() && !forwardGuardSwitch.isPressed() && opMode.gamepad1.right_bumper) {
+            crank.setDirection(DcMotorSimple.Direction.FORWARD);
+            crank.setPower(power);
+            idle();
+        }
+        crank.setPower(0.0);
+    }
+
+    public void crankBackward(double power) {
+        while (opModeIsActive() && !backwardGuardSwitch.isPressed() && opMode.gamepad1.left_bumper) {
+            crank.setDirection(DcMotorSimple.Direction.REVERSE);
+            crank.setPower(power);
+            idle();
+        }
+        crank.setPower(0.0);
+    }
+
 }
+

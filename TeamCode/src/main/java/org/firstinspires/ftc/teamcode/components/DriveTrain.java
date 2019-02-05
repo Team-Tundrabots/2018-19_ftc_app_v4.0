@@ -47,10 +47,11 @@ public class DriveTrain extends BotComponent {
 
     }
 
-    public DriveTrain(OpMode aOpMode, String frontLeftMotorName, String frontRightMotorName,
-                                      String backLeftMotorName, String backRightMotorName)
+    public DriveTrain(Logger aLogger, OpMode aOpMode,
+                String frontLeftMotorName, String frontRightMotorName,
+                String backLeftMotorName, String backRightMotorName)
     {
-        super(aOpMode);
+        super(aLogger, aOpMode);
 
         // Define and Initialize Motors
         frontLeftMotor = initMotor(frontLeftMotorName, DcMotor.Direction.REVERSE);
@@ -58,6 +59,11 @@ public class DriveTrain extends BotComponent {
 
         backLeftMotor = initMotor(backLeftMotorName, DcMotor.Direction.REVERSE);
         backRightMotor = initMotor(backRightMotorName);
+
+        // as long as front motors are configured - assume DriveTrain is available
+        if ((frontLeftMotor != null) && (frontRightMotor != null)) {
+            isAvailable = true;
+        }
 
     }
 
@@ -165,11 +171,11 @@ public class DriveTrain extends BotComponent {
 
     public void updateMotorsMechanumDrive(double leftX, double leftY, double rightX, double rightY) {
 
-        // reverse Y coordinates
-        double lX = leftX;
-        double lY = -leftY;
-        double rX = rightX;
-        double rY = -rightY;
+
+        double lX = -leftX;
+        double lY = leftY;
+        double rX = -rightX;
+        double rY = rightY;
 
         double r = Math.hypot(lX, lY);
         double robotAngle = Math.atan2(lY, lX) - Math.PI / 4;
@@ -220,12 +226,11 @@ public class DriveTrain extends BotComponent {
                              double timeoutS) {
 
         double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-        double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
+        double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
         double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
         double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                 (WHEEL_DIAMETER_INCHES * 3.1415);
-        double     DRIVE_SPEED             = 0.6;
-        double     TURN_SPEED              = 0.5;
+
 
 
         int newLeftTarget;
@@ -268,6 +273,11 @@ public class DriveTrain extends BotComponent {
                 opMode.telemetry.addData("Path2",  "Running at %7d :%7d",
                         frontLeftMotor.getCurrentPosition(),
                         frontRightMotor.getCurrentPosition());
+
+                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontLeftMotor", frontLeftMotor.getTargetPosition(), frontLeftMotor.getCurrentPosition(), frontLeftMotor.getPower());
+                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontRightMotor", frontRightMotor.getTargetPosition(), frontRightMotor.getCurrentPosition(), frontRightMotor.getPower());
+                logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
+
                 opMode.telemetry.update();
             }
 

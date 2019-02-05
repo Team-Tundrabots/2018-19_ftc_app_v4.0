@@ -27,29 +27,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.rex;
+package org.firstinspires.ftc.teamcode.ops.carrick;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.*;
 
 
-@TeleOp(name="RexHoistTest_TeleOp", group="rex")
+@TeleOp(name="Carrick_Game_TeleOp", group="carrick")
 //@Disabled
-public class
-RexHoistTest_TeleOp extends LinearOpMode {
+public class Carrick_Game_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
     private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
+        robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
+        robot.logger.logDebug("TeleOP debug", "");
+        robot.logger.logInfo("TeleOP info", "");
+        //logger.logDebug("PNP.construct", "");
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -61,19 +63,58 @@ RexHoistTest_TeleOp extends LinearOpMode {
         robot.hoist.contractedPosition = 0;
         robot.hoist.extendedPosition = 20000;
         robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = 9.9;
+        robot.hoist.power = .50;
+        telemetry.addData("firstrightsticky", gamepad1.right_stick_y);
 
         while (opModeIsActive()) {
 
-            if (gamepad1.dpad_down) {
-                robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.extend();
+            // hoist controls
+            if (robot.hoist.isAvailable) {
+                if (gamepad1.dpad_down) {
+                    robot.logger.logDebug("runOpMode", "dpad_down");
+                    robot.hoist.extend();
+                }
+
+                if (gamepad1.dpad_up) {
+                    robot.logger.logDebug("runOpMode", "dpad_up");
+                    robot.hoist.contract();
+                }
             }
 
-            if (gamepad1.dpad_up) {
-                robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.contract();
+            // driveTrain controls
+            if (robot.driveTrain.isAvailable) {
+                double leftX = gamepad1.left_stick_x;
+                double leftY = gamepad1.left_stick_y;
+                double rightX = gamepad1.right_stick_x;
+                double rightY = gamepad1.right_stick_y;
+
+                robot.driveTrain.updateMotorsMechanumDrive(leftX, leftY, rightX, rightY);
+
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
+                telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
             }
+
+            //PNP controls
+            if (robot.pnp.isAvailable){
+                if (gamepad1.right_stick_y > 0){
+                    robot.pnp.extend();
+                }
+                else if(gamepad1.right_stick_y < 0) {
+                    robot.pnp.contract();
+                }
+                else{
+                    robot.pnp.pusher.setPower(0.0);
+                }
+            }
+            telemetry.addData("rightsticky", gamepad1.right_stick_y);
+
+            // goldSensor detection
+            if(robot.goldSensor.isAvailable) {
+                telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
+            }
+
+            telemetry.update();
         }
 
         // Show the elapsed game time.

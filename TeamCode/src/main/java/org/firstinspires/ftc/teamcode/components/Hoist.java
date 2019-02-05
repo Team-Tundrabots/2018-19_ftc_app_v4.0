@@ -40,10 +40,15 @@ public class Hoist extends BotComponent {
     public DcMotor crank = null;
     public TouchSensor guardSwitch = null;
 
+    private int ROTATIONS_PER_INCH = 4400;
+
     private int DEFAULT_EXTENDED_POSITION = 3000;
     private int DEFAULT_CONTRACTED_POSITION = 0;
     private int DEFAULT_RAMP_UP_DOWN_THRESHOLD = 200;
     private double DEFAULT_POWER = 0.25;
+
+    public double extendedPositionInches = DEFAULT_EXTENDED_POSITION * ROTATIONS_PER_INCH;
+    public double contractedPositionInches = DEFAULT_CONTRACTED_POSITION * ROTATIONS_PER_INCH;
 
     public int extendedPosition = DEFAULT_EXTENDED_POSITION;
     public int contractedPosition = DEFAULT_CONTRACTED_POSITION;
@@ -90,6 +95,11 @@ public class Hoist extends BotComponent {
         } catch (NullPointerException err) {
             opMode.telemetry.addData("Error", err.getMessage());
         }
+    }
+
+    public void setTargetInches(double inches) {
+        logger.logDebug("setTargetInches", "inches * ROTATIONS_PER_INCH=%f", inches * ROTATIONS_PER_INCH);
+        setTarget((int) inches * ROTATIONS_PER_INCH);
     }
 
     public void setTarget(int targetPosition) {

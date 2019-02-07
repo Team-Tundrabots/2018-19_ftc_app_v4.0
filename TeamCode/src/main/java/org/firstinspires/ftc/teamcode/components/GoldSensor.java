@@ -45,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaException;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 import java.util.List;
@@ -80,20 +81,24 @@ public class GoldSensor extends BotComponent {
     public GoldSensor(Logger aLogger, OpMode aOpMode, String cameraName) {
         super(aLogger, aOpMode);
 
+        try {
+            /*
+             * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+             */
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            parameters.cameraName = aOpMode.hardwareMap.get(WebcamName.class, cameraName);
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = aOpMode.hardwareMap.get(WebcamName.class, cameraName);
+            //  Instantiate the Vuforia engine
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+            reset();
 
+        } catch (VuforiaException | NullPointerException err) {
+            opMode.telemetry.addData("Error Starting Camera", err.getMessage());
+        }
 
-        reset();
 
     }
 

@@ -92,7 +92,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new TestBot(this);
-        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // The TFObjectDetector uses the webCamera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
 

@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.bots;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.components.Arm;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.GoldSensor;
 import org.firstinspires.ftc.teamcode.components.Hoist;
@@ -43,6 +44,7 @@ import org.firstinspires.ftc.teamcode.components.PNP;
 public class GameBot extends Bot {
 
     public Logger logger = null;
+    public WebCamera webCamera = null;
     public DriveTrain driveTrain = null;
     public Navigator navigator = null;
     public Hoist hoist = null;
@@ -58,9 +60,10 @@ public class GameBot extends Bot {
     public GameBot(OpMode aOpMode) {
         logger = new Logger("GameBot");
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
-        navigator = new Navigator(aOpMode, driveTrain);
+        webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
+        navigator = new Navigator(logger, aOpMode, webCamera, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
-        goldSensor = new GoldSensor(logger, aOpMode, "Webcam 1");
+        goldSensor = new GoldSensor(logger, aOpMode, webCamera);
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
         pnp = new PNP(logger, aOpMode, "pusher");
     }

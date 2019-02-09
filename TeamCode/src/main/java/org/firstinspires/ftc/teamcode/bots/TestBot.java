@@ -36,6 +36,7 @@ import org.firstinspires.ftc.teamcode.components.*;
 public class TestBot extends Bot {
 
     public Logger logger = null;
+    public WebCamera webCamera = null;
     public DriveTrain driveTrain = null;
     public Navigator navigator = null;
     public Hoist hoist = null;
@@ -49,7 +50,8 @@ public class TestBot extends Bot {
     public TestBot(OpMode aOpMode) {
         logger = new Logger("TestBot");
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
-        navigator = new Navigator(aOpMode, driveTrain);
+        webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
+        navigator = new Navigator(logger, aOpMode, webCamera, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "arm.forwardGuardSwitch", "arm.backwardGuardSwitch");
     }

@@ -38,6 +38,7 @@ import org.firstinspires.ftc.teamcode.components.*;
 public class ScrimmageBot extends Bot {
 
     public Logger logger = null;
+    public WebCamera webCamera = null;
     public DriveTrain driveTrain = null;
     public Navigator navigator = null;
     public Hoist hoist = null;
@@ -52,7 +53,8 @@ public class ScrimmageBot extends Bot {
     public ScrimmageBot(OpMode aOpMode) {
         logger = new Logger("ScrimmageBot");
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
-        navigator = new Navigator(aOpMode, driveTrain);
+        webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
+        navigator = new Navigator(logger, aOpMode, webCamera, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
     }
 

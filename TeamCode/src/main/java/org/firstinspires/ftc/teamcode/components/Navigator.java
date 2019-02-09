@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -67,6 +68,8 @@ public class Navigator extends BotComponent {
     private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
     private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
 
+    // For convenience, gather together all the trackable objects in one easily-iterable collection */
+    private List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
 
     private OpenGLMatrix lastLocation = null;
     private boolean targetVisible = false;
@@ -120,7 +123,7 @@ public class Navigator extends BotComponent {
 
     }
 
-    private void initLocations() {
+    public void initLocations() {
 
         webCamera.initForNavigation();
 
@@ -136,8 +139,7 @@ public class Navigator extends BotComponent {
         VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
         backSpace.setName("Back-Space");
 
-        // For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+
         allTrackables.addAll(targetsRoverRuckus);
 
         /**
@@ -377,8 +379,43 @@ public class Navigator extends BotComponent {
         resetAngle();
     }
 
+    public boolean isTargetVisible(){
+        // check all the trackable target to see which one (if any) is visible.
+        targetVisible = false;
+        for (VuforiaTrackable trackable : allTrackables) {
+            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
+                opMode.telemetry.addData("Visible Target", trackable.getName());
+                targetVisible = true;
 
+                // getUpdatedRobotLocation() will return null if no new information is available since
+                // the last time that call was made, or if the trackable is not currently visible.
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform;
+                }
+                break;
+            }
+        }
+        return targetVisible;
+    }
 
+    public void displayLocationInfo(){
+        // Provide feedback as to where the robot is located (if we know).
+        if (isTargetVisible()) {
+            // express position (translation) of robot in inches.
+            VectorF translation = lastLocation.getTranslation();
+            opMode.telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+
+            // express the rotation of the robot in degrees.
+            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            opMode.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+        }
+        else {
+            opMode.telemetry.addData("Visible Target", "none");
+        }
+        opMode.telemetry.update();
+    }
 
 }
 

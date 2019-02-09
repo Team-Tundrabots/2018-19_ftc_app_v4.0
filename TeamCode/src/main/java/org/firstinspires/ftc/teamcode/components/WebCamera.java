@@ -88,8 +88,11 @@ public class WebCamera extends BotComponent {
             //  Instantiate the Vuforia engine
             vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
+            isAvailable = true;
+            logger.logDebug("WebCamera","isAvailable", isAvailable);
 
         } catch (VuforiaException | NullPointerException err) {
+            logger.logErr("WebCamera","Error Starting WebCamera:", err);
             opMode.telemetry.addData("Error Starting WebCamera", err.getMessage());
         }
 
@@ -99,19 +102,29 @@ public class WebCamera extends BotComponent {
 
     public void initForNavigation() {
 
-        int cameraMonitorViewId = opMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        try {
+            logger.logDebug("initForNavigation", cameraName);
 
-        /*
-         * Retrieve the webCamera we are to use.
-         */
-        WebcamName webcamName = opMode.hardwareMap.get(WebcamName.class, cameraName);
-        parameters.cameraName = webcamName;
+            int cameraMonitorViewId = opMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+            /*
+             * Retrieve the webCamera we are to use.
+             */
+            WebcamName webcamName = opMode.hardwareMap.get(WebcamName.class, cameraName);
+            parameters.cameraName = webcamName;
 
-        enableCaptureFrameToFile();
+
+            //  Instantiate the Vuforia engine
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+            logger.logDebug("initForNavigation", "debug #5");
+        } catch (VuforiaException err) {
+            isAvailable = false;
+            logger.logErr("initForNavigation", "Error initializing", err.getMessage());
+        }
+
+        if (isAvailable) { enableCaptureFrameToFile(); }
 
     }
 

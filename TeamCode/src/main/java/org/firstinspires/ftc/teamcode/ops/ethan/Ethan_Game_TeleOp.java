@@ -49,9 +49,12 @@ public class Ethan_Game_TeleOp extends LinearOpMode {
     public void runOpMode() {
         robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
+        robot.logger.logDebug("runOpMode","Starting OpMode");
 
         if(robot.navigator.isAvailable){
+            robot.logger.logDebug("runOpMode","Navigator is availible");
             robot.navigator.initLocations();
+            robot.logger.logDebug("runOpMode","Init locations complete");
         }
 
         telemetry.addData("Status", "Initialized");
@@ -69,6 +72,7 @@ public class Ethan_Game_TeleOp extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (robot.navigator.isAvailable){
+                robot.logger.logDebug("runOpMode","OpMode is active loop, and navigator is availible");
                 robot.navigator.displayLocationInfo();
             }
 

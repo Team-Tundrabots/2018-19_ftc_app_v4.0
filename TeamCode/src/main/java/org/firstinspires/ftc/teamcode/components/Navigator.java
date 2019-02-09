@@ -125,7 +125,9 @@ public class Navigator extends BotComponent {
 
     public void initLocations() {
 
+        logger.logDebug("initLocations","Begin init");
         webCamera.initForNavigation();
+        logger.logDebug("initLocations","Web camera init complete");
 
         // Load the data sets that for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.

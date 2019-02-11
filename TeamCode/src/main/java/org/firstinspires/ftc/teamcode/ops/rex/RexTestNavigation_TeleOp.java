@@ -31,15 +31,14 @@ package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.*;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
-@Autonomous(name="RexCameraTest_Auto", group="rex")
+@Autonomous(name="RexTestNavigation_TeleOp", group="rex")
 //@Disabled
-public class RexCameraTest_Auto extends LinearOpMode {
+public class RexTestNavigation_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -48,8 +47,10 @@ public class RexCameraTest_Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
         robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
+        robot.logger.enableTelemetry();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -57,42 +58,38 @@ public class RexCameraTest_Auto extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-/*
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 11000;
-        robot.hoist.rampUpDownThreshold = 1;
-        robot.hoist.power = .50;
 
+        if (robot.navigator.isAvailable) {
+            robot.logger.logDebug("runOpMode", "navigator.isAvailable:%b", robot.navigator.isAvailable);
+            robot.navigator.resetAngle();
+        }
 
-        robot.hoist.extend();
-        robot.driveTrain.crabRight(0.5);
-*/
-        boolean foundGold = false;
+        while (opModeIsActive()) {
 
-        while (opModeIsActive() && !foundGold) {
-            switch (robot.goldSensor.goldFind()) {
+            if (robot.navigator.isAvailable) {
+                robot.logger.logDebug("runOpMode", "navigator.getAngle:%f", robot.navigator.getAngle());
+            }
 
-                case "Right":
-                    foundGold = true;
-                    robot.navigator.rotate(90, .25);
-                    telemetry.addData("Gold:", "Right");
+            // driveTrain controls
+            if (robot.driveTrain.isAvailable) {
 
-                case "Center":
-                    foundGold = true;
-                    robot.driveTrain.moveForward(.5, .25);
-                    telemetry.addData("Gold:", "Center");
+                double leftX = gamepad1.left_stick_x;
+                double leftY = gamepad1.left_stick_y;
+                double rightX = gamepad1.right_stick_x;
+                double rightY = gamepad1.right_stick_y;
 
-                case "Left":
-                    foundGold = true;
-                    robot.navigator.rotate(90, .25);
-                    telemetry.addData("Gold:", "Left");
+                robot.driveTrain.updateMotorsMechanumDrive(leftX, leftY, rightX, rightY);
 
-                default:
-                    telemetry.addData("Gold:", "???");
-                    telemetry.addData("findGold:", robot.goldSensor.goldFind());
+                robot.logger.logDebug("runOpMode", "Run Time: %s", runtime.toString());
+                robot.logger.logDebug("runOpMode", "Left:  X (%.2f), Y (%.2f)", leftX, leftY);
+                robot.logger.logDebug("runOpMode", "Right: X (%.2f), Y (%.2f)", rightX, rightY);
 
             }
+
+
+            telemetry.update();
         }
+
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

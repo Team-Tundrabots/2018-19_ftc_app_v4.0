@@ -58,7 +58,7 @@ public class GameBot extends Bot {
     }
 
     public GameBot(OpMode aOpMode) {
-        logger = new Logger("GameBot");
+        logger = new Logger("GameBot", aOpMode);
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
         navigator = new Navigator(logger, aOpMode, webCamera, driveTrain);

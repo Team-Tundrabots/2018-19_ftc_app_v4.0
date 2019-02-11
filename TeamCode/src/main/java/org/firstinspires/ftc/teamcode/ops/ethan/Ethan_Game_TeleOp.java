@@ -53,7 +53,7 @@ public class Ethan_Game_TeleOp extends LinearOpMode {
 
         if(robot.navigator.isAvailable){
             robot.logger.logDebug("runOpMode","Navigator is availible");
-            robot.navigator.initLocations();
+            //robot.navigator.initLocations();
             robot.logger.logDebug("runOpMode","Init locations complete");
         }
 
@@ -73,7 +73,7 @@ public class Ethan_Game_TeleOp extends LinearOpMode {
 
             if (robot.navigator.isAvailable){
                 robot.logger.logDebug("runOpMode","OpMode is active loop, and navigator is availible");
-                robot.navigator.displayLocationInfo();
+               // robot.navigator.displayLocationInfo();
             }
 
             // hoist controls

@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.bots.*;
 
 public class DriveTrain extends BotComponent {
 
@@ -227,7 +228,7 @@ public class DriveTrain extends BotComponent {
                              double leftInches, double rightInches,
                              double timeoutS) {
 
-        double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+        double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: TETRIX Motor Encoder
         double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
         double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
         double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -246,19 +247,25 @@ public class DriveTrain extends BotComponent {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newLeftTarget = frontLeftMotor.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = frontRightMotor.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newLeftTarget = backLeftMotor.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newRightTarget = backRightMotor.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
             frontLeftMotor.setTargetPosition(newLeftTarget);
             frontRightMotor.setTargetPosition(newRightTarget);
+            backLeftMotor.setTargetPosition(newLeftTarget);
+            backRightMotor.setTargetPosition(newRightTarget);
 
             // Turn On RUN_TO_POSITION
             frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
-            frontLeftMotor.setPower(Math.abs(speed));
-            frontRightMotor.setPower(Math.abs(speed));
+            //frontLeftMotor.setPower(Math.abs(speed));
+            //frontRightMotor.setPower(Math.abs(speed));
+            backLeftMotor.setPower(Math.abs(speed));
+            backRightMotor.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -268,16 +275,11 @@ public class DriveTrain extends BotComponent {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
-                    (frontLeftMotor.isBusy() && frontRightMotor.isBusy())) {
+                    (backLeftMotor.isBusy() && backRightMotor.isBusy())) {
 
-                // Display it for the driver.
-                opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                opMode.telemetry.addData("Path2",  "Running at %7d :%7d",
-                        frontLeftMotor.getCurrentPosition(),
-                        frontRightMotor.getCurrentPosition());
-
-                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontLeftMotor", frontLeftMotor.getTargetPosition(), frontLeftMotor.getCurrentPosition(), frontLeftMotor.getPower());
-                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontRightMotor", frontRightMotor.getTargetPosition(), frontRightMotor.getCurrentPosition(), frontRightMotor.getPower());
+                logger.logDebug("encoderDrive",  "Target: Left:%7d Right:%7d", newLeftTarget,  newRightTarget);
+                logger.logDebug("encoderDrive",  "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+                logger.logDebug("encoderDrive",  "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
                 logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
 
                 opMode.telemetry.update();
@@ -289,6 +291,8 @@ public class DriveTrain extends BotComponent {
             // Turn off RUN_TO_POSITION
             frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //  sleep(250);   // optional pause after each move
         }
@@ -312,9 +316,9 @@ public class DriveTrain extends BotComponent {
         return backRightMotor.getCurrentPosition();
     }
 
-    public void encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup) throws InterruptedException {
+    public void encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup)  {
 
-        double     COUNTS_PER_MOTOR_REV    = 560 ;    //Set for NevRest 20 drive. For 40's change to 1120. For 60's 1680
+        double     COUNTS_PER_MOTOR_REV    = 1120 ;    //Set for NevRest 20 drive. For 40's change to 1120. For 60's 1680
         double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is the ratio between the motor axle and the wheel
         double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
         double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -332,11 +336,24 @@ public class DriveTrain extends BotComponent {
         newLeftTarget = (getFrontLeftPosition()+ getBackLeftPosition() )/2 + (int)(Inches * COUNTS_PER_INCH);
         newRightTarget = (getFrontRightPosition() + getBackRightPosition() )/2 + (int)(Inches * COUNTS_PER_INCH);
 
+        frontLeftMotor.setTargetPosition(newLeftTarget);
+        frontRightMotor.setTargetPosition(newRightTarget);
+        backLeftMotor.setTargetPosition(newLeftTarget);
+        backRightMotor.setTargetPosition(newRightTarget);
+
+        // Turn On RUN_TO_POSITION
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
         // reset the timeout time and start motion.
         runtime.reset();
 
         // keep looping while we are still active, and there is time left, and neither set of motors have reached the target
-        while ( (runtime.seconds() < timeoutS) &&
+        while ( (opModeIsActive()) &&
+                (runtime.seconds() < timeoutS) &&
                 (Math.abs(getFrontLeftPosition()+ getBackLeftPosition()) /2 < newLeftTarget  &&
                         Math.abs(getFrontRightPosition() + getBackRightPosition())/2 < newRightTarget)) {
             double rem = (Math.abs(getFrontLeftPosition()) + Math.abs(getBackLeftPosition())+Math.abs(getFrontRightPosition()) + Math.abs(getBackRightPosition()))/4;
@@ -368,11 +385,19 @@ public class DriveTrain extends BotComponent {
                 NRspeed = Rspeed * .2;
 
             }
+
+            logger.logDebug("encoderDrive2",  "Target: Left:%7d Right:%7d", newLeftTarget,  newRightTarget);
+            logger.logDebug("encoderDrive2",  "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+            logger.logDebug("encoderDrive2",  "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+
+
             //Pass the seed values to the motors
             frontLeftMotor.setPower(NLspeed);
             backLeftMotor.setPower(NLspeed);
             frontRightMotor.setPower(NRspeed);
             backRightMotor.setPower(NRspeed);
+
+            idle();
         }
 
         // Stop all motion;
@@ -380,10 +405,10 @@ public class DriveTrain extends BotComponent {
         stop();
 
         // show the driver how close they got to the last target
-        opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-        opMode.telemetry.addData("Path2",  "Running at %7d :%7d", getFrontLeftPosition(), getFrontRightPosition());
-        opMode.telemetry.update();
-/*
+        logger.logDebug("encoderDrive2",  "Target:  Left:%7d Right:%7d", newLeftTarget,  newRightTarget);
+        logger.logDebug("encoderDrive2",  "Current: Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+
+        /*
         //setting resetC as a way to check the current encoder values easily
         double resetC = ((Math.abs(getFrontLeftPosition()) + Math.abs(getFrontRightPosition())+ Math.abs(getFrontRightPosition())+Math.abs(getFrontRightPosition())));
         //Get the motor encoder resets in motion

@@ -96,6 +96,14 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
                 }
             }
 
+            //encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup)
+            if (robot.driveTrain.isAvailable) {
+                if (gamepad1.dpad_up) {
+                    robot.driveTrain.resetEncoders();
+                    robot.driveTrain.encoderDrive(.5, 12, 12, 5);
+                    //robot.driveTrain.encoderDrive2(.25, .25, 5, 10, 0);
+                }
+            }
 
             telemetry.update();
         }

@@ -51,10 +51,8 @@ public class PNP extends BotComponent {
 
     public PNP(Logger aLogger, OpMode aOpMode, String pusherName) {
         super(aLogger, aOpMode);
-        logger.logDebug("PNP.about_to_construct", "");
         // Define and Initialize Motors
         pusher = initMotor(pusherName, DcMotor.Direction.FORWARD, true);
-        logger.logDebug("PNP.construct", "");
         if (pusher != null) {
             isAvailable = true;
         }
@@ -64,13 +62,13 @@ public class PNP extends BotComponent {
 
 
     public void extend() {
-        logger.logDebug("PNP.extend", "");
+        logger.logDebug("PNP.extend", "power:%f", DEFAULT_POWER);
         pusher.setDirection(DcMotorSimple.Direction.REVERSE);
         pusher.setPower(DEFAULT_POWER);
     }
 
     public void contract() {
-        logger.logDebug("PNP.contract", "");
+        logger.logDebug("PNP.contract", "power:%f", DEFAULT_POWER);
         pusher.setDirection(DcMotorSimple.Direction.FORWARD);
         pusher.setPower(DEFAULT_POWER);
     }

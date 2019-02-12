@@ -78,14 +78,9 @@ public class GoldSensor extends BotComponent {
             initTfod();
             isAvailable = true;
         } else {
-            opMode.telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+            logger.logErr("GoldSensor:reset","Error: %s","This device is not compatible with TFO");
         }
 
-        /** Wait for the game to begin */
-        opMode.telemetry.addData(">", "Press Play to start tracking");
-        opMode.telemetry.update();
-
-        // we dont know how to do this so we are moving on: waitForStart();
     }
 
 

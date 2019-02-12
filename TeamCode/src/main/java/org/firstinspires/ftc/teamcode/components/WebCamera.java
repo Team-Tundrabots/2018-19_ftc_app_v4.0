@@ -93,7 +93,6 @@ public class WebCamera extends BotComponent {
 
         } catch (VuforiaException | NullPointerException err) {
             logger.logErr("WebCamera","Error Starting WebCamera:", err);
-            opMode.telemetry.addData("Error Starting WebCamera", err.getMessage());
         }
 
 

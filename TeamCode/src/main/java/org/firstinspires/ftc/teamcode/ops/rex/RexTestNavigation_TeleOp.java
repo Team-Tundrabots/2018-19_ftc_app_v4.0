@@ -44,16 +44,17 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private GameBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
+
 
     @Override
     public void runOpMode() {
 
-        robot = new GameBot(this);
-        robot.logger.open(logEnableTrace);
-        robot.logger.enableTelemetry();
+        robot = new GameBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logDebug("runOpMode","Status", "Initializing");
         robot.gyroNavigator.init();
 
-        telemetry.addData("Status", "Initialized");
+        robot.logger.logDebug("runOpMode","Status", "Initialized");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -99,9 +100,11 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
             //encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup)
             if (robot.driveTrain.isAvailable) {
                 if (gamepad1.dpad_up) {
-                    robot.driveTrain.resetEncoders();
-                    robot.driveTrain.encoderDrive(.5, 12, 12, 5);
+                    robot.driveTrain.encoderDrive(.5, 72, 72, 5);
                     //robot.driveTrain.encoderDrive2(.25, .25, 5, 10, 0);
+                }
+                if (gamepad1.dpad_down) {
+                    robot.driveTrain.gyroEncoderDrive(.5, 72, 72, 5);
                 }
             }
 

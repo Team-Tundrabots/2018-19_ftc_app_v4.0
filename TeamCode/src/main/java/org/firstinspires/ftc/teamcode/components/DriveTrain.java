@@ -219,15 +219,25 @@ public class DriveTrain extends BotComponent {
 
     }
 
+
+    public void disableEncoders() {
+
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+
     public void resetEncoders() {
 
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -284,8 +294,13 @@ public class DriveTrain extends BotComponent {
             // reset the timeout time and start motion.
             runtime.reset();
 
-            setLeftMotorsPower(Math.abs(power));
-            setRightMotorsPower(Math.abs(power));
+//            frontLeftMotor.setPower(power);
+//            frontRightMotor.setPower(power);
+            backLeftMotor.setPower(power);
+            backRightMotor.setPower(power);
+
+            //setLeftMotorsPower(Math.abs(power));
+            //setRightMotorsPower(Math.abs(power));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -307,6 +322,8 @@ public class DriveTrain extends BotComponent {
 
             // Stop all motion;
             stop();
+
+            disableEncoders();
 
         }
         
@@ -341,12 +358,14 @@ public class DriveTrain extends BotComponent {
             // reset the timeout time and start motion.
             runtime.reset();
 
-            if (Math.abs(gyroNavigator.getAngle()-targetAngle) > 2) {
-                gyroRotate(targetAngle, power);
-            }
 
-            setLeftMotorsPower(Math.abs(power));
-            setRightMotorsPower(Math.abs(power));
+//            frontLeftMotor.setPower(power);
+//            frontRightMotor.setPower(power);
+            backLeftMotor.setPower(power);
+            backRightMotor.setPower(power);
+
+            //setLeftMotorsPower(Math.abs(power));
+            //setRightMotorsPower(Math.abs(power));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -363,11 +382,17 @@ public class DriveTrain extends BotComponent {
                 logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
                 logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
 
+                if (Math.abs(gyroNavigator.getAngle()-targetAngle) > 2) {
+                    gyroRotate(targetAngle, power);
+                }
+
                 opMode.telemetry.update();
             }
 
             // Stop all motion;
             stop();
+
+            disableEncoders();
 
         }
 

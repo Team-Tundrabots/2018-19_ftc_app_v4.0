@@ -54,7 +54,7 @@ public class ScrimmageBot extends Bot {
         logger = new Logger("ScrimmageBot");
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
-        gyroNavigator = new GyroNavigator(logger, aOpMode, driveTrain);
+        gyroNavigator = new GyroNavigator(logger, aOpMode);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
     }
 

@@ -60,14 +60,18 @@ public class GameBot extends Bot {
 
     public GameBot(OpMode aOpMode) {
         logger = new Logger("GameBot", aOpMode);
-        driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
+        gyroNavigator = new GyroNavigator(logger, aOpMode);
+        driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor",
+                                                      "backLeftMotor", "backRightMotor",
+                                                        gyroNavigator);
+
         webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
-        gyroNavigator = new GyroNavigator(logger, aOpMode, driveTrain);
-        hoist = new Hoist(logger, aOpMode, "hoistCrank");
         goldSensor = new GoldSensor(logger, aOpMode, webCamera);
+        webCamNavigator = new WebCamNavigator(logger, aOpMode, webCamera);
+
+        hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
         pnp = new PNP(logger, aOpMode, "pusher");
-        webCamNavigator = new WebCamNavigator(logger, aOpMode, webCamera);
     }
 
 }

@@ -73,7 +73,7 @@ public class RexCameraTest_Auto extends LinearOpMode {
 
                 case "Right":
                     foundGold = true;
-                    robot.gyroNavigator.rotate(90, .25);
+                    robot.driveTrain.gyroRotate(90, .25);
                     telemetry.addData("Gold:", "Right");
 
                 case "Center":
@@ -83,7 +83,7 @@ public class RexCameraTest_Auto extends LinearOpMode {
 
                 case "Left":
                     foundGold = true;
-                    robot.gyroNavigator.rotate(90, .25);
+                    robot.driveTrain.gyroRotate(90, .25);
                     telemetry.addData("Gold:", "Left");
 
                 default:

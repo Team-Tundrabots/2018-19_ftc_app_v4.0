@@ -51,7 +51,7 @@ public class TestBot extends Bot {
         logger = new Logger("TestBot");
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
-        gyroNavigator = new GyroNavigator(logger, aOpMode, driveTrain);
+        gyroNavigator = new GyroNavigator(logger, aOpMode);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "arm.forwardGuardSwitch", "arm.backwardGuardSwitch");
     }

@@ -89,10 +89,10 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
 
             if (robot.gyroNavigator.isAvailable && robot.driveTrain.isAvailable) {
                 if (gamepad1.x){
-                    robot.gyroNavigator.rotate(-90, 0.5);
+                    robot.driveTrain.gyroRotate(-90, 0.5);
                 }
                 if (gamepad1.b){
-                    robot.gyroNavigator.rotate(90, 0.5);
+                    robot.driveTrain.gyroRotate(90, 0.5);
                 }
             }
 

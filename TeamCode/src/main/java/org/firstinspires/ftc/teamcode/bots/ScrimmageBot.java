@@ -40,7 +40,7 @@ public class ScrimmageBot extends Bot {
     public Logger logger = null;
     public WebCamera webCamera = null;
     public DriveTrain driveTrain = null;
-    public Navigator navigator = null;
+    public GyroNavigator gyroNavigator = null;
     public Hoist hoist = null;
     public GoldSensor goldSensor = null;
     public Arm arm = null;
@@ -54,7 +54,7 @@ public class ScrimmageBot extends Bot {
         logger = new Logger("ScrimmageBot");
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
-        navigator = new Navigator(logger, aOpMode, webCamera, driveTrain);
+        gyroNavigator = new GyroNavigator(logger, aOpMode, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
     }
 

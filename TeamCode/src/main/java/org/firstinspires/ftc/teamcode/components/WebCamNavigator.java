@@ -51,11 +51,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 
 public class WebCamNavigator extends BotComponent {
 
-    private DriveTrain driveTrain = null;
-    private BNO055IMU imu;
-    private Orientation lastAngles = new Orientation();
-    private double globalAngle, power = .30, correction;
-
     private static final String VUFORIA_KEY = "AYb6Z43/////AAABmUDTPvzNUErvv+V5mxyyLy5xIbXbTnWaz/luHdMrGjmXWTa49gQSiDxm1hnzzQVmlkAh/5PCeNEicf28nm7T31+td8OKFeU4C4iu/aQ7HXEv74/NRf38ixE2iYmLLPrPApWBKRrUnuz7v4wsZdXZwIZzgHI0S0t4T4cX34ppylT72P+GXG9U48f7qr5x0KZpn+WgkiSMVQ2r0KvSGTAvU7Sx5y69teWPt+NdHwkes7vpnOQyOXn9NvVSuDgByMcGKbTEScLa9L4zyyRLrBIK9fSIxrRFDNbVGojzcu8+70TuZuyjx+2u/9OzuK4mMDdpqL/46aXinDXqNuSj/BZsPcDCaPsG7R5oxpp9zdfhIwiO";
     public WebCamera webCamera = null;
 
@@ -72,51 +67,19 @@ public class WebCamNavigator extends BotComponent {
     private boolean targetVisible = false;
 
 
+
     /* Constructor */
     public WebCamNavigator() {
 
     }
 
-    public WebCamNavigator(Logger aLogger, OpMode aOpMode, WebCamera aWebCamera, DriveTrain aDriveTrain) {
+    public WebCamNavigator(Logger aLogger, OpMode aOpMode, WebCamera aWebCamera) {
         super(aLogger, aOpMode);
 
         webCamera = aWebCamera;
-        driveTrain = aDriveTrain;
+        isAvailable = webCamera.isAvailable;
 
-        isAvailable = (webCamera.isAvailable && driveTrain.isAvailable);
-
-    }
-
-    public void init() {
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-
-        parameters.mode                = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled      = false;
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu = opMode.hardwareMap.get(BNO055IMU.class, "imu");
-
-        imu.initialize(parameters);
-
-        opMode.telemetry.addData("Mode", "calibrating...");
-        opMode.telemetry.update();
-
-        // make sure the imu gyro is calibrated before continuing.
-        while (opModeIsActive() && !imu.isGyroCalibrated())
-        {
-            driveTrain.pause(.5);
-            driveTrain.idle();
-        }
-
-        isAvailable = true;
-
-        opMode.telemetry.addData("Mode", "waiting for start");
-        opMode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-
+        logger.logDebug("WebCamNavigator","isAvailable:%b", isAvailable);
 
     }
 
@@ -248,134 +211,6 @@ public class WebCamNavigator extends BotComponent {
             ((VuforiaTrackableDefaultListener)trackable.getListener()).setCameraLocationOnRobot(webCamera.parameters.cameraName, robotFromCamera);
         }
 
-    }
-
-
-    /**
-     * Resets the cumulative angle tracking to zero.
-     */
-    private void resetAngle()
-    {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        globalAngle = 0;
-    }
-
-    /**
-     * Get current cumulative angle rotation from last reset.
-     * @return Angle in degrees. - = left, + = right.
-     */
-    private double getAngle()
-    {
-        // We experimentally determined the Z axis is the axis we want to use for heading angle.
-        // We have to process the angle because the imu works in euler angles so the Z axis is
-        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
-        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
-
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle += deltaAngle;
-
-        lastAngles = angles;
-
-        return 0 - globalAngle;
-    }
-
-    /**
-     * See if we are moving in a straight line and if not return a power correction value.
-     * @return Power adjustment, + is adjust left - is adjust right.
-     */
-    private double checkDirection()
-    {
-        // The gain value determines how sensitive the correction is to direction changes.
-        // You will have to experiment with your robot to get small smooth direction changes
-        // to stay on a straight line.
-        double correction, angle, gain = .10;
-
-        angle = getAngle();
-
-        if (angle == 0)
-            correction = 0;             // no adjustment.
-        else
-            correction = -angle;        // reverse sign of angle for correction.
-
-        correction = correction * gain;
-
-        return correction;
-    }
-
-    /**
-     * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
-     * @param degrees Degrees to turn, + is left - is right
-     */
-    public void rotate(int degrees, double power)
-    {
-        double  leftPower, rightPower;
-
-        // restart imu movement tracking.
-        resetAngle();
-
-        // getAngle() returns - when rotating counter clockwise (left) and + when rotating
-        // clockwise (right).
-
-        if (degrees < 0)
-        {   // turn left.
-            leftPower = - power;
-            rightPower = power;
-        }
-        else if (degrees > 0)
-        {   // turn right.
-            leftPower = power;
-            rightPower = - power;
-        }
-        else return;
-
-        // set power to rotate.
-        driveTrain.setLeftMotorsPower(leftPower);
-        driveTrain.setRightMotorsPower(rightPower);
-        opMode.telemetry.addData("angle",getAngle());
-        opMode.telemetry.addData("degrees",degrees);
-        opMode.telemetry.update();
-
-        // rotate until turn is completed.
-        if (degrees < 0)
-        {
-            // On right turn we have to get off zero first.
-            while (opModeIsActive() && getAngle() == 0) {
-                opMode.telemetry.addData("angle",getAngle());
-                opMode.telemetry.addData("degrees",degrees);
-                opMode.telemetry.update();
-            }
-
-            while (opModeIsActive() && getAngle() > degrees) {
-                opMode.telemetry.addData("angle",getAngle());
-                opMode.telemetry.addData("degrees",degrees);
-                opMode.telemetry.update();
-
-            }
-        }
-        else    // left turn.
-            while (opModeIsActive() && getAngle() < degrees) {
-                opMode.telemetry.addData("angle",getAngle());
-                opMode.telemetry.addData("degrees",degrees);
-                opMode.telemetry.update();
-            }
-
-        // turn the motors off.
-        driveTrain.stop();
-
-        // wait for rotation to stop.
-        driveTrain.pause(1);
-
-        // reset angle tracking on new heading.
-        resetAngle();
     }
 
     public boolean isTargetVisible(){

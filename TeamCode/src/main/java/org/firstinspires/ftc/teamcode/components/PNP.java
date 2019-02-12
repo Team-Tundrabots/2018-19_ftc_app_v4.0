@@ -55,7 +55,10 @@ public class PNP extends BotComponent {
         // Define and Initialize Motors
         pusher = initMotor(pusherName, DcMotor.Direction.FORWARD, true);
         logger.logDebug("PNP.construct", "");
-        isAvailable= true;
+        if (pusher != null) {
+            isAvailable = true;
+        }
+        logger.logDebug("PNP","isAvailable:%b", isAvailable);
     }
 
 

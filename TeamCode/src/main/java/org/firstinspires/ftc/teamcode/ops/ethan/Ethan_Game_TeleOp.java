@@ -51,10 +51,10 @@ public class Ethan_Game_TeleOp extends LinearOpMode {
         robot.logger.open(logEnableTrace);
         robot.logger.logDebug("runOpMode","Starting OpMode");
 
-        if(robot.navigator.isAvailable){
-            robot.logger.logDebug("runOpMode","Navigator is availible");
-            //robot.navigator.initLocations();
-            robot.logger.logDebug("runOpMode","Init locations complete");
+        if(robot.webCamNavigator.isAvailable){
+            robot.logger.logDebug("runOpMode","webCamNavigator is availible");
+            robot.webCamNavigator.initLocations();
+            robot.logger.logDebug("runOpMode","initLocations complete");
         }
 
         telemetry.addData("Status", "Initialized");
@@ -71,9 +71,9 @@ public class Ethan_Game_TeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (robot.navigator.isAvailable){
-                robot.logger.logDebug("runOpMode","OpMode is active loop, and navigator is availible");
-               // robot.navigator.displayLocationInfo();
+            if (robot.webCamNavigator.isAvailable){
+                robot.logger.logDebug("runOpMode","OpMode is active loop, and webCamNavigator is availible");
+                robot.webCamNavigator.displayLocationInfo();
             }
 
             // hoist controls

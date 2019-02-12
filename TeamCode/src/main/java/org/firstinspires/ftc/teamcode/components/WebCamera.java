@@ -89,7 +89,7 @@ public class WebCamera extends BotComponent {
             vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
             isAvailable = true;
-            logger.logDebug("WebCamera","isAvailable", isAvailable);
+            logger.logDebug("WebCamera","isAvailable:%b", isAvailable);
 
         } catch (VuforiaException | NullPointerException err) {
             logger.logErr("WebCamera","Error Starting WebCamera:", err);

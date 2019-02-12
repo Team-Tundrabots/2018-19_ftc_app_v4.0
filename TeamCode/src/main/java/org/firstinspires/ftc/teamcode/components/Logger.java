@@ -66,30 +66,30 @@ public class Logger {
         }
     }
 
-    private void logToTelemetry(String format, Object... args){
+    private void logToTelemetry(String funcName, String format, Object... args){
         if (opMode != null && telemetryEnabled) {
-            opMode.telemetry.addData(format, args);
+            opMode.telemetry.addData(funcName, format, args);
         }
     }
 
     public void logErr(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
             tracer.traceErr(funcName, format, args);
-            logToTelemetry(format, args);
+            logToTelemetry(funcName, format, args);
         }
     }
 
     public void logInfo(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
             tracer.traceInfo(funcName, format, args);
-            logToTelemetry(format, args);
+            logToTelemetry(funcName, format, args);
         }
     }
 
     public void logDebug(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
             tracer.traceVerbose(funcName, format, args);
-            logToTelemetry(format, args);
+            logToTelemetry(funcName, format, args);
         }
     }
 

@@ -32,25 +32,26 @@ package org.firstinspires.ftc.teamcode.bots;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.components.Arm;
+import org.firstinspires.ftc.teamcode.components.GyroNavigator;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.GoldSensor;
 import org.firstinspires.ftc.teamcode.components.Hoist;
 import org.firstinspires.ftc.teamcode.components.Logger;
-import org.firstinspires.ftc.teamcode.components.Navigator;
 import org.firstinspires.ftc.teamcode.components.PNP;
-
+import org.firstinspires.ftc.teamcode.components.WebCamNavigator;
 
 public class GameBot extends Bot {
 
     public Logger logger = null;
     public WebCamera webCamera = null;
     public DriveTrain driveTrain = null;
-    public Navigator navigator = null;
+    public GyroNavigator gyroNavigator = null;
     public Hoist hoist = null;
     public GoldSensor goldSensor = null;
     public Arm arm = null;
     public PNP pnp = null;
+    public WebCamNavigator webCamNavigator = null;
 
     /* Constructor */
     public GameBot() {
@@ -61,11 +62,12 @@ public class GameBot extends Bot {
         logger = new Logger("GameBot", aOpMode);
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
         webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
-        navigator = new Navigator(logger, aOpMode, webCamera, driveTrain);
+        gyroNavigator = new GyroNavigator(logger, aOpMode, driveTrain);
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         goldSensor = new GoldSensor(logger, aOpMode, webCamera);
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
         pnp = new PNP(logger, aOpMode, "pusher");
+        webCamNavigator = new WebCamNavigator(logger, aOpMode, webCamera);
     }
 
 }

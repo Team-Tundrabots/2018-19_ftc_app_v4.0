@@ -29,14 +29,14 @@
 
 package org.firstinspires.ftc.teamcode.ops.rex;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
-@Autonomous(name="RexTestNavigation_TeleOp", group="rex")
+@TeleOp(name="RexTestNavigation_TeleOp", group="rex")
 //@Disabled
 public class RexTestNavigation_TeleOp extends LinearOpMode {
 
@@ -51,6 +51,7 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
         robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
         robot.logger.enableTelemetry();
+        robot.gyroNavigator.init();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -59,15 +60,15 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        if (robot.navigator.isAvailable) {
-            robot.logger.logDebug("runOpMode", "navigator.isAvailable:%b", robot.navigator.isAvailable);
-            robot.navigator.resetAngle();
+        if (robot.gyroNavigator.isAvailable) {
+            robot.logger.logDebug("runOpMode", "gyroNavigator.isAvailable:%b", robot.gyroNavigator.isAvailable);
+            robot.gyroNavigator.resetAngle();
         }
 
         while (opModeIsActive()) {
 
-            if (robot.navigator.isAvailable) {
-                robot.logger.logDebug("runOpMode", "navigator.getAngle:%f", robot.navigator.getAngle());
+            if (robot.gyroNavigator.isAvailable) {
+                robot.logger.logDebug("runOpMode", "gyroNavigator.getAngle:%f", robot.gyroNavigator.getAngle());
             }
 
             // driveTrain controls
@@ -86,10 +87,18 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
 
             }
 
+            if (robot.gyroNavigator.isAvailable && robot.driveTrain.isAvailable) {
+                if (gamepad1.x){
+                    robot.gyroNavigator.rotate(-90, 0.5);
+                }
+                if (gamepad1.b){
+                    robot.gyroNavigator.rotate(90, 0.5);
+                }
+            }
+
 
             telemetry.update();
         }
-
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

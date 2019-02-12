@@ -68,6 +68,8 @@ public class GoldSensor extends BotComponent {
             this.isAvailable = true;
         }
 
+        logger.logDebug("GoldSensor","isAvailable:%b", isAvailable);
+
     }
 
     public void reset() {

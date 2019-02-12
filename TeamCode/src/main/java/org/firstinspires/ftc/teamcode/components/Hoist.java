@@ -66,9 +66,8 @@ public class Hoist extends BotComponent {
 
         // Define and Initialize Motors
         crank = initMotor(crankName, DcMotor.Direction.FORWARD, true);
-
-
         reset();
+        logger.logDebug("Hoist","isAvailable:%b", isAvailable);
 
     }
 
@@ -79,11 +78,6 @@ public class Hoist extends BotComponent {
 
     public void outputCrankPositions(String label) {
         logger.logDebug("outputCrankPositions", "Status: %s, Target: %7d, Current: %7d, Power: %f", label, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
-        opMode.telemetry.addData("Status", label);
-        opMode.telemetry.addData("Target", "%7d", crank.getTargetPosition());
-        opMode.telemetry.addData("Current", "%7d", crank.getCurrentPosition());
-        opMode.telemetry.addData("Power", crank.getPower());
-        opMode.telemetry.update();
     }
 
     public void reset() {
@@ -93,7 +87,7 @@ public class Hoist extends BotComponent {
             outputCrankPositions("Hoist.reset");
             isAvailable = true;
         } catch (NullPointerException err) {
-            opMode.telemetry.addData("Error", err.getMessage());
+            logger.logErr("Host.reset","Error",err.getMessage());
         }
     }
 

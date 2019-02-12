@@ -37,7 +37,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class Navigator extends BotComponent {
+public class GyroNavigator extends BotComponent {
 
     private DriveTrain driveTrain = null;
     private BNO055IMU imu;
@@ -45,11 +45,11 @@ public class Navigator extends BotComponent {
     private double globalAngle, power = .30, correction;
 
     /* Constructor */
-    public Navigator() {
+    public GyroNavigator() {
 
     }
 
-    public Navigator(Logger aLogger, OpMode aOpMode, WebCamera aWebCamera, DriveTrain aDriveTrain)
+    public GyroNavigator(Logger aLogger, OpMode aOpMode, DriveTrain aDriveTrain)
     {
         super(aLogger, aOpMode);
 
@@ -150,11 +150,59 @@ public class Navigator extends BotComponent {
         return correction;
     }
 
+    public void rotate(int degrees, double power) {
+        double currentAngle = getAngle();
+        double targetAngle = currentAngle + degrees;
+
+
+        boolean rotationComplete = false;
+        while (opModeIsActive() && !rotationComplete) {
+
+            logger.logDebug("rotate", "degrees:%d, power:%f", degrees, power);
+            double leftPower = 0;
+            double rightPower = 0;
+
+            if (degrees < 0)
+            {   // turn left.
+                logger.logDebug("rotate", "turning left");
+                leftPower = power;
+                rightPower = - power;
+                if (currentAngle <= targetAngle) {
+                    rotationComplete = true;
+                }
+            } else if (degrees > 0) {   // turn right.
+                logger.logDebug("rotate", "turning right");
+                leftPower = - power;
+                rightPower = power;
+                if (currentAngle >= targetAngle) {
+                    rotationComplete = true;
+                }
+            } else {
+                rotationComplete = true;
+            }
+
+            currentAngle = getAngle();
+            logger.logDebug("rotate", "currentAngle:%f, targetAngle:%f", currentAngle, targetAngle);
+
+            logger.logDebug("rotate", "rotationComplete:%b", rotationComplete);
+            if (!rotationComplete) {
+                driveTrain.setLeftMotorsPower(leftPower);
+                driveTrain.setRightMotorsPower(rightPower);
+            } else {
+                driveTrain.stop();
+            }
+
+            opMode.telemetry.update();
+            idle();
+
+        }
+    }
+
     /**
      * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
      * @param degrees Degrees to turn, + is left - is right
      */
-    public void rotate(int degrees, double power)
+    public void rotate2(int degrees, double power)
     {
         double  leftPower, rightPower;
 
@@ -168,6 +216,7 @@ public class Navigator extends BotComponent {
         {   // turn left.
             leftPower = - power;
             rightPower = power;
+
         }
         else if (degrees > 0)
         {   // turn right.

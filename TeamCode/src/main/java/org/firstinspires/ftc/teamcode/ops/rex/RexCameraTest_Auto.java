@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.*;
@@ -74,7 +73,7 @@ public class RexCameraTest_Auto extends LinearOpMode {
 
                 case "Right":
                     foundGold = true;
-                    robot.navigator.rotate(90, .25);
+                    robot.gyroNavigator.rotate(90, .25);
                     telemetry.addData("Gold:", "Right");
 
                 case "Center":
@@ -84,7 +83,7 @@ public class RexCameraTest_Auto extends LinearOpMode {
 
                 case "Left":
                     foundGold = true;
-                    robot.navigator.rotate(90, .25);
+                    robot.gyroNavigator.rotate(90, .25);
                     telemetry.addData("Gold:", "Left");
 
                 default:

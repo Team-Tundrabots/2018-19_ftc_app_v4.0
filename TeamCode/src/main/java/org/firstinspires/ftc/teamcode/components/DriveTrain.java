@@ -65,6 +65,8 @@ public class DriveTrain extends BotComponent {
             isAvailable = true;
         }
 
+        logger.logDebug("DriveTrain","isAvailable:%b", isAvailable);
+
     }
 
     public void setLeftMotorsPower(double power){

@@ -294,8 +294,8 @@ public class DriveTrain extends BotComponent {
             // reset the timeout time and start motion.
             runtime.reset();
 
-//            frontLeftMotor.setPower(power);
-//            frontRightMotor.setPower(power);
+            frontLeftMotor.setPower(power);
+            frontRightMotor.setPower(power);
             backLeftMotor.setPower(power);
             backRightMotor.setPower(power);
 
@@ -359,8 +359,8 @@ public class DriveTrain extends BotComponent {
             runtime.reset();
 
 
-//            frontLeftMotor.setPower(power);
-//            frontRightMotor.setPower(power);
+            frontLeftMotor.setPower(power);
+            frontRightMotor.setPower(power);
             backLeftMotor.setPower(power);
             backRightMotor.setPower(power);
 

@@ -44,16 +44,16 @@ public class Ethan_Game_TeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private GameBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logEnableTelemetry = true;
 
     @Override
     public void runOpMode() {
-        robot = new GameBot(this);
-        robot.logger.open(logEnableTrace);
-        robot.logger.logDebug("runOpMode","Starting OpMode");
+        robot = new GameBot(this, logEnableTrace, logEnableTelemetry);
+        robot.webCamNavigator.init();
+
 
         if(robot.webCamNavigator.isAvailable){
             robot.logger.logDebug("runOpMode","webCamNavigator is availible");
-            robot.webCamNavigator.initLocations();
             robot.logger.logDebug("runOpMode","initLocations complete");
         }
 

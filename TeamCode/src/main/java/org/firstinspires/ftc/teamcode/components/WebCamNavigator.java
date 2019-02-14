@@ -66,8 +66,6 @@ public class WebCamNavigator extends BotComponent {
     private OpenGLMatrix lastLocation = null;
     private boolean targetVisible = false;
 
-
-
     /* Constructor */
     public WebCamNavigator() {
 
@@ -75,19 +73,19 @@ public class WebCamNavigator extends BotComponent {
 
     public WebCamNavigator(Logger aLogger, OpMode aOpMode, WebCamera aWebCamera) {
         super(aLogger, aOpMode);
-
         webCamera = aWebCamera;
-        isAvailable = webCamera.isAvailable;
-
-        logger.logDebug("WebCamNavigator","isAvailable:%b", isAvailable);
-
     }
 
-    public void initLocations() {
+    public void init() {
+        webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        if (webCamera.isAvailable) {
+            initLocations();
+            isAvailable = true;
+        }
+        logger.logDebug("WebCamNavigator.init","isAvailable:%b", isAvailable);
+    }
 
-        logger.logDebug("initLocations","Begin init");
-        webCamera.initForNavigation();
-        logger.logDebug("initLocations","Web camera init complete");
+    private void initLocations() {
 
         // Load the data sets that for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.

@@ -78,8 +78,7 @@ public class GyroNavigator extends BotComponent {
         }
 
         isAvailable = true;
-
-        logger.logDebug("GyroNavigator:init", "Calibration Stauts:%s",imu.getCalibrationStatus().toString());
+        logger.logDebug("GyroNavigator:init", "Calibration Status:%s",imu.getCalibrationStatus().toString());
 
     }
 

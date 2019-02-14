@@ -56,16 +56,21 @@ public class WebCamera extends BotComponent {
 
     public String cameraName;
 
-    private static final String VUFORIA_KEY = "AYb6Z43/////AAABmUDTPvzNUErvv+V5mxyyLy5xIbXbTnWaz/luHdMrGjmXWTa49gQSiDxm1hnzzQVmlkAh/5PCeNEicf28nm7T31+td8OKFeU4C4iu/aQ7HXEv74/NRf38ixE2iYmLLPrPApWBKRrUnuz7v4wsZdXZwIZzgHI0S0t4T4cX34ppylT72P+GXG9U48f7qr5x0KZpn+WgkiSMVQ2r0KvSGTAvU7Sx5y69teWPt+NdHwkes7vpnOQyOXn9NvVSuDgByMcGKbTEScLa9L4zyyRLrBIK9fSIxrRFDNbVGojzcu8+70TuZuyjx+2u/9OzuK4mMDdpqL/46aXinDXqNuSj/BZsPcDCaPsG7R5oxpp9zdfhIwiO";
     public VuforiaLocalizer vuforia;
     public VuforiaLocalizer.Parameters parameters;
+
+    public enum InitType {
+        INIT_FOR_FIND_GOLD,
+        INIT_FOR_NAVIGATION
+    }
+
+    private static final String VUFORIA_KEY = "AYb6Z43/////AAABmUDTPvzNUErvv+V5mxyyLy5xIbXbTnWaz/luHdMrGjmXWTa49gQSiDxm1hnzzQVmlkAh/5PCeNEicf28nm7T31+td8OKFeU4C4iu/aQ7HXEv74/NRf38ixE2iYmLLPrPApWBKRrUnuz7v4wsZdXZwIZzgHI0S0t4T4cX34ppylT72P+GXG9U48f7qr5x0KZpn+WgkiSMVQ2r0KvSGTAvU7Sx5y69teWPt+NdHwkes7vpnOQyOXn9NvVSuDgByMcGKbTEScLa9L4zyyRLrBIK9fSIxrRFDNbVGojzcu8+70TuZuyjx+2u/9OzuK4mMDdpqL/46aXinDXqNuSj/BZsPcDCaPsG7R5oxpp9zdfhIwiO";
 
     /**
      * @see #captureFrameToFile()
      */
-    int captureCounter = 0;
-    File captureDirectory = AppUtil.ROBOT_DATA_DIR;
-
+    private int captureCounter = 0;
+    private File captureDirectory = AppUtil.ROBOT_DATA_DIR;
 
     /* Constructor */
     public WebCamera() {
@@ -74,7 +79,25 @@ public class WebCamera extends BotComponent {
 
     public WebCamera(Logger aLogger, OpMode aOpMode, String aCameraName) {
         super(aLogger, aOpMode);
+        cameraName = aCameraName;
+    }
 
+    public void init( ){
+        init(InitType.INIT_FOR_FIND_GOLD);
+        isAvailable = true;
+        logger.logDebug("WebCamera.init","isAvailable:%b", isAvailable);
+    }
+
+    public void init (InitType initType) {
+        switch  (initType) {
+            case INIT_FOR_FIND_GOLD:
+                initForGoldFind();
+            case INIT_FOR_NAVIGATION:
+                initForNavigation();
+        }
+    }
+
+    private void initForGoldFind() {
         try {
             /*
              * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -82,24 +105,21 @@ public class WebCamera extends BotComponent {
             parameters = new VuforiaLocalizer.Parameters();
 
             parameters.vuforiaLicenseKey = VUFORIA_KEY;
-            cameraName = aCameraName;
-            parameters.cameraName = aOpMode.hardwareMap.get(WebcamName.class, cameraName);
+            parameters.cameraName = opMode.hardwareMap.get(WebcamName.class, cameraName);
 
             //  Instantiate the Vuforia engine
             vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
             isAvailable = true;
-            logger.logDebug("WebCamera","isAvailable:%b", isAvailable);
+            logger.logDebug("WebCamera.initForGoldFind","isAvailable:%b", isAvailable);
 
         } catch (VuforiaException | NullPointerException err) {
-            logger.logErr("WebCamera","Error Starting WebCamera:", err);
+            logger.logErr("WebCamera.initForGoldFind","Error Starting WebCamera:", err);
         }
-
 
     }
 
-
-    public void initForNavigation() {
+    private void initForNavigation() {
 
         try {
             logger.logDebug("initForNavigation", cameraName);
@@ -117,10 +137,12 @@ public class WebCamera extends BotComponent {
             //  Instantiate the Vuforia engine
             vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-            logger.logDebug("initForNavigation", "debug #5");
+            isAvailable = true;
+            logger.logDebug("WebCamera.initForNavigation","isAvailable:%b", isAvailable);
+
         } catch (VuforiaException err) {
             isAvailable = false;
-            logger.logErr("initForNavigation", "Error initializing", err.getMessage());
+            logger.logErr("WebCamera.initForNavigation", "Error initializing", err.getMessage());
         }
 
         if (isAvailable) { enableCaptureFrameToFile(); }

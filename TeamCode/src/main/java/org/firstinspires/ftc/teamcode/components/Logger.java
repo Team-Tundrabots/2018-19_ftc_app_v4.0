@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.components.utilities.TrcDbgTrace;
@@ -26,12 +28,12 @@ Hex string.
 public class Logger {
 
     private boolean traceEnabled = false;
+    private boolean telemetryEnabled = false;
     private boolean fileOpen = false;
     private String filePrefix = "Logger";
     private TrcDbgTrace tracer;
     private OpMode opMode = null;
 
-    private boolean telemetryEnabled = false;
 
     /* Constructor */
     public Logger(String aFilePrefix) {
@@ -45,24 +47,26 @@ public class Logger {
         opMode = aOpMode;
     }
 
-    public void enableTelemetry() {
-        telemetryEnabled = true;
-    }
-
-    public void disableTelemetry() {
-        telemetryEnabled = false;
+    public Logger(String aFilePrefix, OpMode aOpMode, boolean enableTrace, boolean enableTelemetry) {
+        filePrefix =  aFilePrefix;
+        opMode = aOpMode;
+        open(filePrefix, enableTrace, enableTelemetry);
     }
 
     public void open(boolean enableTrace) {
-        open(filePrefix, enableTrace);
+        open(filePrefix, enableTrace, telemetryEnabled);
     }
 
-    public void open(String filePrefix, boolean enableTrace) {
+    public void open(String filePrefix, boolean enableTrace, boolean enableTelemetry) {
+
         traceEnabled = enableTrace;
+        telemetryEnabled = enableTelemetry;
+
         if (traceEnabled && !fileOpen) {
             tracer = new TrcDbgTrace("LOGGER", traceEnabled, TrcDbgTrace.TraceLevel.HIFREQ, TrcDbgTrace.MsgLevel.VERBOSE);
             tracer.openTraceLog("/sdcard/FIRST/tracelog", filePrefix);
             fileOpen = true;
+            logInfo("Logger.open","===== [%s] =====", filePrefix);
         }
     }
 
@@ -75,22 +79,22 @@ public class Logger {
     public void logErr(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
             tracer.traceErr(funcName, format, args);
-            logToTelemetry(funcName, format, args);
         }
+        logToTelemetry(funcName, format, args);
     }
 
     public void logInfo(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
             tracer.traceInfo(funcName, format, args);
-            logToTelemetry(funcName, format, args);
         }
+        logToTelemetry(funcName, format, args);
     }
 
     public void logDebug(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
             tracer.traceVerbose(funcName, format, args);
-            logToTelemetry(funcName, format, args);
         }
+        logToTelemetry(funcName, format, args);
     }
 
     public void close() {

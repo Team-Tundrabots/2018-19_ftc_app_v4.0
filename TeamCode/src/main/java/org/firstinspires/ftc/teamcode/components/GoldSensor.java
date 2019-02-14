@@ -61,32 +61,32 @@ public class GoldSensor extends BotComponent {
 
     public GoldSensor(Logger aLogger, OpMode aOpMode, WebCamera aWebCamera) {
         super(aLogger, aOpMode);
-
         webCamera = aWebCamera;
-        if (webCamera.isAvailable) {
-            reset();
-            this.isAvailable = true;
-        }
-
+        logger.logDebug("GoldSensor","webCamera.isAvailable:%b", webCamera.isAvailable);
         logger.logDebug("GoldSensor","isAvailable:%b", isAvailable);
-
     }
 
-    public void reset() {
+    public void init() {
 
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-            isAvailable = true;
-        } else {
-            logger.logErr("GoldSensor:reset","Error: %s","This device is not compatible with TFO");
+        if (webCamera.isAvailable) {
+
+            if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+                initTfod();
+                isAvailable = true;
+            } else {
+                logger.logErr("GoldSensor:init", "Error: %s", "This device is not compatible with TFO");
+            }
+
         }
+
+        logger.logDebug("GoldSensor:init","isAvailable:%b", isAvailable);
 
     }
 
 
 
     public String goldFind() {
-        if (!isAvailable) {return "Unknown";}
+        if (!isAvailable) {return goldPosition;}
 
         if (tfod != null) {
             tfod.activate();
@@ -97,7 +97,7 @@ public class GoldSensor extends BotComponent {
             // the last time that call was made.
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
-                opMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
+                logger.logDebug("goldFind", "# Object Detected:%d",updatedRecognitions.size());
                 if (updatedRecognitions.size() == 3) {
                     int goldMineralX = -1;
                     int silverMineral1X = -1;
@@ -113,22 +113,16 @@ public class GoldSensor extends BotComponent {
                     }
                     if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                         if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                            opMode.telemetry.addData("Gold Mineral Position", "Left");
-                            opMode.telemetry.update();
                             goldPosition = "Left";
                         } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                            opMode.telemetry.addData("Gold Mineral Position", "Right");
-                            opMode.telemetry.update();
                             goldPosition = "Right";
                         } else {
-                            opMode.telemetry.addData("Gold Mineral Position", "Center");
-                            opMode.telemetry.update();
                             goldPosition = "Center";
                         }
                     }
                 }
 
-                logger.logDebug("goldFind", goldPosition);
+                logger.logDebug("goldFind", "Gold Mineral Position: %s", goldPosition);
                 opMode.telemetry.update();
             }
         }

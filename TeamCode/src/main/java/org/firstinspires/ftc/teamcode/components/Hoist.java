@@ -63,14 +63,9 @@ public class Hoist extends BotComponent {
 
     public Hoist(Logger aLogger, OpMode aOpMode, String crankName) {
         super(aLogger, aOpMode);
-
-        // Define and Initialize Motors
         crank = initMotor(crankName, DcMotor.Direction.FORWARD, true);
-        reset();
-        logger.logDebug("Hoist","isAvailable:%b", isAvailable);
-
+        init();
     }
-
 
     public void outputCrankPositions() {
         outputCrankPositions("Crank Positions");
@@ -80,15 +75,16 @@ public class Hoist extends BotComponent {
         logger.logDebug("outputCrankPositions", "Status: %s, Target: %7d, Current: %7d, Power: %f", label, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
     }
 
-    public void reset() {
+    private void init() {
         try {
             crank.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            outputCrankPositions("Hoist.reset");
             isAvailable = true;
         } catch (NullPointerException err) {
-            logger.logErr("Host.reset","Error",err.getMessage());
+            logger.logErr("Host.init","Error", err.getMessage());
         }
+        logger.logDebug("Hoist.init","isAvailable:%b", isAvailable);
+
     }
 
     public void setTargetInches(double inches) {
@@ -112,20 +108,6 @@ public class Hoist extends BotComponent {
         logger.logDebug("Hoist.contract", "");
         crank.setDirection(DcMotorSimple.Direction.FORWARD);
         runToTarget(contractedPosition, power, rampUpDownThreshold);
-    }
-
-    // Simple version - no ramp up or down
-    private void runToTarget(int targetPosition, double power) {
-        int startPosition = crank.getCurrentPosition();
-        setTarget(targetPosition);
-        crank.setPower(power);
-        while (opModeIsActive() && crank.isBusy()) {
-            outputCrankPositions("Hoist.runToTarget");
-            idle();
-        }
-        crank.setPower(0);
-        // Turn off RUN_TO_POSITION
-        crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void runToTarget(int targetPosition, double power, int rampUpDownThreshold) {

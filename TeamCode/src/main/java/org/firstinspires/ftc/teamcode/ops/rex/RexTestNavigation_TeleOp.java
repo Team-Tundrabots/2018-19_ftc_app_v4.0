@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.GameBot;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
 @TeleOp(name="RexTestNavigation_TeleOp", group="rex")
@@ -52,13 +54,21 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
 
         robot = new GameBot(this, logEnableTrace, logToTelemetry);
         robot.logger.logDebug("runOpMode","Status", "Initializing");
+
+        /* Use either robot.initAll or select only the components that need initializing below */
+        //robot.initAll();
         robot.gyroNavigator.init();
+        robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        // robot.goldSensor.init();
+        // robot.webCamNavigator.init();
 
         robot.logger.logDebug("runOpMode","Status", "Initialized");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
         runtime.reset();
 
         if (robot.gyroNavigator.isAvailable) {
@@ -100,11 +110,11 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
             //encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup)
             if (robot.driveTrain.isAvailable) {
                 if (gamepad1.dpad_up) {
-                    robot.driveTrain.encoderDrive(.5, 72, 72, 5);
+                    robot.driveTrain.encoderDrive(.5, 24, 24, 5);
                     //robot.driveTrain.encoderDrive2(.25, .25, 5, 10, 0);
                 }
                 if (gamepad1.dpad_down) {
-                    robot.driveTrain.gyroEncoderDrive(.5, 72, 72, 5);
+                    robot.driveTrain.gyroEncoderDrive(.5, 24, 24, 5);
                 }
             }
 

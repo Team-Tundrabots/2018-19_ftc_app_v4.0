@@ -43,6 +43,8 @@ import org.firstinspires.ftc.teamcode.components.WebCamNavigator;
 
 public class GameBot extends Bot {
 
+    /* BotComponents */
+
     public Logger logger = null;
     public WebCamera webCamera = null;
     public DriveTrain driveTrain = null;
@@ -62,11 +64,9 @@ public class GameBot extends Bot {
         this(aOpMode, false, false);
     }
 
-    public GameBot(OpMode aOpMode, boolean enableTrace, boolean logToTelemetry) {
-        logger = new Logger("GameBot", aOpMode);
-        logger.open(enableTrace);
-        if (logToTelemetry) { logger.enableTelemetry(); }
+    public GameBot(OpMode aOpMode, boolean enableTrace, boolean enableTelemetry) {
 
+        logger = new Logger("GameBot", aOpMode, enableTrace, enableTelemetry);
         gyroNavigator = new GyroNavigator(logger, aOpMode);
         driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor",
                                                       "backLeftMotor", "backRightMotor",
@@ -79,6 +79,14 @@ public class GameBot extends Bot {
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
         pnp = new PNP(logger, aOpMode, "pusher");
+    }
+
+    public void initAll() {
+        gyroNavigator.init();
+        driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        goldSensor.init();
+        // webCamNavigator.init();
     }
 
 }

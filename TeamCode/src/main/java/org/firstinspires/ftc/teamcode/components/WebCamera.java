@@ -91,9 +91,13 @@ public class WebCamera extends BotComponent {
     public void init (InitType initType) {
         switch  (initType) {
             case INIT_FOR_FIND_GOLD:
+                logger.logDebug("webCamera.init", "INIT_FOR_FIND_GOLD");
                 initForGoldFind();
+                break;
             case INIT_FOR_NAVIGATION:
+                logger.logDebug("webCamera.init", "INIT_FOR_NAVIGATION");
                 initForNavigation();
+                break;
         }
     }
 

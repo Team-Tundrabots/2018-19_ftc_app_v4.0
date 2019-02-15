@@ -94,7 +94,7 @@ public class Logger {
         if (traceEnabled) {
             tracer.traceVerbose(funcName, format, args);
         }
-        logToTelemetry(funcName, format, args);
+        //logToTelemetry(funcName, format, args);
     }
 
     public void close() {

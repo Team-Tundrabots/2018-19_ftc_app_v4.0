@@ -106,19 +106,22 @@ public class DriveTrain extends BotComponent {
             case INIT_FRONT_MOTORS:
                 frontMotorsEnabled = (frontLeftMotor != null) && (frontRightMotor != null);
                 isAvailable = frontMotorsEnabled;
+                break;
 
             case INIT_BACK_MOTORS:
                 backMotorsEnabled = (backLeftMotor != null) && (backRightMotor != null);
                 isAvailable = backMotorsEnabled;
+                break;
 
             case INIT_4WD:
                 frontMotorsEnabled = (frontLeftMotor != null) && (frontRightMotor != null);
                 backMotorsEnabled = (backLeftMotor != null) && (backRightMotor != null);
                 isAvailable = frontMotorsEnabled && backMotorsEnabled;
+                break;
 
         }
 
-        logger.logDebug("DriveTrain","isAvailable:%b", isAvailable);
+        logger.logInfo("DriveTrain","isAvailable:%b", isAvailable);
 
     }
 
@@ -355,11 +358,11 @@ public class DriveTrain extends BotComponent {
 
             // Determine new target position, and pass to motor controller
             if (backMotorsEnabled) {
-                newLeftTarget = backLeftMotor.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
-                newRightTarget = backRightMotor.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
+                newLeftTarget = backLeftMotor.getCurrentPosition() - (int) (leftInches * COUNTS_PER_INCH);
+                newRightTarget = backRightMotor.getCurrentPosition() - (int) (rightInches * COUNTS_PER_INCH);
             } else {
-                newLeftTarget = frontLeftMotor.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
-                newRightTarget = frontRightMotor.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
+                newLeftTarget = frontLeftMotor.getCurrentPosition() - (int) (leftInches * COUNTS_PER_INCH);
+                newRightTarget = frontRightMotor.getCurrentPosition() - (int) (rightInches * COUNTS_PER_INCH);
             }
 
             setTargetPositions(newLeftTarget, newRightTarget);

@@ -68,7 +68,7 @@ public class GyroNavigator extends BotComponent {
 
         imu.initialize(parameters);
 
-        logger.logDebug("GyroNavigator:init", "Calibrating...");
+        logger.logInfo("GyroNavigator:init", "Calibrating...");
 
         // make sure the imu gyro is calibrated before continuing.
         while (opModeIsActive() && !imu.isGyroCalibrated())
@@ -78,7 +78,7 @@ public class GyroNavigator extends BotComponent {
         }
 
         isAvailable = true;
-        logger.logDebug("GyroNavigator:init", "Calibration Status:%s",imu.getCalibrationStatus().toString());
+        logger.logInfo("GyroNavigator:init", "Calibration Status:%s",imu.getCalibrationStatus().toString());
 
     }
 

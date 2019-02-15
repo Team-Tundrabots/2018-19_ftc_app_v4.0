@@ -62,8 +62,8 @@ public class GoldSensor extends BotComponent {
     public GoldSensor(Logger aLogger, OpMode aOpMode, WebCamera aWebCamera) {
         super(aLogger, aOpMode);
         webCamera = aWebCamera;
-        logger.logDebug("GoldSensor","webCamera.isAvailable:%b", webCamera.isAvailable);
-        logger.logDebug("GoldSensor","isAvailable:%b", isAvailable);
+        logger.logInfo("GoldSensor","webCamera.isAvailable:%b", webCamera.isAvailable);
+        logger.logInfo("GoldSensor","isAvailable:%b", isAvailable);
     }
 
     public void init() {
@@ -79,7 +79,7 @@ public class GoldSensor extends BotComponent {
 
         }
 
-        logger.logDebug("GoldSensor:init","isAvailable:%b", isAvailable);
+        logger.logInfo("GoldSensor:init","isAvailable:%b", isAvailable);
 
     }
 

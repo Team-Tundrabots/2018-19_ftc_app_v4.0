@@ -83,7 +83,7 @@ public class Hoist extends BotComponent {
         } catch (NullPointerException err) {
             logger.logErr("Host.init","Error", err.getMessage());
         }
-        logger.logDebug("Hoist.init","isAvailable:%b", isAvailable);
+        logger.logInfo("Hoist.init","isAvailable:%b", isAvailable);
 
     }
 

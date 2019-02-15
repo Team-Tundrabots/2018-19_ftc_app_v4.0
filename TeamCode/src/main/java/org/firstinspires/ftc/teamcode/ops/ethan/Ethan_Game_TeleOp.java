@@ -29,26 +29,27 @@
 
 package org.firstinspires.ftc.teamcode.ops.ethan;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.GameBot;
+import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
 @TeleOp(name="Ethan_Game_TeleOp", group="ethan")
-//@Disabled
+@Disabled
 public class Ethan_Game_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private GameBot robot = null;
+    private TestBot robot = null;
     private boolean logEnableTrace = true;
     private boolean logEnableTelemetry = true;
 
     @Override
     public void runOpMode() {
-        robot = new GameBot(this, logEnableTrace, logEnableTelemetry);
+        robot = new TestBot(this, logEnableTrace, logEnableTelemetry);
         robot.webCamNavigator.init();
 
 

@@ -107,7 +107,7 @@ import java.util.Locale;
  */
 
 @TeleOp(name="Rex_ConceptVuforiaNavRoverRuckus", group ="rex")
-//@Disabled
+@Disabled
 public class Rex_ConceptVuforiaNavRoverRuckus extends LinearOpMode {
 
     public static final String TAG = "Rex_ConceptVuforiaNavRoverRuckus";

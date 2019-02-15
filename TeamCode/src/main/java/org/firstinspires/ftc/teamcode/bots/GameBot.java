@@ -53,7 +53,6 @@ public class GameBot extends Bot {
     public GoldSensor goldSensor = null;
     public Arm arm = null;
     public PNP pnp = null;
-    public WebCamNavigator webCamNavigator = null;
 
     /* Constructor */
     public GameBot() {
@@ -74,7 +73,6 @@ public class GameBot extends Bot {
 
         webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
         goldSensor = new GoldSensor(logger, aOpMode, webCamera);
-        webCamNavigator = new WebCamNavigator(logger, aOpMode, webCamera);
 
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
@@ -86,7 +84,6 @@ public class GameBot extends Bot {
         driveTrain.init(DriveTrain.InitType.INIT_4WD);
         webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
         goldSensor.init();
-        // webCamNavigator.init();
     }
 
 }

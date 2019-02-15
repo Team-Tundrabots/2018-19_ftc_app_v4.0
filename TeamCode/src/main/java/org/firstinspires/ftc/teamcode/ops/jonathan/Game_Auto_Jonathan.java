@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.ops.jonathan;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -37,7 +38,7 @@ import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
 @Autonomous(name="Game_Auto_Jonathan", group="jonathan")
-//@Disabled
+@Disabled
 public class Game_Auto_Jonathan extends LinearOpMode {
 
     // Declare OpMode members.

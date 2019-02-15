@@ -40,7 +40,7 @@ public class PNP extends BotComponent {
     public DcMotor pusher = null;
 
 
-    private double DEFAULT_POWER = 0.25;
+    private double DEFAULT_POWER = 0.50;
 
     public double power = DEFAULT_POWER;
 

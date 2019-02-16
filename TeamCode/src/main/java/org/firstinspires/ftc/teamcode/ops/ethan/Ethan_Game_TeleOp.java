@@ -27,38 +27,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.carrick;
+package org.firstinspires.ftc.teamcode.ops.ethan;
 
-import com.qualcomm.ftccommon.SoundPlayer;
-
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.*;
-
-import java.io.File;
+import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
-@TeleOp(name="Carrick_Game_TeleOp", group="carrick")
-//@Disabled
-public class Carrick_Game_TeleOp extends LinearOpMode {
+@TeleOp(name="Ethan_Game_TeleOp", group="ethan")
+@Disabled
+public class Ethan_Game_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private GameBot robot = null;
+    private TestBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logEnableTelemetry = true;
 
     @Override
     public void runOpMode() {
-        robot = new GameBot(this);
-        robot.logger.open(logEnableTrace);
-        robot.logger.logDebug("TeleOP debug", "");
-        robot.logger.logInfo("TeleOP info", "");
-        //logger.logDebug("PNP.construct", "");
+        robot = new TestBot(this, logEnableTrace, logEnableTelemetry);
+        robot.webCamNavigator.init();
 
-        int silverSoundID = hardwareMap.appContext.getResources().getIdentifier("silver", "raw", hardwareMap.appContext.getPackageName());
-        int goldSoundID   = hardwareMap.appContext.getResources().getIdentifier("gold",   "raw", hardwareMap.appContext.getPackageName());
+
+        if(robot.webCamNavigator.isAvailable){
+            robot.logger.logDebug("runOpMode","webCamNavigator is availible");
+            robot.logger.logDebug("runOpMode","initLocations complete");
+        }
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -70,21 +68,14 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
         robot.hoist.contractedPosition = 0;
         robot.hoist.extendedPosition = 20000;
         robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = .50;
-        telemetry.addData("firstrightsticky", gamepad1.right_stick_y);
-
-        boolean goldFound;
-        boolean silverFound;
-        int soundCounterGold = 0;
-        int soundCounterSilver = 0;
-
-        if (goldSoundID != 0)
-            goldFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, goldSoundID);
-
-        if (silverSoundID != 0)
-            silverFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, silverSoundID);
+        robot.hoist.power = 1;
 
         while (opModeIsActive()) {
+
+            if (robot.webCamNavigator.isAvailable){
+                robot.logger.logDebug("runOpMode","OpMode is active loop, and webCamNavigator is availible");
+                robot.webCamNavigator.displayLocationInfo();
+            }
 
             // hoist controls
             if (robot.hoist.isAvailable) {
@@ -113,41 +104,27 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
                 telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
             }
 
-            //PNP controls
-            if (robot.pnp.isAvailable){
-                if (gamepad1.right_stick_y > 0){
-                    robot.pnp.extend();
-                    if(soundCounterGold == 0){
-                        SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, goldSoundID);
-                        telemetry.addData("Playing", "Resource Gold");
-                        telemetry.update();
-                    }
-                }
-                else if(gamepad1.right_stick_y < 0) {
-                    robot.pnp.contract();
-                    if(soundCounterSilver == 0){
-                        SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, silverSoundID);
-                        telemetry.addData("Playing", "Resource Silver");
-                        telemetry.update();
-                    }
-
-                }
-                else{
-                    robot.pnp.pusher.setPower(0.0);
-                }
-                double arm_proportion = 0.5;
-                double new_left_trigger = gamepad1.left_trigger*arm_proportion;
-                double new_right_trigger = gamepad1.right_trigger*arm_proportion;
-                robot.arm.crank.setPower(-new_left_trigger+new_right_trigger);
-            }
-            telemetry.addData("rightsticky", gamepad1.right_stick_y);
-
             // goldSensor detection
             if(robot.goldSensor.isAvailable) {
                 telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
             }
 
             telemetry.update();
+            //PNP controls
+            if (robot.pnp.isAvailable){
+                if (gamepad1.right_stick_y > 0){
+                    robot.pnp.extend();
+                }
+                else if(gamepad1.right_stick_y < 0) {
+                    robot.pnp.contract();
+                }
+                else{
+                    robot.pnp.pusher.setPower(0.0);
+                }
+            }
+            telemetry.addData("rightsticky", gamepad1.right_stick_y);
+
+            robot.arm.crank.setPower(-gamepad1.left_trigger+gamepad1.right_trigger);
         }
 
         // Show the elapsed game time.

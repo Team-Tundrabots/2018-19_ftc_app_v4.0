@@ -92,7 +92,7 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new TestBot(this);
-        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // The TFObjectDetector uses the webCamera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
 
@@ -191,5 +191,6 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+        tfodParameters.minimumConfidence = .95;
     }
 }

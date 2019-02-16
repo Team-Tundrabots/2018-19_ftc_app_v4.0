@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.bots.*;
 
 public class DriveTrain extends BotComponent {
 
@@ -41,7 +42,27 @@ public class DriveTrain extends BotComponent {
 
     public DcMotor backLeftMotor = null;
     public DcMotor backRightMotor = null;
-    
+
+    public GyroNavigator gyroNavigator = null;
+
+
+    public enum InitType {
+        INIT_FRONT_MOTORS,
+        INIT_BACK_MOTORS,
+        INIT_4WD
+    }
+
+    private boolean frontMotorsEnabled = false;
+    private boolean backMotorsEnabled   = false;
+
+    private double COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: TETRIX Motor Encoder
+    private double DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+    private double WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    private double COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+                                             (WHEEL_DIAMETER_INCHES * 3.1415);
+
+    private double MAX_INCHES_PER_SECOND   = 12;
+
     /* Constructor */
     public DriveTrain() {
 
@@ -51,36 +72,73 @@ public class DriveTrain extends BotComponent {
                 String frontLeftMotorName, String frontRightMotorName,
                 String backLeftMotorName, String backRightMotorName)
     {
+        this(aLogger, aOpMode, frontLeftMotorName, frontRightMotorName, backLeftMotorName, backRightMotorName, null);
+    }
+
+    public DriveTrain(Logger aLogger, OpMode aOpMode,
+                      String frontLeftMotorName, String frontRightMotorName,
+                      String backLeftMotorName, String backRightMotorName,
+                      GyroNavigator aGyroNavigator) {
+
         super(aLogger, aOpMode);
 
-        // Define and Initialize Motors
+        gyroNavigator = aGyroNavigator;
+        if (gyroNavigator == null) {
+            gyroNavigator = new GyroNavigator(aLogger, aOpMode);
+        }
+
         frontLeftMotor = initMotor(frontLeftMotorName, DcMotor.Direction.REVERSE);
         frontRightMotor = initMotor(frontRightMotorName);
 
         backLeftMotor = initMotor(backLeftMotorName, DcMotor.Direction.REVERSE);
         backRightMotor = initMotor(backRightMotorName);
 
-        // as long as front motors are configured - assume DriveTrain is available
-        if ((frontLeftMotor != null) && (frontRightMotor != null)) {
-            isAvailable = true;
+    }
+
+    public void init() {
+        init(InitType.INIT_4WD);
+    }
+
+    public void init(InitType initType) {
+
+        switch (initType) {
+
+            case INIT_FRONT_MOTORS:
+                frontMotorsEnabled = (frontLeftMotor != null) && (frontRightMotor != null);
+                isAvailable = frontMotorsEnabled;
+                break;
+
+            case INIT_BACK_MOTORS:
+                backMotorsEnabled = (backLeftMotor != null) && (backRightMotor != null);
+                isAvailable = backMotorsEnabled;
+                break;
+
+            case INIT_4WD:
+                frontMotorsEnabled = (frontLeftMotor != null) && (frontRightMotor != null);
+                backMotorsEnabled = (backLeftMotor != null) && (backRightMotor != null);
+                isAvailable = frontMotorsEnabled && backMotorsEnabled;
+                break;
+
         }
+
+        logger.logInfo("DriveTrain","isAvailable: %b", isAvailable);
 
     }
 
     public void setLeftMotorsPower(double power){
-        if (frontLeftMotor != null) {
+        if (frontMotorsEnabled) {
             frontLeftMotor.setPower(power);
         }
-        if (backLeftMotor != null) {
+        if (backMotorsEnabled) {
             backLeftMotor.setPower(power);
         }
     }
 
     public void setRightMotorsPower(double power){
-        if (frontRightMotor != null) {
+        if (frontMotorsEnabled) {
             frontRightMotor.setPower(power);
         }
-        if (backRightMotor != null) {
+        if (backMotorsEnabled) {
             backRightMotor.setPower(power);
         }
     }
@@ -185,56 +243,116 @@ public class DriveTrain extends BotComponent {
         final double v3 = r * Math.sin(robotAngle) + rX;
         final double v4 = r * Math.cos(robotAngle) - rX;
 
-        frontLeftMotor.setPower(v1);
-        frontRightMotor.setPower(v2);
-        backLeftMotor.setPower(v3);
-        backRightMotor.setPower(v4);
+        if (frontMotorsEnabled) {
+            frontLeftMotor.setPower(v1);
+            frontRightMotor.setPower(v2);
+
+        }
+        if (backMotorsEnabled) {
+            backLeftMotor.setPower(v3);
+            backRightMotor.setPower(v4);
+        }
 
         if (!opModeIsActive()) { stop(); }
 
     }
 
+
+    public void disableEncoders() {
+
+        if (frontMotorsEnabled) {
+            frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        if (backMotorsEnabled) {
+            backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    }
+
+
     public void resetEncoders() {
-        // Send telemetry message to signify robot waiting;
-        opMode.telemetry.addData("Status", "Resetting Encoders");    //
-        opMode.telemetry.update();
 
-        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (frontMotorsEnabled) {
+            frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        if (backMotorsEnabled) {
+            backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
 
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Send telemetry message to indicate successful Encoder reset
-        opMode.telemetry.addData("Path0",  "Starting at %7d :%7d",
-                frontLeftMotor.getCurrentPosition(),
-                frontRightMotor.getCurrentPosition());
-        opMode.telemetry.update();
+        logger.logDebug("resetEncoders",  "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+        logger.logDebug("resetEncoders",  "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
 
     }
 
-    /*
-     *  Method to perfmorm a relative move, based on encoder counts.
-     *  Encoders are not reset as the move is based on the current position.
-     *  Move will stop if any of three conditions occur:
-     *  1) Move gets to the desired position
-     *  2) Move runs out of time
-     *  3) Driver stops the opmode running.
-     */
-    public void encoderDrive(double speed,
+    private void setTargetPositions(int leftTarget, int rightTarget) {
+
+        if (frontMotorsEnabled) {
+            frontLeftMotor.setTargetPosition(leftTarget);
+            frontRightMotor.setTargetPosition(rightTarget);
+            frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        if (backMotorsEnabled) {
+            backLeftMotor.setTargetPosition(leftTarget);
+            backRightMotor.setTargetPosition(rightTarget);
+            backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+
+    }
+
+    private boolean encodersAreBusy() {
+        if (backMotorsEnabled) {
+            return (backLeftMotor.isBusy() && backRightMotor.isBusy());
+        } else {
+            return (frontLeftMotor.isBusy() && frontRightMotor.isBusy());
+        }
+    }
+
+    public void gyroEncoderDrive(double power,
                              double leftInches, double rightInches,
-                             double timeoutS) {
+                             double timeoutSeconds) {
 
-        double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-        double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
-        double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-        double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                (WHEEL_DIAMETER_INCHES * 3.1415);
+        boolean useEncoder = true;
+        encoderDrive(power,leftInches, rightInches, timeoutSeconds, useEncoder);
+        
+    }
 
+    public void encoderDrive(double power,
+                             double leftInches, double rightInches,
+                             double timeoutSeconds) {
+        boolean useEncoder = false;
+        encoderDrive(power,leftInches, rightInches, timeoutSeconds, useEncoder);
 
+    }
+
+    public void encoderDrive(double power, double inches) {
+        double timeoutSeconds = (1 / Math.abs(power)) * MAX_INCHES_PER_SECOND;
+        encoderDrive(power, inches, inches, timeoutSeconds, false);
+    }
+
+    public void encoderDrive(double power,
+                             double leftInches, double rightInches,
+                             double timeoutSeconds,
+                             boolean useGyro) {
+
+        int targetAngle =0;
+        if (useGyro && gyroNavigator.isAvailable) {
+            // keep the current angle as the target to stay on
+            targetAngle = (int) gyroNavigator.getAngle();
+        }
 
         int newLeftTarget;
         int newRightTarget;
+
+        resetEncoders();
 
         ElapsedTime runtime = new ElapsedTime();
 
@@ -244,19 +362,24 @@ public class DriveTrain extends BotComponent {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newLeftTarget = frontLeftMotor.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = frontRightMotor.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            frontLeftMotor.setTargetPosition(newLeftTarget);
-            frontRightMotor.setTargetPosition(newRightTarget);
+            if (backMotorsEnabled) {
+                newLeftTarget = backLeftMotor.getCurrentPosition() - (int) (leftInches * COUNTS_PER_INCH);
+                newRightTarget = backRightMotor.getCurrentPosition() - (int) (rightInches * COUNTS_PER_INCH);
+            } else {
+                newLeftTarget = frontLeftMotor.getCurrentPosition() - (int) (leftInches * COUNTS_PER_INCH);
+                newRightTarget = frontRightMotor.getCurrentPosition() - (int) (rightInches * COUNTS_PER_INCH);
+            }
 
-            // Turn On RUN_TO_POSITION
-            frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            setTargetPositions(newLeftTarget, newRightTarget);
 
             // reset the timeout time and start motion.
             runtime.reset();
-            frontLeftMotor.setPower(Math.abs(speed));
-            frontRightMotor.setPower(Math.abs(speed));
+
+            setLeftMotorsPower(power);
+            setRightMotorsPower(power);
+
+            //setLeftMotorsPower(Math.abs(power));
+            //setRightMotorsPower(Math.abs(power));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -265,18 +388,18 @@ public class DriveTrain extends BotComponent {
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (frontLeftMotor.isBusy() && frontRightMotor.isBusy())) {
+                    (runtime.seconds() < timeoutSeconds) && encodersAreBusy()) {
 
-                // Display it for the driver.
-                opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                opMode.telemetry.addData("Path2",  "Running at %7d :%7d",
-                        frontLeftMotor.getCurrentPosition(),
-                        frontRightMotor.getCurrentPosition());
-
-                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontLeftMotor", frontLeftMotor.getTargetPosition(), frontLeftMotor.getCurrentPosition(), frontLeftMotor.getPower());
-                logger.logDebug("encoderDrive", "Status: %s, Target: %7d, Current: %7d, Power: %f", "frontRightMotor", frontRightMotor.getTargetPosition(), frontRightMotor.getCurrentPosition(), frontRightMotor.getPower());
+                logger.logDebug("encoderDrive", "Target: Left:%7d Right:%7d", newLeftTarget,  newRightTarget);
+                logger.logDebug("encoderDrive", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+                logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
                 logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
+
+                if (useGyro && gyroNavigator.isAvailable) {
+                    if (Math.abs(gyroNavigator.getAngle() - targetAngle) > 2) {
+                        gyroRotate(targetAngle, power);
+                    }
+                }
 
                 opMode.telemetry.update();
             }
@@ -284,14 +407,11 @@ public class DriveTrain extends BotComponent {
             // Stop all motion;
             stop();
 
-            // Turn off RUN_TO_POSITION
-            frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            disableEncoders();
 
-            //  sleep(250);   // optional pause after each move
         }
-        
-        
+
+
     }
 
     private int getFrontLeftPosition() {
@@ -310,34 +430,118 @@ public class DriveTrain extends BotComponent {
         return backRightMotor.getCurrentPosition();
     }
 
-    public void encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup) throws InterruptedException {
 
-        double     COUNTS_PER_MOTOR_REV    = 560 ;    //Set for NevRest 20 drive. For 40's change to 1120. For 60's 1680
-        double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is the ratio between the motor axle and the wheel
-        double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-        double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                (WHEEL_DIAMETER_INCHES * 3.1415);
+    public void gyroRotate(double degrees, double power) {
+        boolean isRelative = true;
+        gyroRotate(degrees, power, isRelative);
+    }
+
+    public void gyroRotate(double degrees, double power, boolean isRelative) {
+
+        if (!gyroNavigator.isAvailable) {
+            logger.logErr("gyroRotate", "Error: %s","gyroNavigator is not available");
+            return;
+        }
+
+        double currentAngle = gyroNavigator.getAngle();
+        double targetAngle = degrees;
+        double adjustedPower = power;
+
+        if (isRelative) { targetAngle = currentAngle + degrees;}
+
+        boolean rotationComplete = false;
+        while (opModeIsActive() && !rotationComplete) {
+
+            if (Math.abs((int)currentAngle - (int)targetAngle) < 5 ) {
+                adjustedPower = 0.25;
+            }
+
+            logger.logDebug("gyroRotate", "degrees: %f, power: %f, adjustedPower: %f", degrees, power, adjustedPower);
+            double leftPower = 0;
+            double rightPower = 0;
+
+            if (targetAngle < currentAngle)
+            {   // turn left.
+                logger.logDebug("gyroRotate", "turning left");
+                leftPower = adjustedPower;
+                rightPower = - adjustedPower;
+/*
+                int compareResult = Double.compare(currentAngle, targetAngle);
+                if (compareResult >= 0) {
+                    rotationComplete = true;
+                }
+*/
+                if (currentAngle <= targetAngle) {
+                    rotationComplete = true;
+                }
+
+            } else if (targetAngle > currentAngle) {   // turn right.
+                logger.logDebug("gyroRotate", "turning right");
+                leftPower = - adjustedPower;
+                rightPower = adjustedPower;
+                if (currentAngle >= targetAngle) {
+                    rotationComplete = true;
+                }
+            } else {
+                rotationComplete = true;
+            }
+
+            logger.logDebug("gyroRotate", "currentAngle: %f, targetAngle: %f", currentAngle, targetAngle);
+            logger.logDebug("gyroRotate", "rotationComplete: %b", rotationComplete);
+
+            if (!rotationComplete) {
+                setLeftMotorsPower(leftPower);
+                setRightMotorsPower(rightPower);
+            } else {
+                stop();
+            }
+
+            opMode.telemetry.update();
+            idle();
+
+            currentAngle = gyroNavigator.getAngle();
+
+        }
+
+        if ( opModeIsActive() && currentAngle != targetAngle && power > 0.25) {
+            logger.logDebug("gyroRotate", "ADJUST ANGLE");
+            gyroRotate(targetAngle, power / 2, false);
+        }
+    }
+
+
+    public void encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup) throws InterruptedException {
 
         ElapsedTime runtime = new ElapsedTime();
 
         //initialise some variables for the subroutine
         int newLeftTarget;
         int newRightTarget;
-        // Ensure that the opmode is still active
-        // Determine new target position, and pass to motor controller we only do this in case the encoders are not totally zero'd
 
         // Determine new target position, and pass to motor controller
-        newLeftTarget = (getFrontLeftPosition()+ getBackLeftPosition() )/2 + (int)(Inches * COUNTS_PER_INCH);
-        newRightTarget = (getFrontRightPosition() + getBackRightPosition() )/2 + (int)(Inches * COUNTS_PER_INCH);
+        if (backMotorsEnabled && frontMotorsEnabled) {
+            newLeftTarget = ( backLeftMotor.getCurrentPosition() + frontLeftMotor.getCurrentPosition() ) /2 - (int) (Inches * COUNTS_PER_INCH);
+            newRightTarget = ( backRightMotor.getCurrentPosition() + frontRightMotor.getCurrentPosition() ) /2 - (int) (Inches * COUNTS_PER_INCH);
+        } else if (backMotorsEnabled) {
+            newLeftTarget = backLeftMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+            newRightTarget = backRightMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+        } else {
+            newLeftTarget = frontLeftMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+            newRightTarget = frontRightMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+        }
 
         // reset the timeout time and start motion.
         runtime.reset();
-
         // keep looping while we are still active, and there is time left, and neither set of motors have reached the target
         while ( (runtime.seconds() < timeoutS) &&
-                (Math.abs(getFrontLeftPosition()+ getBackLeftPosition()) /2 < newLeftTarget  &&
-                        Math.abs(getFrontRightPosition() + getBackRightPosition())/2 < newRightTarget)) {
-            double rem = (Math.abs(getFrontLeftPosition()) + Math.abs(getBackLeftPosition())+Math.abs(getFrontRightPosition()) + Math.abs(getBackRightPosition()))/4;
+                (Math.abs(backLeftMotor.getCurrentPosition() + frontLeftMotor.getCurrentPosition()) /2 < newLeftTarget  &&
+                        Math.abs(backRightMotor.getCurrentPosition() + frontRightMotor.getCurrentPosition())/2 < newRightTarget))
+        {
+            double rem = (Math.abs(backLeftMotor.getCurrentPosition())
+                       + Math.abs(frontLeftMotor.getCurrentPosition())
+                       + Math.abs(backRightMotor.getCurrentPosition())
+                       + Math.abs(frontRightMotor.getCurrentPosition()))/4;
+
             double NLspeed;
             double NRspeed;
             //To Avoid spinning the wheels, this will "Slowly" ramp the motors up over
@@ -367,10 +571,8 @@ public class DriveTrain extends BotComponent {
 
             }
             //Pass the seed values to the motors
-            frontLeftMotor.setPower(NLspeed);
-            backLeftMotor.setPower(NLspeed);
-            frontRightMotor.setPower(NRspeed);
-            backRightMotor.setPower(NRspeed);
+            setRightMotorsPower(NRspeed);
+            setLeftMotorsPower(NLspeed);
         }
 
         // Stop all motion;
@@ -378,33 +580,43 @@ public class DriveTrain extends BotComponent {
         stop();
 
         // show the driver how close they got to the last target
-        opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-        opMode.telemetry.addData("Path2",  "Running at %7d :%7d", getFrontLeftPosition(), getFrontRightPosition());
-        opMode.telemetry.update();
-/*
+        logger.logDebug("encoderDrive2", "Target: Left:%7d Right:%7d", newLeftTarget,  newRightTarget);
+        logger.logDebug("encoderDrive2", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+        logger.logDebug("encoderDrive2", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+        logger.logDebug("encoderDrive2", "runtime.seconds: %f", runtime.seconds());
+
+
         //setting resetC as a way to check the current encoder values easily
-        double resetC = ((Math.abs(getFrontLeftPosition()) + Math.abs(getFrontRightPosition())+ Math.abs(getFrontRightPosition())+Math.abs(getFrontRightPosition())));
+        double resetC = (Math.abs(backLeftMotor.getCurrentPosition())
+                + Math.abs(frontLeftMotor.getCurrentPosition())
+                + Math.abs(backRightMotor.getCurrentPosition())
+                + Math.abs(frontRightMotor.getCurrentPosition()));
         //Get the motor encoder resets in motion
-        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //keep waiting while the reset is running
         while (Math.abs(resetC) > 0){
-            resetC =  ((Math.abs(getFrontLeftPosition()) + Math.abs(getFrontRightPosition())+ Math.abs(getFrontRightPosition())+Math.abs(getFrontRightPosition())));
-            pause(.25);
+            resetC = (Math.abs(backLeftMotor.getCurrentPosition())
+                    + Math.abs(frontLeftMotor.getCurrentPosition())
+                    + Math.abs(backRightMotor.getCurrentPosition())
+                    + Math.abs(frontRightMotor.getCurrentPosition()));
+            idle();
         }
-*/
+
         // switch the motors back to RUN_USING_ENCODER mode
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //give the encoders a chance to switch modes.
         pause(.25);
     }
+
 
 }
 

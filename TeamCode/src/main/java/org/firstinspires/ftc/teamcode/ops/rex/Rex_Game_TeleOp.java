@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.ops.rex;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,7 +40,7 @@ import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
 @TeleOp(name="Rex_Game_TeleOp", group="rex")
-//@Disabled
+@Disabled
 public class Rex_Game_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.

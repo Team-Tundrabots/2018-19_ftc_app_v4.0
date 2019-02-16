@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.ops.ethan;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,7 +40,7 @@ import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
 @Autonomous(name="Game_Auto_Ethan", group="ethan")
-//@Disabled
+@Disabled
 public class Game_Auto_Ethan extends LinearOpMode {
 
     // Declare OpMode members.

@@ -59,8 +59,8 @@ public class Game_Auto extends LinearOpMode {
         //robot.initAll();
         robot.gyroNavigator.init();
         robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
-        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
-        robot.goldSensor.init();
+        //robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        //robot.goldSensor.init();
 
         robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
@@ -81,6 +81,9 @@ public class Game_Auto extends LinearOpMode {
 
         robot.logger.logInfo("runOpMode", "===== [ Move Off Lander ]");
         robot.driveTrain.crabRight(0.3);
+
+        robot.logger.logInfo("runOpMode", "===== [ Adjust Angle ]");
+        robot.driveTrain.gyroRotate(0.5, 0, false);
 
         robot.logger.logInfo("runOpMode", "===== [ Look for Gold ]");
         String goldPosition = robot.goldSensor.goldFind();

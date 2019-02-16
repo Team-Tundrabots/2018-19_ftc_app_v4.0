@@ -71,15 +71,17 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
 
         runtime.reset();
 
-        if (robot.gyroNavigator.isAvailable) {
-            robot.logger.logDebug("runOpMode", "gyroNavigator.isAvailable:%b", robot.gyroNavigator.isAvailable);
-            robot.gyroNavigator.resetAngle();
-        }
-
         while (opModeIsActive()) {
 
-            if (robot.gyroNavigator.isAvailable) {
-                robot.logger.logDebug("runOpMode", "gyroNavigator.getAngle:%f", robot.gyroNavigator.getAngle());
+            // hoist controls
+            if (robot.hoist.isAvailable) {
+                if (gamepad1.dpad_down) {
+                    robot.hoist.extendContinuous(1);
+                } else if (gamepad1.dpad_up) {
+                    robot.hoist.contractContinuous(1);
+                } else {
+                    robot.hoist.stop();
+                }
             }
 
             // driveTrain controls
@@ -114,14 +116,12 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
 
             }
 
-            //encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup)
             if (robot.driveTrain.isAvailable) {
-                if (gamepad1.dpad_up) {
-                    robot.driveTrain.encoderDrive(.5, 24, 24, 5);
-                    //robot.driveTrain.encoderDrive2(.25, .25, 5, 10, 0);
+                if (gamepad1.left_bumper) {
+                    robot.driveTrain.encoderDrive(0.5, 24);
                 }
-                if (gamepad1.dpad_down) {
-                    robot.driveTrain.gyroEncoderDrive(.5, 24, 24, 5);
+                if (gamepad1.right_bumper) {
+                    robot.driveTrain.encoderDrive(0.5, -24);
                 }
             }
 

@@ -27,13 +27,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.game;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.*;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 
@@ -68,23 +68,16 @@ public class Game_TeleOp extends LinearOpMode {
         robot.logger.logInfo("runOpMode", "===== [ Start TeleOp ]");
         runtime.reset();
 
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 20000;
-        robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = 1;
-
         while (opModeIsActive()) {
 
             // hoist controls
             if (robot.hoist.isAvailable) {
                 if (gamepad1.dpad_down) {
-                    robot.logger.logDebug("runOpMode", "dpad_down");
-                    robot.hoist.extend();
-                }
-
-                if (gamepad1.dpad_up) {
-                    robot.logger.logDebug("runOpMode", "dpad_up");
-                    robot.hoist.contract();
+                    robot.hoist.extendContinuous(1);
+                } else if (gamepad1.dpad_up) {
+                    robot.hoist.contractContinuous(1);
+                } else {
+                    robot.hoist.stop();
                 }
             }
 

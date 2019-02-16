@@ -60,6 +60,8 @@ public class Arm extends BotComponent {
         if (crank != null) {
             isAvailable = true;
         }
+
+        logger.logDebug("Arm","isAvailable:%b", isAvailable);
     }
 
     public void crankForward(double power) {

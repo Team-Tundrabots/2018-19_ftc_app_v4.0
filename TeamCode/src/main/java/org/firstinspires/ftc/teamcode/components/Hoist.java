@@ -63,15 +63,9 @@ public class Hoist extends BotComponent {
 
     public Hoist(Logger aLogger, OpMode aOpMode, String crankName) {
         super(aLogger, aOpMode);
-
-        // Define and Initialize Motors
         crank = initMotor(crankName, DcMotor.Direction.FORWARD, true);
-
-
-        reset();
-
+        init();
     }
-
 
     public void outputCrankPositions() {
         outputCrankPositions("Crank Positions");
@@ -79,22 +73,18 @@ public class Hoist extends BotComponent {
 
     public void outputCrankPositions(String label) {
         logger.logDebug("outputCrankPositions", "Status: %s, Target: %7d, Current: %7d, Power: %f", label, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
-        opMode.telemetry.addData("Status", label);
-        opMode.telemetry.addData("Target", "%7d", crank.getTargetPosition());
-        opMode.telemetry.addData("Current", "%7d", crank.getCurrentPosition());
-        opMode.telemetry.addData("Power", crank.getPower());
-        opMode.telemetry.update();
     }
 
-    public void reset() {
+    private void init() {
         try {
             crank.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            outputCrankPositions("Hoist.reset");
             isAvailable = true;
         } catch (NullPointerException err) {
-            opMode.telemetry.addData("Error", err.getMessage());
+            logger.logErr("Host.init","Error", err.getMessage());
         }
+        logger.logInfo("Hoist.init","isAvailable:%b", isAvailable);
+
     }
 
     public void setTargetInches(double inches) {
@@ -120,18 +110,21 @@ public class Hoist extends BotComponent {
         runToTarget(contractedPosition, power, rampUpDownThreshold);
     }
 
-    // Simple version - no ramp up or down
-    private void runToTarget(int targetPosition, double power) {
-        int startPosition = crank.getCurrentPosition();
-        setTarget(targetPosition);
+    public void extendContinuous(double power) {
+        logger.logDebug("Hoist.extendFreely", "");
+        crank.setDirection(DcMotorSimple.Direction.REVERSE);
         crank.setPower(power);
-        while (opModeIsActive() && crank.isBusy()) {
-            outputCrankPositions("Hoist.runToTarget");
-            idle();
-        }
+    }
+
+    public void contractContinuous(double power) {
+        logger.logDebug("Hoist.contractFreely", "");
+        crank.setDirection(DcMotorSimple.Direction.FORWARD);
+        crank.setPower(power);
+    }
+
+    public void stop() {
+        logger.logDebug("Hoist.stop", "");
         crank.setPower(0);
-        // Turn off RUN_TO_POSITION
-        crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void runToTarget(int targetPosition, double power, int rampUpDownThreshold) {
@@ -176,6 +169,9 @@ public class Hoist extends BotComponent {
         // Turn off RUN_TO_POSITION
         crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
+
+
 }
 
 

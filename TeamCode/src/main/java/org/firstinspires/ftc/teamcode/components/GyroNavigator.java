@@ -37,24 +37,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class Navigator extends BotComponent {
+public class GyroNavigator extends BotComponent {
 
-    private DriveTrain driveTrain = null;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double globalAngle, power = .30, correction;
 
     /* Constructor */
-    public Navigator() {
+    public GyroNavigator() {
 
     }
 
-    public Navigator(OpMode aOpMode, DriveTrain aDriveTrain)
+    public GyroNavigator(Logger aLogger, OpMode aOpMode)
     {
-        super(aOpMode);
-
-        driveTrain = aDriveTrain;
-
+        super(aLogger, aOpMode);
     }
 
     public void init() {
@@ -72,28 +68,24 @@ public class Navigator extends BotComponent {
 
         imu.initialize(parameters);
 
-        opMode.telemetry.addData("Mode", "calibrating...");
-        opMode.telemetry.update();
+        logger.logInfo("GyroNavigator:init", "Calibrating...");
 
         // make sure the imu gyro is calibrated before continuing.
         while (opModeIsActive() && !imu.isGyroCalibrated())
         {
-            driveTrain.pause(.5);
-            driveTrain.idle();
+            pause(.5);
+            idle();
         }
 
         isAvailable = true;
-
-        opMode.telemetry.addData("Mode", "waiting for start");
-        opMode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-
+        logger.logInfo("GyroNavigator:init", "Calibration Status:%s",imu.getCalibrationStatus().toString());
 
     }
 
     /**
      * Resets the cumulative angle tracking to zero.
      */
-    private void resetAngle()
+    public void resetAngle()
     {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
@@ -104,7 +96,7 @@ public class Navigator extends BotComponent {
      * Get current cumulative angle rotation from last reset.
      * @return Angle in degrees. - = left, + = right.
      */
-    private double getAngle()
+    public double getAngle()
     {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
@@ -127,98 +119,20 @@ public class Navigator extends BotComponent {
         return 0 - globalAngle;
     }
 
-    /**
-     * See if we are moving in a straight line and if not return a power correction value.
-     * @return Power adjustment, + is adjust left - is adjust right.
-     */
-    private double checkDirection()
+
+    public double getAngleCorrection(double targetAngle)
     {
-        // The gain value determines how sensitive the correction is to direction changes.
-        // You will have to experiment with your robot to get small smooth direction changes
-        // to stay on a straight line.
-        double correction, angle, gain = .10;
 
-        angle = getAngle();
+        double correction, currentAngle, gain = .10;
 
-        if (angle == 0)
-            correction = 0;             // no adjustment.
-        else
-            correction = -angle;        // reverse sign of angle for correction.
+        currentAngle = getAngle();
 
+        correction = targetAngle - currentAngle;
         correction = correction * gain;
 
         return correction;
     }
 
-    /**
-     * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
-     * @param degrees Degrees to turn, + is left - is right
-     */
-    public void rotate(int degrees, double power)
-    {
-        double  leftPower, rightPower;
-
-        // restart imu movement tracking.
-        resetAngle();
-
-        // getAngle() returns - when rotating counter clockwise (left) and + when rotating
-        // clockwise (right).
-
-        if (degrees < 0)
-        {   // turn left.
-            leftPower = - power;
-            rightPower = power;
-        }
-        else if (degrees > 0)
-        {   // turn right.
-            leftPower = power;
-            rightPower = - power;
-        }
-        else return;
-
-        // set power to rotate.
-        driveTrain.setLeftMotorsPower(leftPower);
-        driveTrain.setRightMotorsPower(rightPower);
-        opMode.telemetry.addData("angle",getAngle());
-        opMode.telemetry.addData("degrees",degrees);
-        opMode.telemetry.update();
-
-        // rotate until turn is completed.
-        if (degrees < 0)
-        {
-            // On right turn we have to get off zero first.
-            while (opModeIsActive() && getAngle() == 0) {
-                opMode.telemetry.addData("angle",getAngle());
-                opMode.telemetry.addData("degrees",degrees);
-                opMode.telemetry.update();
-            }
-
-            while (opModeIsActive() && getAngle() > degrees) {
-                opMode.telemetry.addData("angle",getAngle());
-                opMode.telemetry.addData("degrees",degrees);
-                opMode.telemetry.update();
-
-            }
-        }
-        else    // left turn.
-            while (opModeIsActive() && getAngle() < degrees) {
-                opMode.telemetry.addData("angle",getAngle());
-                opMode.telemetry.addData("degrees",degrees);
-                opMode.telemetry.update();
-            }
-
-        // turn the motors off.
-        driveTrain.stop();
-
-        // wait for rotation to stop.
-        driveTrain.pause(1);
-
-        // reset angle tracking on new heading.
-        resetAngle();
-    }
-
-
 
 
 }
-

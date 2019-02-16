@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.*;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
 @TeleOp(name="Game_TeleOp", group="game")
@@ -44,17 +46,26 @@ public class Game_TeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private GameBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
+
 
     @Override
     public void runOpMode() {
-        robot = new GameBot(this);
-        robot.logger.open(logEnableTrace);
 
-        telemetry.addData("Status", "Initialized");
+        robot = new GameBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        robot.goldSensor.init();
+
+        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
+        robot.logger.logInfo("runOpMode", "===== [ Start TeleOp ]");
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
@@ -97,21 +108,7 @@ public class Game_TeleOp extends LinearOpMode {
             }
 
             telemetry.update();
-            //PNP controls
-            if (robot.pnp.isAvailable){
-                if (gamepad1.right_stick_y > 0){
-                    robot.pnp.extend();
-                }
-                else if(gamepad1.right_stick_y < 0) {
-                    robot.pnp.contract();
-                }
-                else{
-                    robot.pnp.pusher.setPower(0.0);
-                }
-            }
-            telemetry.addData("rightsticky", gamepad1.right_stick_y);
 
-            robot.arm.crank.setPower(-gamepad1.left_trigger+gamepad1.right_trigger);
         }
 
         // Show the elapsed game time.

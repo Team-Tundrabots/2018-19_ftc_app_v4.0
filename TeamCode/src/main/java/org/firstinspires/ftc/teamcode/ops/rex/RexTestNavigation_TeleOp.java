@@ -27,9 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.game;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -38,9 +38,9 @@ import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
-@Autonomous(name="Game_Auto", group="game")
+@TeleOp(name="RexTestNavigation_TeleOp", group="rex")
 //@Disabled
-public class Game_Auto extends LinearOpMode {
+public class RexTestNavigation_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -53,68 +53,83 @@ public class Game_Auto extends LinearOpMode {
     public void runOpMode() {
 
         robot = new GameBot(this, logEnableTrace, logToTelemetry);
-        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+        robot.logger.logDebug("runOpMode","Status", "Initializing");
 
         /* Use either robot.initAll or select only the components that need initializing below */
         //robot.initAll();
         robot.gyroNavigator.init();
         robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
         robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
-        robot.goldSensor.init();
+        // robot.goldSensor.init();
+        // robot.webCamNavigator.init();
 
-        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
+        robot.logger.logDebug("runOpMode","Status", "Initialized");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        robot.logger.logInfo("runOpMode", "===== [ Start Autonomous ]");
         runtime.reset();
 
-        robot.logger.logInfo("runOpMode", "===== [ Lower Robot ]");
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 24000;
-        robot.hoist.rampUpDownThreshold = 1;
-        robot.hoist.power = 1;
-
-        robot.hoist.extend();
-
-        robot.logger.logInfo("runOpMode", "===== [ Move Off Lander ]");
-        robot.driveTrain.crabRight(0.3);
-
-        robot.logger.logInfo("runOpMode", "===== [ Look for Gold ]");
-        String goldPosition = robot.goldSensor.goldFind();
-        while(opModeIsActive() && goldPosition == "Unknown") {
-            goldPosition = robot.goldSensor.goldFind();
+        if (robot.gyroNavigator.isAvailable) {
+            robot.logger.logDebug("runOpMode", "gyroNavigator.isAvailable:%b", robot.gyroNavigator.isAvailable);
+            robot.gyroNavigator.resetAngle();
         }
 
-        robot.logger.logInfo("runOpMode", "goldPosition: %s", goldPosition);
-        switch (goldPosition) {
-            case "Right":
+        while (opModeIsActive()) {
 
-                robot.driveTrain.encoderDrive(0.25, -0.15, -0.15, 2);
-                robot.driveTrain.crabLeft(1.5);
-                robot.driveTrain.moveForward(1,0.25);
+            if (robot.gyroNavigator.isAvailable) {
+                robot.logger.logDebug("runOpMode", "gyroNavigator.getAngle:%f", robot.gyroNavigator.getAngle());
+            }
 
-            case "Center":
+            // driveTrain controls
+            if (robot.driveTrain.isAvailable) {
 
-                robot.driveTrain.encoderDrive(0.25,-27);
-                robot.driveTrain.crabLeft(0.4);
-                robot.driveTrain.encoderDrive(0.25, -4.5);
-                stop();
+                double leftX = gamepad1.left_stick_x;
+                double leftY = gamepad1.left_stick_y;
+                double rightX = gamepad1.right_stick_x;
+                double rightY = gamepad1.right_stick_y;
 
-            case "Left":
-                robot.driveTrain.encoderDrive(0.25, -0.12, -0.12, 2);
-                robot.driveTrain.crabRight(1);
-                robot.driveTrain.moveForward(1,0.25);
+                robot.driveTrain.updateMotorsMechanumDrive(leftX, leftY, rightX, rightY);
 
-            default:
-//                telemetry.addData("Gold:", "???");
+                robot.logger.logDebug("runOpMode", "Run Time: %s", runtime.toString());
+                robot.logger.logDebug("runOpMode", "Left:  X (%.2f), Y (%.2f)", leftX, leftY);
+                robot.logger.logDebug("runOpMode", "Right: X (%.2f), Y (%.2f)", rightX, rightY);
 
+            }
+
+            if (robot.gyroNavigator.isAvailable && robot.driveTrain.isAvailable) {
+                if (gamepad1.x){
+                    robot.driveTrain.gyroRotate(-90, 0.5);
+                }
+                if (gamepad1.b){
+                    robot.driveTrain.gyroRotate(90, 0.5);
+                }
+                if (gamepad1.y) {
+                    robot.driveTrain.gyroRotate(0, 0.5, false);
+                }
+                if (gamepad1.a) {
+                    robot.driveTrain.gyroRotate(180, 0.5, false);
+                }
+
+            }
+
+            //encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup)
+            if (robot.driveTrain.isAvailable) {
+                if (gamepad1.dpad_up) {
+                    robot.driveTrain.encoderDrive(.5, 24, 24, 5);
+                    //robot.driveTrain.encoderDrive2(.25, .25, 5, 10, 0);
+                }
+                if (gamepad1.dpad_down) {
+                    robot.driveTrain.gyroEncoderDrive(.5, 24, 24, 5);
+                }
+            }
+
+            telemetry.update();
         }
 
         // Show the elapsed game time.
-        robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();
 
     }

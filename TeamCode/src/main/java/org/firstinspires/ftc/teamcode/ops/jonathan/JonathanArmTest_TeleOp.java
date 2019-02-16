@@ -38,7 +38,7 @@ import org.firstinspires.ftc.teamcode.bots.TestBot;
 
 
 @TeleOp(name="JonathanArmTest_TeleOp", group="jonathan")
-//*@Disabled
+@Disabled
 public class JonathanArmTest_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.

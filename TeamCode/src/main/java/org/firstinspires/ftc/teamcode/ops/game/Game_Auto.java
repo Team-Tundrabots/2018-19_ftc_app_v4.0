@@ -59,8 +59,8 @@ public class Game_Auto extends LinearOpMode {
         //robot.initAll();
         robot.gyroNavigator.init();
         robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
-        //robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
-        //robot.goldSensor.init();
+        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        robot.goldSensor.init();
 
         robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
@@ -80,7 +80,7 @@ public class Game_Auto extends LinearOpMode {
         robot.hoist.extend();
 
         robot.logger.logInfo("runOpMode", "===== [ Move Off Lander ]");
-        robot.driveTrain.crabRight(0.3);
+        robot.driveTrain.crabRight(0.5);
 
         robot.logger.logInfo("runOpMode", "===== [ Adjust Angle ]");
         robot.driveTrain.gyroRotate(0.5, 0, false);
@@ -95,21 +95,24 @@ public class Game_Auto extends LinearOpMode {
         switch (goldPosition) {
             case "Right":
 
-                robot.driveTrain.encoderDrive(0.25, -0.15, -0.15, 2);
-                robot.driveTrain.crabLeft(1.5);
-                robot.driveTrain.moveForward(1,0.25);
+                robot.driveTrain.encoderDrive(0.25, -5);
+                robot.driveTrain.crabLeft(2);
+                robot.driveTrain.encoderDrive(0.25, -27);
+                break;
 
             case "Center":
 
                 robot.driveTrain.encoderDrive(0.25,-27);
                 robot.driveTrain.crabLeft(0.4);
                 robot.driveTrain.encoderDrive(0.25, -4.5);
-                stop();
+                break;
+                //stop();
 
             case "Left":
                 robot.driveTrain.encoderDrive(0.25, -0.12, -0.12, 2);
                 robot.driveTrain.crabRight(1);
                 robot.driveTrain.moveForward(1,0.25);
+                break;
 
             default:
 //                telemetry.addData("Gold:", "???");

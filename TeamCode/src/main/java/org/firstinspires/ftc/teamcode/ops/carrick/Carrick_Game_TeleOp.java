@@ -121,6 +121,7 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
                         SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, goldSoundID);
                         telemetry.addData("Playing", "Resource Gold");
                         telemetry.update();
+                        soundCounterGold = soundCounterGold + 1;
                     }
                 }
                 else if(gamepad1.right_stick_y < 0) {
@@ -129,6 +130,7 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
                         SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, silverSoundID);
                         telemetry.addData("Playing", "Resource Silver");
                         telemetry.update();
+                        soundCounterSilver = soundCounterSilver + 1;
                     }
 
                 }

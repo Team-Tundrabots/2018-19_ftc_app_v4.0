@@ -31,10 +31,11 @@ package org.firstinspires.ftc.teamcode.ops.game;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.GameBot;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
 @Autonomous(name="Game_Auto", group="game")
@@ -45,50 +46,67 @@ public class Game_Auto extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private GameBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
+
 
     @Override
     public void runOpMode() {
-        robot = new GameBot(this);
-        robot.logger.open(logEnableTrace);
 
-        telemetry.addData("Status", "Initialized");
+        robot = new GameBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        /* Use either robot.initAll or select only the components that need initializing below */
+        //robot.initAll();
+        robot.gyroNavigator.init();
+        robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        robot.goldSensor.init();
+
+        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
+        robot.logger.logInfo("runOpMode", "===== [ Start Autonomous ]");
         runtime.reset();
 
+        robot.logger.logInfo("runOpMode", "===== [ Lower Robot ]");
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 22000;
+        robot.hoist.extendedPosition = 24000;
         robot.hoist.rampUpDownThreshold = 1;
         robot.hoist.power = 1;
 
-
         robot.hoist.extend();
 
-        robot.driveTrain.crabRight(0.35);
+        robot.logger.logInfo("runOpMode", "===== [ Move Off Lander ]");
+        robot.driveTrain.crabRight(0.3);
 
+        robot.logger.logInfo("runOpMode", "===== [ Look for Gold ]");
         String goldPosition = robot.goldSensor.goldFind();
         while(opModeIsActive() && goldPosition == "Unknown") {
             goldPosition = robot.goldSensor.goldFind();
         }
 
-        telemetry.addData("goldDirection:", goldPosition);
-
+        robot.logger.logInfo("runOpMode", "goldPosition: %s", goldPosition);
         switch (goldPosition) {
             case "Right":
-                robot.driveTrain.encoderDrive(0.25, 0.1, 0.1,2);
-                robot.driveTrain.encoderDrive(0.25, -0.15, 0.15, 2);
-                robot.driveTrain.encoderDrive(0.25, 0.5, 0.5, 2);
+
+                robot.driveTrain.encoderDrive(0.25, -0.15, -0.15, 2);
+                robot.driveTrain.crabLeft(1.5);
+                robot.driveTrain.moveForward(1,0.25);
 
             case "Center":
-                /*robot.driveTrain.encoderDrive(0.25, 2, 2, 2); */
-                robot.driveTrain.moveForward(3,0.25);
+
+                robot.driveTrain.encoderDrive(0.25,-27);
+                robot.driveTrain.crabLeft(0.4);
+                robot.driveTrain.encoderDrive(0.25, -4.5);
                 stop();
 
             case "Left":
-                robot.driveTrain.encoderDrive(0.25, 0.1, -0.1, 2);
-                robot.driveTrain.encoderDrive(0.25, 2, 2, 2);
+                robot.driveTrain.encoderDrive(0.25, -0.12, -0.12, 2);
+                robot.driveTrain.crabRight(1);
+                robot.driveTrain.moveForward(1,0.25);
 
             default:
 //                telemetry.addData("Gold:", "???");
@@ -96,7 +114,7 @@ public class Game_Auto extends LinearOpMode {
         }
 
         // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());
         telemetry.update();
 
     }

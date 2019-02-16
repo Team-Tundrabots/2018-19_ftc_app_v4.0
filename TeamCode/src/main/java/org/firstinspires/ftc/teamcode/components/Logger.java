@@ -66,7 +66,7 @@ public class Logger {
             tracer = new TrcDbgTrace("LOGGER", traceEnabled, TrcDbgTrace.TraceLevel.HIFREQ, TrcDbgTrace.MsgLevel.VERBOSE);
             tracer.openTraceLog("/sdcard/FIRST/tracelog", filePrefix);
             fileOpen = true;
-            logInfo("Logger.open","===== [%s] =====", filePrefix);
+            logInfo("Logger.open","===== [ %s ]", filePrefix);
         }
     }
 

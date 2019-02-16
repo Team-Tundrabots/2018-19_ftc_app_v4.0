@@ -61,7 +61,7 @@ public class DriveTrain extends BotComponent {
     private double COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                              (WHEEL_DIAMETER_INCHES * 3.1415);
 
-
+    private double MAX_INCHES_PER_SECOND   = 12;
 
     /* Constructor */
     public DriveTrain() {
@@ -121,7 +121,7 @@ public class DriveTrain extends BotComponent {
 
         }
 
-        logger.logInfo("DriveTrain","isAvailable:%b", isAvailable);
+        logger.logInfo("DriveTrain","isAvailable: %b", isAvailable);
 
     }
 
@@ -333,6 +333,11 @@ public class DriveTrain extends BotComponent {
 
     }
 
+    public void encoderDrive(double power, double inches) {
+        double timeoutSeconds = (1 / Math.abs(power)) * MAX_INCHES_PER_SECOND;
+        encoderDrive(power, inches, inches, timeoutSeconds, false);
+    }
+
     public void encoderDrive(double power,
                              double leftInches, double rightInches,
                              double timeoutSeconds,
@@ -425,41 +430,55 @@ public class DriveTrain extends BotComponent {
         return backRightMotor.getCurrentPosition();
     }
 
-    /***
-     * rotate using gyro
-      * @param degrees
-     * @param power
-     */
-    public void gyroRotate(int degrees, double power) {
+
+    public void gyroRotate(double degrees, double power) {
+        boolean isRelative = true;
+        gyroRotate(degrees, power, isRelative);
+    }
+
+    public void gyroRotate(double degrees, double power, boolean isRelative) {
 
         if (!gyroNavigator.isAvailable) {
-            logger.logErr("gyroRotate", "Error:%s","gyroNavigator is not available");
+            logger.logErr("gyroRotate", "Error: %s","gyroNavigator is not available");
             return;
         }
 
         double currentAngle = gyroNavigator.getAngle();
-        double targetAngle = currentAngle + degrees;
+        double targetAngle = degrees;
+        double adjustedPower = power;
 
+        if (isRelative) { targetAngle = currentAngle + degrees;}
 
         boolean rotationComplete = false;
         while (opModeIsActive() && !rotationComplete) {
 
-            logger.logDebug("gyroRotate", "degrees:%d, power:%f", degrees, power);
+            if (Math.abs((int)currentAngle - (int)targetAngle) < 5 ) {
+                adjustedPower = 0.25;
+            }
+
+            logger.logDebug("gyroRotate", "degrees: %f, power: %f, adjustedPower: %f", degrees, power, adjustedPower);
             double leftPower = 0;
             double rightPower = 0;
 
-            if (degrees < 0)
+            if (targetAngle < currentAngle)
             {   // turn left.
                 logger.logDebug("gyroRotate", "turning left");
-                leftPower = power;
-                rightPower = - power;
+                leftPower = adjustedPower;
+                rightPower = - adjustedPower;
+/*
+                int compareResult = Double.compare(currentAngle, targetAngle);
+                if (compareResult >= 0) {
+                    rotationComplete = true;
+                }
+*/
                 if (currentAngle <= targetAngle) {
                     rotationComplete = true;
                 }
-            } else if (degrees > 0) {   // turn right.
+
+            } else if (targetAngle > currentAngle) {   // turn right.
                 logger.logDebug("gyroRotate", "turning right");
-                leftPower = - power;
-                rightPower = power;
+                leftPower = - adjustedPower;
+                rightPower = adjustedPower;
                 if (currentAngle >= targetAngle) {
                     rotationComplete = true;
                 }
@@ -467,10 +486,9 @@ public class DriveTrain extends BotComponent {
                 rotationComplete = true;
             }
 
-            currentAngle = gyroNavigator.getAngle();
-            logger.logDebug("gyroRotate", "currentAngle:%f, targetAngle:%f", currentAngle, targetAngle);
+            logger.logDebug("gyroRotate", "currentAngle: %f, targetAngle: %f", currentAngle, targetAngle);
+            logger.logDebug("gyroRotate", "rotationComplete: %b", rotationComplete);
 
-            logger.logDebug("gyroRotate", "rotationComplete:%b", rotationComplete);
             if (!rotationComplete) {
                 setLeftMotorsPower(leftPower);
                 setRightMotorsPower(rightPower);
@@ -481,8 +499,124 @@ public class DriveTrain extends BotComponent {
             opMode.telemetry.update();
             idle();
 
+            currentAngle = gyroNavigator.getAngle();
+
+        }
+
+        if ( opModeIsActive() && currentAngle != targetAngle && power > 0.25) {
+            logger.logDebug("gyroRotate", "ADJUST ANGLE");
+            gyroRotate(targetAngle, power / 2, false);
         }
     }
+
+
+    public void encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup) throws InterruptedException {
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        //initialise some variables for the subroutine
+        int newLeftTarget;
+        int newRightTarget;
+
+        // Determine new target position, and pass to motor controller
+        if (backMotorsEnabled && frontMotorsEnabled) {
+            newLeftTarget = ( backLeftMotor.getCurrentPosition() + frontLeftMotor.getCurrentPosition() ) /2 - (int) (Inches * COUNTS_PER_INCH);
+            newRightTarget = ( backRightMotor.getCurrentPosition() + frontRightMotor.getCurrentPosition() ) /2 - (int) (Inches * COUNTS_PER_INCH);
+        } else if (backMotorsEnabled) {
+            newLeftTarget = backLeftMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+            newRightTarget = backRightMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+        } else {
+            newLeftTarget = frontLeftMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+            newRightTarget = frontRightMotor.getCurrentPosition() - (int) (Inches * COUNTS_PER_INCH);
+        }
+
+        // reset the timeout time and start motion.
+        runtime.reset();
+        // keep looping while we are still active, and there is time left, and neither set of motors have reached the target
+        while ( (runtime.seconds() < timeoutS) &&
+                (Math.abs(backLeftMotor.getCurrentPosition() + frontLeftMotor.getCurrentPosition()) /2 < newLeftTarget  &&
+                        Math.abs(backRightMotor.getCurrentPosition() + frontRightMotor.getCurrentPosition())/2 < newRightTarget))
+        {
+            double rem = (Math.abs(backLeftMotor.getCurrentPosition())
+                       + Math.abs(frontLeftMotor.getCurrentPosition())
+                       + Math.abs(backRightMotor.getCurrentPosition())
+                       + Math.abs(frontRightMotor.getCurrentPosition()))/4;
+
+            double NLspeed;
+            double NRspeed;
+            //To Avoid spinning the wheels, this will "Slowly" ramp the motors up over
+            //the amount of time you set for this SubRun
+            double R = runtime.seconds();
+            if (R < rampup) {
+                double ramp = R / rampup;
+                NLspeed = Lspeed * ramp;
+                NRspeed = Rspeed * ramp;
+            }
+
+            //Keep running until you are about two rotations out
+            else if(rem > (1000) )
+            {
+                NLspeed = Lspeed;
+                NRspeed = Rspeed;
+            }
+            //start slowing down as you get close to the target
+            else if(rem > (200) && (Lspeed*.2) > .1 && (Rspeed*.2) > .1) {
+                NLspeed = Lspeed * (rem / 1000);
+                NRspeed = Rspeed * (rem / 1000);
+            }
+            //minimum speed
+            else {
+                NLspeed = Lspeed * .2;
+                NRspeed = Rspeed * .2;
+
+            }
+            //Pass the seed values to the motors
+            setRightMotorsPower(NRspeed);
+            setLeftMotorsPower(NLspeed);
+        }
+
+        // Stop all motion;
+        //Note: This is outside our while statement, this will only activate once the time, or distance has been met
+        stop();
+
+        // show the driver how close they got to the last target
+        logger.logDebug("encoderDrive2", "Target: Left:%7d Right:%7d", newLeftTarget,  newRightTarget);
+        logger.logDebug("encoderDrive2", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+        logger.logDebug("encoderDrive2", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+        logger.logDebug("encoderDrive2", "runtime.seconds: %f", runtime.seconds());
+
+
+        //setting resetC as a way to check the current encoder values easily
+        double resetC = (Math.abs(backLeftMotor.getCurrentPosition())
+                + Math.abs(frontLeftMotor.getCurrentPosition())
+                + Math.abs(backRightMotor.getCurrentPosition())
+                + Math.abs(frontRightMotor.getCurrentPosition()));
+        //Get the motor encoder resets in motion
+
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //keep waiting while the reset is running
+        while (Math.abs(resetC) > 0){
+            resetC = (Math.abs(backLeftMotor.getCurrentPosition())
+                    + Math.abs(frontLeftMotor.getCurrentPosition())
+                    + Math.abs(backRightMotor.getCurrentPosition())
+                    + Math.abs(frontRightMotor.getCurrentPosition()));
+            idle();
+        }
+
+        // switch the motors back to RUN_USING_ENCODER mode
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //give the encoders a chance to switch modes.
+        pause(.25);
+    }
+
 
 }
 

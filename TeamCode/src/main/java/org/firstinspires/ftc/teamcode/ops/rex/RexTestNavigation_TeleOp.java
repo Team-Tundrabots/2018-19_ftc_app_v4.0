@@ -105,6 +105,13 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
                 if (gamepad1.b){
                     robot.driveTrain.gyroRotate(90, 0.5);
                 }
+                if (gamepad1.y) {
+                    robot.driveTrain.gyroRotate(0, 0.5, false);
+                }
+                if (gamepad1.a) {
+                    robot.driveTrain.gyroRotate(180, 0.5, false);
+                }
+
             }
 
             //encoderDrive2(double Lspeed, double Rspeed, double Inches, double timeoutS, double rampup)

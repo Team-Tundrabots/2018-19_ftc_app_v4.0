@@ -110,6 +110,23 @@ public class Hoist extends BotComponent {
         runToTarget(contractedPosition, power, rampUpDownThreshold);
     }
 
+    public void extendContinuous(double power) {
+        logger.logDebug("Hoist.extendFreely", "");
+        crank.setDirection(DcMotorSimple.Direction.REVERSE);
+        crank.setPower(power);
+    }
+
+    public void contractContinuous(double power) {
+        logger.logDebug("Hoist.contractFreely", "");
+        crank.setDirection(DcMotorSimple.Direction.FORWARD);
+        crank.setPower(power);
+    }
+
+    public void stop() {
+        logger.logDebug("Hoist.stop", "");
+        crank.setPower(0);
+    }
+
     private void runToTarget(int targetPosition, double power, int rampUpDownThreshold) {
         int startPosition = crank.getCurrentPosition();
         setTarget(targetPosition);
@@ -152,6 +169,9 @@ public class Hoist extends BotComponent {
         // Turn off RUN_TO_POSITION
         crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
+
+
 }
 
 

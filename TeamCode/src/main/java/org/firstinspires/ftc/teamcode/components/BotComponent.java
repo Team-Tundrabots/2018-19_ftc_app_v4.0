@@ -114,7 +114,7 @@ public class BotComponent {
 
         } catch (NullPointerException | IllegalArgumentException err) {
             if (opMode.telemetry != null) {
-                opMode.telemetry.addData("Error", err.getMessage());
+                logger.logErr("initMotor","Error: %s", err.getMessage());
             }
             return null;
         }
@@ -130,7 +130,7 @@ public class BotComponent {
 
         } catch (NullPointerException | IllegalArgumentException err) {
             if (opMode.telemetry != null) {
-                opMode.telemetry.addData("Error", err.getMessage());
+                logger.logErr("initServo","Error: %s", err.getMessage());
             }
             return null;
         }
@@ -143,7 +143,7 @@ public class BotComponent {
             return (touchSensor);
         } catch (NullPointerException | IllegalArgumentException err) {
             if (opMode.telemetry != null) {
-                opMode.telemetry.addData("Error", err.getMessage());
+                logger.logErr("initTouchSensor","Error: %s", err.getMessage());
             }
             return null;
         }

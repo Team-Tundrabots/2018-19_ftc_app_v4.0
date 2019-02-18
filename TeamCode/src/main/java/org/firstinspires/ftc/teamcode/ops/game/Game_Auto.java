@@ -80,44 +80,71 @@ public class Game_Auto extends LinearOpMode {
         robot.hoist.extend();
 
         robot.logger.logInfo("runOpMode", "===== [ Move Off Lander ]");
-        robot.driveTrain.crabRight(0.5);
+        robot.driveTrain.crabRight(0.4);
 
-        robot.logger.logInfo("runOpMode", "===== [ Adjust Angle ]");
-        robot.driveTrain.gyroRotate(0.5, 0, false);
 
         robot.logger.logInfo("runOpMode", "===== [ Look for Gold ]");
+
         String goldPosition = robot.goldSensor.goldFind();
+        int numTrials = 0;
         while(opModeIsActive() && goldPosition == "Unknown") {
             goldPosition = robot.goldSensor.goldFind();
+            numTrials ++;
+
+        //    if (numTrials > 5 && goldPosition == "Unknown") {
+        //        robot.driveTrain.gyroRotate(.15, .25, true, false);
+        //    }
         }
 
+//        robot.logger.logInfo("runOpMode", "===== [ Adjust Angle ]");
+//        robot.driveTrain.gyroRotate(0.5, 0, false);
+
+        robot.logger.logInfo("runOpMode", "===== [ Move Toward Gold ]");
         robot.logger.logInfo("runOpMode", "goldPosition: %s", goldPosition);
+
+        double goldPositionOffset = 0;
+
         switch (goldPosition) {
             case "Right":
 
-                robot.driveTrain.encoderDrive(0.25, -5);
-                robot.driveTrain.crabLeft(2);
-                robot.driveTrain.encoderDrive(0.25, -27);
+                robot.logger.logInfo("runOpMode", "===== [ Gold on Right ]");
+                robot.driveTrain.encoderDrive(0.25, -13);
+                robot.driveTrain.crabLeft(1.7);
+                robot.driveTrain.encoderDrive(0.25, -15);
+                goldPositionOffset = 32;
                 break;
 
             case "Center":
 
-                robot.driveTrain.encoderDrive(0.25,-27);
+                robot.logger.logInfo("runOpMode", "===== [ Gold in Center ]");
+                robot.driveTrain.encoderDrive(0.25,-20);
                 robot.driveTrain.crabLeft(0.4);
-                robot.driveTrain.encoderDrive(0.25, -4.5);
+                robot.driveTrain.encoderDrive(0.25, -8);
+                goldPositionOffset = 16;
                 break;
-                //stop();
 
             case "Left":
-                robot.driveTrain.encoderDrive(0.25, -0.12, -0.12, 2);
-                robot.driveTrain.crabRight(1);
-                robot.driveTrain.moveForward(1,0.25);
+
+                robot.logger.logInfo("runOpMode", "===== [ Gold on Left ]");
+                robot.driveTrain.encoderDrive(0.25, -13);
+                robot.driveTrain.crabRight(0.75);
+                robot.driveTrain.encoderDrive(0.25, -15);
+                goldPositionOffset = 0;
                 break;
 
             default:
-//                telemetry.addData("Gold:", "???");
+                robot.logger.logInfo("runOpMode", "===== [ Gold ??? ]");
+                //                telemetry.addData("Gold:", "???");
 
         }
+
+        robot.logger.logInfo("runOpMode", "===== [ Back up and head for Depot ]");
+        robot.driveTrain.encoderDrive(0.25, 9);
+        robot.driveTrain.gyroRotate(-90, 0.5, false);
+        robot.driveTrain.encoderDrive(1.0, -33.0 - goldPositionOffset);
+        robot.driveTrain.gyroRotate(-45, 0.25);
+        robot.driveTrain.encoderDrive(0.25, -18);
+
 
         // Show the elapsed game time.
         robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());

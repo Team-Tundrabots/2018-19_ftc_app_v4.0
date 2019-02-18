@@ -123,7 +123,6 @@ public class Hoist extends BotComponent {
     }
 
     public void stop() {
-        logger.logDebug("Hoist.stop", "");
         crank.setPower(0);
     }
 

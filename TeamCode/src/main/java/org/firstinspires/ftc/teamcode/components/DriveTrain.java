@@ -199,6 +199,7 @@ public class DriveTrain extends BotComponent {
 
     public void crabLeft(double seconds) {
 
+        logger.logDebug("crabLeft", "seconds: %f", seconds);
         ElapsedTime runtime = new ElapsedTime();
 
         // leftX -1, rightY -1
@@ -214,6 +215,7 @@ public class DriveTrain extends BotComponent {
 
     public void crabRight(double seconds) {
 
+        logger.logDebug("crabRight", "seconds: %f", seconds);
         ElapsedTime runtime = new ElapsedTime();
 
         // crabRight = lefty -1, rightX 1
@@ -320,22 +322,26 @@ public class DriveTrain extends BotComponent {
                              double leftInches, double rightInches,
                              double timeoutSeconds) {
 
-        boolean useEncoder = true;
-        encoderDrive(power,leftInches, rightInches, timeoutSeconds, useEncoder);
+        boolean useGyro = true;
+        encoderDrive(power,leftInches, rightInches, timeoutSeconds, useGyro);
         
     }
 
     public void encoderDrive(double power,
                              double leftInches, double rightInches,
                              double timeoutSeconds) {
-        boolean useEncoder = false;
-        encoderDrive(power,leftInches, rightInches, timeoutSeconds, useEncoder);
+        boolean useGyro = false;
+        encoderDrive(power,leftInches, rightInches, timeoutSeconds, useGyro);
 
     }
 
     public void encoderDrive(double power, double inches) {
+        encoderDrive(power, inches, inches);
+    }
+
+    public void encoderDrive(double power, double leftInches, double rightInches) {
         double timeoutSeconds = (1 / Math.abs(power)) * MAX_INCHES_PER_SECOND;
-        encoderDrive(power, inches, inches, timeoutSeconds, false);
+        encoderDrive(power, leftInches, rightInches, timeoutSeconds, false);
     }
 
     public void encoderDrive(double power,
@@ -387,13 +393,20 @@ public class DriveTrain extends BotComponent {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            int debugCount = 0;
+
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutSeconds) && encodersAreBusy()) {
 
-                logger.logDebug("encoderDrive", "Target: Left:%7d Right:%7d", newLeftTarget,  newRightTarget);
-                logger.logDebug("encoderDrive", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
-                logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
-                logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
+                if (debugCount == 0 ) {
+                    logger.logDebug("encoderDrive", "Target: Left:%7d Right:%7d", newLeftTarget, newRightTarget);
+                    logger.logDebug("encoderDrive", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+                    logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+                    logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
+                }
+
+                debugCount ++;
+                if (debugCount >= 10) { debugCount = 0; }
 
                 if (useGyro && gyroNavigator.isAvailable) {
                     if (Math.abs(gyroNavigator.getAngle() - targetAngle) > 2) {
@@ -437,6 +450,11 @@ public class DriveTrain extends BotComponent {
     }
 
     public void gyroRotate(double degrees, double power, boolean isRelative) {
+        boolean adjustAngle = true;
+        gyroRotate(degrees, power, isRelative, adjustAngle);
+    }
+
+    public void gyroRotate(double degrees, double power, boolean isRelative, boolean adjustAngle) {
 
         if (!gyroNavigator.isAvailable) {
             logger.logErr("gyroRotate", "Error: %s","gyroNavigator is not available");
@@ -488,6 +506,7 @@ public class DriveTrain extends BotComponent {
 
             logger.logDebug("gyroRotate", "currentAngle: %f, targetAngle: %f", currentAngle, targetAngle);
             logger.logDebug("gyroRotate", "rotationComplete: %b", rotationComplete);
+            logger.logDebug("gyroRotate", "adjustAngle: %b", adjustAngle);
 
             if (!rotationComplete) {
                 setLeftMotorsPower(leftPower);
@@ -503,9 +522,11 @@ public class DriveTrain extends BotComponent {
 
         }
 
-        if ( opModeIsActive() && currentAngle != targetAngle && power > 0.25) {
-            logger.logDebug("gyroRotate", "ADJUST ANGLE");
-            gyroRotate(targetAngle, power / 2, false);
+        if (adjustAngle) {
+            if (opModeIsActive() && currentAngle != targetAngle && power > 0.25) {
+                logger.logDebug("gyroRotate", "ADJUST ANGLE");
+                gyroRotate(targetAngle, power / 2, false);
+            }
         }
     }
 

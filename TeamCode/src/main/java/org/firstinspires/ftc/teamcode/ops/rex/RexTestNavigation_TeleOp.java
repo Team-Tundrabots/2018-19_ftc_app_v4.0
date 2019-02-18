@@ -71,6 +71,10 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
 
         runtime.reset();
 
+        while (opModeIsActive() && !gamepad1.start) {
+            idle();
+        }
+
         while (opModeIsActive()) {
 
             // hoist controls

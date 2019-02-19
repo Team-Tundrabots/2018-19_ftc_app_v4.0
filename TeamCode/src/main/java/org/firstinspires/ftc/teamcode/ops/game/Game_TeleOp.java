@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.ops.rex;
 
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -56,6 +57,7 @@ public class Game_TeleOp extends LinearOpMode {
         robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
 
         robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        robot.driveTrain.disableEncoders();
         robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
         robot.goldSensor.init();
 
@@ -100,6 +102,23 @@ public class Game_TeleOp extends LinearOpMode {
                 telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
             }
 
+
+            //PNP controls
+            if (robot.pnp.isAvailable){
+                if (gamepad1.right_stick_y > 0){
+                    robot.pnp.extend();
+                }
+                else if(gamepad1.right_stick_y < 0) {
+                    robot.pnp.contract();
+                }
+                else{
+                    robot.pnp.pusher.setPower(0.0);
+                }
+                double arm_proportion = 0.6;
+                double new_left_trigger = gamepad1.left_trigger*arm_proportion;
+                double new_right_trigger = gamepad1.right_trigger*arm_proportion;
+                robot.arm.crank.setPower(-new_left_trigger+new_right_trigger);
+            }
             telemetry.update();
 
         }

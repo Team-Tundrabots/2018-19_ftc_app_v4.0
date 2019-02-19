@@ -143,6 +143,7 @@ public class DriveTrain extends BotComponent {
         }
     }
 
+    /*
     public void move(double seconds, double leftPower, double rightPower) {
 
         ElapsedTime runtime = new ElapsedTime();
@@ -169,15 +170,7 @@ public class DriveTrain extends BotComponent {
         // move forwards with negative power
         move(seconds, -power, -power);
     }
-
-    public void turnLeft(double seconds, double power) {
-        move(seconds, -power, power);
-    }
-
-    public void turnRight(double seconds, double power) {
-        move(seconds, power, -power);
-    }
-
+*/
     public void updateMotorsTankDrive(double leftY, double rightY) {
 
         double left;
@@ -349,6 +342,17 @@ public class DriveTrain extends BotComponent {
                              double timeoutSeconds,
                              boolean useGyro) {
 
+        boolean crabWheels = false;
+        encoderDrive(power, leftInches, rightInches, timeoutSeconds,useGyro, crabWheels);
+
+    }
+
+    public void encoderDrive(double power,
+                             double leftInches, double rightInches,
+                             double timeoutSeconds,
+                             boolean useGyro,
+                             boolean crabWheels) {
+
         int targetAngle =0;
         if (useGyro && gyroNavigator.isAvailable) {
             // keep the current angle as the target to stay on
@@ -381,8 +385,19 @@ public class DriveTrain extends BotComponent {
             // reset the timeout time and start motion.
             runtime.reset();
 
-            setLeftMotorsPower(power);
-            setRightMotorsPower(power);
+            if (crabWheels) {
+                if (leftInches > 0) {
+                    // crab left
+                    updateMotorsMechanumDrive(-power, 0, 0, -power);
+                } else {
+                    // crab right
+                    updateMotorsMechanumDrive(power, 0, 0, -power);
+                }
+
+            } else {
+                setLeftMotorsPower(power);
+                setRightMotorsPower(power);
+            }
 
             //setLeftMotorsPower(Math.abs(power));
             //setRightMotorsPower(Math.abs(power));

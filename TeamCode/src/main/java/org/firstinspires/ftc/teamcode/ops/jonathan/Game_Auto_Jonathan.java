@@ -78,11 +78,11 @@ public class Game_Auto_Jonathan extends LinearOpMode {
             case "Right":
                 robot.driveTrain.encoderDrive(0.25, 0.15, 0.15, 2);
                 robot.driveTrain.crabLeft(1.5);
-                robot.driveTrain.moveForward(1,0.25);
+                //robot.driveTrain.moveForward(1,0.25);
 
             case "Center":
                 /*robot.driveTrain.encoderDrive(0.25, 2, 2, 2); */
-                robot.driveTrain.moveForward(0.75,0.25);
+                //robot.driveTrain.moveForward(0.75,0.25);
                 robot.driveTrain.crabLeft(0.4);
                 robot.driveTrain.encoderDrive(0.25, 4.5, 4.5, 1);
                 stop();
@@ -90,7 +90,7 @@ public class Game_Auto_Jonathan extends LinearOpMode {
             case "Left":
                 robot.driveTrain.encoderDrive(0.25, 0.12, 0.12, 2);
                 robot.driveTrain.crabRight(1);
-                robot.driveTrain.moveForward(1,0.25);
+                //robot.driveTrain.moveForward(1,0.25);
 
             default:
 //                telemetry.addData("Gold:", "???");

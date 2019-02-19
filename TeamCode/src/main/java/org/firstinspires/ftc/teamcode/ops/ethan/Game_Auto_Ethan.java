@@ -94,7 +94,7 @@ public class Game_Auto_Ethan extends LinearOpMode {
             case "Right":
                 robot.driveTrain.encoderDrive(0.25, -0.15, -0.15, 2);
                 robot.driveTrain.crabLeft(1.5);
-                robot.driveTrain.moveForward(1,0.25);
+                //robot.driveTrain.moveForward(1,0.25);
 
             case "Center":
 
@@ -106,7 +106,7 @@ public class Game_Auto_Ethan extends LinearOpMode {
             case "Left":
                 robot.driveTrain.encoderDrive(0.25, -0.12, -0.12, 2);
                 robot.driveTrain.crabRight(1);
-                robot.driveTrain.moveForward(1,0.25);
+                //robot.driveTrain.moveForward(1,0.25);
 
             default:
 //                telemetry.addData("Gold:", "???");

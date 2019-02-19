@@ -84,6 +84,13 @@ public class GoldSensor extends BotComponent {
     }
 
 
+    public String goldFind(int numTrials) {
+        int counter = 0;
+        while (opModeIsActive() &&  goldPosition == "Unknown" && counter <= numTrials) {
+            goldPosition = goldFind();
+        }
+        return goldPosition;
+    }
 
     public String goldFind() {
         if (!isAvailable) {return goldPosition;}

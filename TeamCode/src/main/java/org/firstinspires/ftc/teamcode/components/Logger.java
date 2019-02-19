@@ -34,6 +34,11 @@ public class Logger {
     private TrcDbgTrace tracer;
     private OpMode opMode = null;
 
+    private int DEFAULT_DEBUG_FILTER_THRESHOLD = 10;
+    private String DEFAULT_DEBUG_FILTER_FUNCTION = "N/A";
+    private int debugFilterCount = 0;
+    private int debugFilterThreshold = 0;
+    private String debugFilterFunction = DEFAULT_DEBUG_FILTER_FUNCTION;
 
     /* Constructor */
     public Logger(String aFilePrefix) {
@@ -55,6 +60,29 @@ public class Logger {
 
     public void open(boolean enableTrace) {
         open(filePrefix, enableTrace, telemetryEnabled);
+    }
+
+    public void setDebugFilter(String functionName) {
+        setDebugFilter(functionName, DEFAULT_DEBUG_FILTER_THRESHOLD);
+    }
+
+    public void setDebugFilter (String functionName, int threshold) {
+        debugFilterCount = 0;
+        debugFilterFunction = functionName;
+        debugFilterThreshold = threshold;
+    }
+
+    public void incrementDebugFilterCount() {
+        debugFilterCount ++;
+        if (debugFilterCount > debugFilterThreshold) {
+            debugFilterCount = 0;
+        }
+    }
+
+    public void clearDebugFilter (String functionName) {
+        debugFilterCount = 0;
+        debugFilterThreshold = 0;
+        debugFilterFunction = DEFAULT_DEBUG_FILTER_FUNCTION;
     }
 
     public void open(String filePrefix, boolean enableTrace, boolean enableTelemetry) {
@@ -92,8 +120,16 @@ public class Logger {
 
     public void logDebug(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
-            tracer.traceVerbose(funcName, format, args);
+            if (debugFilterFunction == funcName && debugFilterCount == debugFilterThreshold) {
+                String formatString = format;
+               if (debugFilterThreshold > 0) {
+                   formatString = formatString.concat(" [").concat(String.valueOf(debugFilterThreshold).concat("]"));
+                }
+                tracer.traceVerbose(funcName, formatString, args);
+            }
         }
+        tracer.traceVerbose(funcName, format, args);
+
         //logToTelemetry(funcName, format, args);
     }
 

@@ -418,20 +418,17 @@ public class DriveTrain extends BotComponent {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            int debugCount = 0;
+            logger.setDebugFilter("encoderDrive");
 
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutSeconds) && encodersAreBusy()) {
 
-                if (debugCount == 0 ) {
-                    logger.logDebug("encoderDrive", "Target: Left:%7d Right:%7d", newLeftTarget, newRightTarget);
-                    logger.logDebug("encoderDrive", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
-                    logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
-                    logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
-                }
+                logger.logDebug("encoderDrive", "Target: Left:%7d Right:%7d", newLeftTarget, newRightTarget);
+                logger.logDebug("encoderDrive", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+                logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+                logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
 
-                debugCount ++;
-                if (debugCount >= 10) { debugCount = 0; }
+                logger.incrementDebugFilterCount();
 
                 if (useGyro && gyroNavigator.isAvailable) {
                     if (Math.abs(gyroNavigator.getAngle() - targetAngle) > 2) {
@@ -493,6 +490,8 @@ public class DriveTrain extends BotComponent {
         if (isRelative) { targetAngle = currentAngle + degrees;}
 
         boolean rotationComplete = false;
+        logger.setDebugFilter("gyroRotate");
+
         while (opModeIsActive() && !rotationComplete) {
 
             if (Math.abs((int)currentAngle - (int)targetAngle) < 5 ) {
@@ -532,6 +531,7 @@ public class DriveTrain extends BotComponent {
             logger.logDebug("gyroRotate", "currentAngle: %f, targetAngle: %f", currentAngle, targetAngle);
             logger.logDebug("gyroRotate", "rotationComplete: %b", rotationComplete);
             logger.logDebug("gyroRotate", "adjustAngle: %b", adjustAngle);
+            logger.incrementDebugFilterCount();
 
             if (!rotationComplete) {
                 setLeftMotorsPower(leftPower);

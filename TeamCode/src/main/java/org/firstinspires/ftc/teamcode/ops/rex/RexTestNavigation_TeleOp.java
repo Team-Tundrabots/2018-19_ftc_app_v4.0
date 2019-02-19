@@ -72,6 +72,7 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive() && !gamepad1.start) {
+            robot.logger.logDebug("runOpMode", "waiting...");
             idle();
         }
 
@@ -131,10 +132,12 @@ public class RexTestNavigation_TeleOp extends LinearOpMode {
 
             if (robot.driveTrain.isAvailable) {
                 if (gamepad1.left_trigger > 0) {
-                    robot.driveTrain.crabEncoderLeft(0.5, 12);
+                    robot.logger.logDebug("runOpMode", "gamepad1.left_trigger");
+//                    robot.driveTrain.crabEncoderLeft(0.5, 12);
                 }
                 if (gamepad1.right_trigger > 0) {
-                    robot.driveTrain.crabEncoderLeft(0.5, 12);
+                    robot.logger.logDebug("runOpMode", "gamepad1.right_trigger");
+//                    robot.driveTrain.crabEncoderLeft(0.5, 12);
                 }
             }
 

@@ -320,6 +320,16 @@ public class DriveTrain extends BotComponent {
         
     }
 
+    public void crabEncoderLeft(double power, double inches) {
+        double timeoutSeconds = (1 / Math.abs(power)) * MAX_INCHES_PER_SECOND;
+        encoderDrive(power, inches, 0, timeoutSeconds, false, true);
+    }
+
+    public void crabEncoderRight(double power, double inches) {
+        double timeoutSeconds = (1 / Math.abs(power)) * MAX_INCHES_PER_SECOND;
+        encoderDrive(power, 0, inches, timeoutSeconds, false, true);
+    }
+
     public void encoderDrive(double power,
                              double leftInches, double rightInches,
                              double timeoutSeconds) {

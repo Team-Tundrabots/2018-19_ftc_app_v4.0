@@ -105,6 +105,7 @@ public class Game_TeleOp extends LinearOpMode {
 
             //PNP controls
             if (robot.pnp.isAvailable){
+
                 if (gamepad1.right_stick_y > 0){
                     robot.pnp.extend();
                 }
@@ -114,9 +115,12 @@ public class Game_TeleOp extends LinearOpMode {
                 else{
                     robot.pnp.pusher.setPower(0.0);
                 }
-                double arm_proportion = 0.6;
+                double arm_proportion = 0.7;
                 double new_left_trigger = gamepad1.left_trigger*arm_proportion;
                 double new_right_trigger = gamepad1.right_trigger*arm_proportion;
+                telemetry.addData("Left Trigger ", "Raw (%.2f), New (%.2f)", gamepad1.left_trigger, new_left_trigger);
+                telemetry.addData("Right Trigger", "Raw (%.2f), New (%.2f)", gamepad1.right_trigger, new_right_trigger);
+
                 robot.arm.crank.setPower(-new_left_trigger+new_right_trigger);
             }
             telemetry.update();

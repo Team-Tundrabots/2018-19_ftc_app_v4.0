@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.game;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -38,9 +38,9 @@ import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
-@Autonomous(name="Game_Auto", group="game")
+@Autonomous(name="Rex_Game_Auto", group="rex")
 //@Disabled
-public class Game_Auto extends LinearOpMode {
+public class Rex_Game_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -84,7 +84,8 @@ public class Game_Auto extends LinearOpMode {
         String goldPosition = robot.goldSensor.goldFind(5);
 
         robot.logger.logInfo("runOpMode", "===== [ Move Off Lander ]");
-        robot.driveTrain.crabRight(0.4);
+        robot.driveTrain.crabEncoderRight(1, 5);
+        //robot.driveTrain.crabRight(0.4);
 
        // robot.logger.logInfo("runOpMode", "===== [ Look for Gold ]");
       //  goldPosition = robot.goldSensor.goldFind(5);
@@ -103,16 +104,16 @@ public class Game_Auto extends LinearOpMode {
 
                 robot.logger.logInfo("runOpMode", "===== [ Gold on Right ]");
                 robot.driveTrain.encoderDrive(1, -13);
-                robot.driveTrain.crabLeft(1.7);
+                robot.driveTrain.crabEncoderLeft(1, 16);
                 robot.driveTrain.encoderDrive(1, -15);
-                goldPositionOffset = 32;
+                goldPositionOffset = 30;
                 break;
 
             case "Center":
 
                 robot.logger.logInfo("runOpMode", "===== [ Gold in Center ]");
                 robot.driveTrain.encoderDrive(1,-20);
-                robot.driveTrain.crabLeft(0.4);
+                robot.driveTrain.crabEncoderLeft(1, 5);
                 robot.driveTrain.encoderDrive(1, -8);
                 goldPositionOffset = 16;
                 break;
@@ -121,9 +122,9 @@ public class Game_Auto extends LinearOpMode {
 
                 robot.logger.logInfo("runOpMode", "===== [ Gold on Left ]");
                 robot.driveTrain.encoderDrive(1, -13);
-                robot.driveTrain.crabRight(0.75);
+                robot.driveTrain.crabEncoderRight(1, 8);
                 robot.driveTrain.encoderDrive(1, -15);
-                goldPositionOffset = 0;
+                goldPositionOffset = 3;
                 break;
 
             default:
@@ -134,9 +135,9 @@ public class Game_Auto extends LinearOpMode {
 
         robot.logger.logInfo("runOpMode", "===== [ Back up and head for Depot ]");
         robot.driveTrain.encoderDrive(1, 10);
-        robot.driveTrain.gyroRotate(-90, 0.75, false, false);
+        robot.driveTrain.gyroRotate(-90, 1, false, false);
         robot.driveTrain.encoderDrive(1, -27.0 - goldPositionOffset);
-        robot.driveTrain.gyroRotate(-44, 0.75, true, false);
+        robot.driveTrain.gyroRotate(-44, 1, true, false);
         robot.driveTrain.encoderDrive(1, -36);
         robot.driveTrain.encoderDrive(1, 63);
 

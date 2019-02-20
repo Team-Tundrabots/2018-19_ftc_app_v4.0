@@ -68,11 +68,11 @@ public class Hoist extends BotComponent {
     }
 
     public void outputCrankPositions() {
-        outputCrankPositions("Crank Positions");
+        outputCrankPositions("Crank Positions", "???");
     }
 
-    public void outputCrankPositions(String label) {
-        logger.logDebug("outputCrankPositions", "Status: %s, Target: %7d, Current: %7d, Power: %f", label, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
+    public void outputCrankPositions(String funcName, String status) {
+        logger.logDebug(funcName, "Status: %s, Target: %7d, Current: %7d, Power: %f", status, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
     }
 
     private void init() {
@@ -111,19 +111,16 @@ public class Hoist extends BotComponent {
     }
 
     public void extendContinuous(double power) {
-        logger.logDebug("Hoist.extendFreely", "");
         crank.setDirection(DcMotorSimple.Direction.REVERSE);
         crank.setPower(power);
     }
 
     public void contractContinuous(double power) {
-        logger.logDebug("Hoist.contractFreely", "");
         crank.setDirection(DcMotorSimple.Direction.FORWARD);
         crank.setPower(power);
     }
 
     public void stop() {
-        logger.logDebug("Hoist.stop", "");
         crank.setPower(0);
     }
 
@@ -132,6 +129,7 @@ public class Hoist extends BotComponent {
         setTarget(targetPosition);
         crank.setPower(power);
 
+        logger.setDebugFilter("Hoist.runToTarget");
         double calcPower = 0;
 
         while (opModeIsActive() && (crank.isBusy() || opMode.gamepad1.x)) {
@@ -143,27 +141,31 @@ public class Hoist extends BotComponent {
                 crank.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 if (diffTarget < rampUpDownThreshold && calcPower > .01) {
                     calcPower = power * ((double) diffTarget / rampUpDownThreshold); // calcPower - .01;
-                    logger.logDebug("outputCrankPositions", "Status: %s, diffTarget: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Down", diffTarget, rampUpDownThreshold, calcPower);
+                    logger.logDebug("Hoist.runToTarget", "Status: %s, diffTarget: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Down", diffTarget, rampUpDownThreshold, calcPower);
                     crank.setPower(calcPower);
-                    outputCrankPositions("Hoist.runToTarget:Ramp Down");
+                    outputCrankPositions("Hoist.runToTarget", "Ramp Down");
                 } else if (diffStart < rampUpDownThreshold && calcPower < power) {
                     calcPower = power * ((double) diffStart / rampUpDownThreshold) + 0.01; // calcPower + .01;
                     logger.logDebug("outputCrankPositions", "Status: %s, diffStart: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Up", diffStart, rampUpDownThreshold, calcPower);
                     crank.setPower(calcPower);
-                    outputCrankPositions("Hoist.runToTarget:Ramp Up");
+                    outputCrankPositions("Hoist.runToTarget", "Ramp Up");
                 } else {
                     crank.setPower(power);
-                    outputCrankPositions("Hoist.runToTarget:Running");
+                    outputCrankPositions("Hoist.runToTarget", "Running");
                 }
             } else {
                 crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 crank.setPower(power);
-                outputCrankPositions("Hoist.runToTarget:OVERRIDE");
+                outputCrankPositions("Hoist.runToTarget", "OVERRIDE");
             }
 
             idle();
 
+            logger.incrementDebugFilterCount();
+
         }
+
+        logger.clearDebugFilter();
 
         crank.setPower(0);
         // Turn off RUN_TO_POSITION

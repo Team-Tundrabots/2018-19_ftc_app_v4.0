@@ -77,6 +77,8 @@ public class GyroNavigator extends BotComponent {
             idle();
         }
 
+        resetAngle();
+
         isAvailable = true;
         logger.logInfo("GyroNavigator:init", "Calibration Status:%s",imu.getCalibrationStatus().toString());
 

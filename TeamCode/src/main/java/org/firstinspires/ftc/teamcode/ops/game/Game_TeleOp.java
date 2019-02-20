@@ -27,13 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.game;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.*;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 
@@ -56,6 +57,7 @@ public class Game_TeleOp extends LinearOpMode {
         robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
 
         robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        robot.driveTrain.disableEncoders();
         robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
         robot.goldSensor.init();
 
@@ -68,23 +70,16 @@ public class Game_TeleOp extends LinearOpMode {
         robot.logger.logInfo("runOpMode", "===== [ Start TeleOp ]");
         runtime.reset();
 
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 20000;
-        robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = 1;
-
         while (opModeIsActive()) {
 
             // hoist controls
             if (robot.hoist.isAvailable) {
                 if (gamepad1.dpad_down) {
-                    robot.logger.logDebug("runOpMode", "dpad_down");
-                    robot.hoist.extend();
-                }
-
-                if (gamepad1.dpad_up) {
-                    robot.logger.logDebug("runOpMode", "dpad_up");
-                    robot.hoist.contract();
+                    robot.hoist.extendContinuous(1);
+                } else if (gamepad1.dpad_up) {
+                    robot.hoist.contractContinuous(1);
+                } else {
+                    robot.hoist.stop();
                 }
             }
 
@@ -107,6 +102,27 @@ public class Game_TeleOp extends LinearOpMode {
                 telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
             }
 
+
+            //PNP controls
+            if (robot.pnp.isAvailable){
+
+                if (gamepad1.right_stick_y > 0){
+                    robot.pnp.extend();
+                }
+                else if(gamepad1.right_stick_y < 0) {
+                    robot.pnp.contract();
+                }
+                else{
+                    robot.pnp.pusher.setPower(0.0);
+                }
+                double arm_proportion = 0.7;
+                double new_left_trigger = gamepad1.left_trigger*arm_proportion;
+                double new_right_trigger = gamepad1.right_trigger*arm_proportion;
+                telemetry.addData("Left Trigger ", "Raw (%.2f), New (%.2f)", gamepad1.left_trigger, new_left_trigger);
+                telemetry.addData("Right Trigger", "Raw (%.2f), New (%.2f)", gamepad1.right_trigger, new_right_trigger);
+
+                robot.arm.crank.setPower(-new_left_trigger+new_right_trigger);
+            }
             telemetry.update();
 
         }

@@ -36,6 +36,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.*;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 import java.io.File;
 
@@ -46,12 +48,20 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private GameBot robot = null;
+    private TestBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
 
     @Override
     public void runOpMode() {
-        robot = new GameBot(this);
+        robot = new TestBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        //robot.gyroNavigator.init();
+        //robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        //robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        //robot.goldSensor.init();
+
         robot.logger.open(logEnableTrace);
         robot.logger.logDebug("TeleOP debug", "");
         robot.logger.logInfo("TeleOP info", "");

@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.ops.ethan;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,7 +40,7 @@ import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
 @Autonomous(name="Game_Auto_Ethan", group="ethan")
-//@Disabled
+@Disabled
 public class Game_Auto_Ethan extends LinearOpMode {
 
     // Declare OpMode members.
@@ -93,7 +94,7 @@ public class Game_Auto_Ethan extends LinearOpMode {
             case "Right":
                 robot.driveTrain.encoderDrive(0.25, -0.15, -0.15, 2);
                 robot.driveTrain.crabLeft(1.5);
-                robot.driveTrain.moveForward(1,0.25);
+                //robot.driveTrain.moveForward(1,0.25);
 
             case "Center":
 
@@ -105,7 +106,7 @@ public class Game_Auto_Ethan extends LinearOpMode {
             case "Left":
                 robot.driveTrain.encoderDrive(0.25, -0.12, -0.12, 2);
                 robot.driveTrain.crabRight(1);
-                robot.driveTrain.moveForward(1,0.25);
+                //robot.driveTrain.moveForward(1,0.25);
 
             default:
 //                telemetry.addData("Gold:", "???");

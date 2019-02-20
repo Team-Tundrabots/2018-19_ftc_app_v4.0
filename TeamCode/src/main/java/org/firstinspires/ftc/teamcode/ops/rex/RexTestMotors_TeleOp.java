@@ -30,115 +30,130 @@
 package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 @TeleOp(name="RexTestMotors_TeleOp", group="rex")
 //@Disabled
-public class RexTestMotors_TeleOp extends OpMode
+public class RexTestMotors_TeleOp extends LinearOpMode
 {
     // Declare OpMode members.
-    private TestBot robot       = null;
+    private GameBot robot       = null;
     private ElapsedTime runtime = new ElapsedTime();
     private Boolean activateFrontMotors = false;
     private Boolean activateBackMotors = false;
+    private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
-    @Override
-    public void init() {
-        robot = new TestBot(this);
-        telemetry.addData("Status", "Initialized");
-    }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
     @Override
-    public void init_loop() {
-    }
+    public void runOpMode() {
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
+        robot = new GameBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+
+        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        robot.logger.logInfo("runOpMode", "===== [ Start TeleOp ]");
         runtime.reset();
-    }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
+        while (opModeIsActive()) {
 
-        double leftX = gamepad1.left_stick_x;
-        double leftY = gamepad1.left_stick_y;
-        double rightX = gamepad1.right_stick_x;
-        double rightY = gamepad1.right_stick_y;
 
-        if (gamepad1.y) {
-            activateFrontMotors = true;
+            if (robot.driveTrain.isAvailable) {
+                if (gamepad1.dpad_down) {
+                    robot.logger.logInfo("runOpMode", "===== [ Encoder Drive Forward ]");
+                    robot.driveTrain.encoderDrive(.5, -1);
+                } else if (gamepad1.dpad_up) {
+                    robot.logger.logInfo("runOpMode", "===== [ Encoder Drive Backward ]");
+                    robot.driveTrain.encoderDrive(.5, 1);
+                } else {
+                    robot.driveTrain.stop();
+                }
+            }
+
+            if (gamepad1.y) {
+                activateFrontMotors = true;
+                robot.logger.logInfo("runOpMode", "===== [ Front Motors : Activate ]");
+            }
+
+            if (gamepad1.b) {
+                activateBackMotors = true;
+                robot.logger.logInfo("runOpMode", "===== [ Back Motors : Activate ]");
+            }
+
+            if (gamepad1.x) {
+                activateFrontMotors = false;
+                robot.logger.logInfo("runOpMode", "===== [ Front Motors : OFF ]");
+            }
+
+            if (gamepad1.a) {
+                activateBackMotors = false;
+                robot.logger.logInfo("runOpMode", "===== [ Back Motors : OFF ]");
+            }
+
+
+            double leftX = gamepad1.left_stick_x;
+            double leftY = gamepad1.left_stick_y;
+            double rightX = gamepad1.right_stick_x;
+            double rightY = gamepad1.right_stick_y;
+
+            if (robot.driveTrain.isAvailable) {
+                if (activateFrontMotors) {
+                    robot.driveTrain.frontLeftMotor.setPower(leftY);
+                    robot.driveTrain.frontRightMotor.setPower(rightY);
+                } else {
+                    robot.driveTrain.frontLeftMotor.setPower(0);
+                    robot.driveTrain.frontRightMotor.setPower(0);
+                }
+
+                if (activateBackMotors) {
+                    robot.driveTrain.backLeftMotor.setPower(leftY);
+                    robot.driveTrain.backRightMotor.setPower(rightY);
+                } else {
+                    robot.driveTrain.backLeftMotor.setPower(0);
+                    robot.driveTrain.backRightMotor.setPower(0);
+                }
+            }
+
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
+            telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
+
+
+            telemetry.addData("Front Motors", "%b", activateFrontMotors);
+
+            if (robot.driveTrain.isAvailable) {
+                double frontLPower = robot.driveTrain.frontLeftMotor.getPower();
+                double frontRPower = robot.driveTrain.frontRightMotor.getPower();
+                telemetry.addData("Front", "L (%.2f), R (%.2f)", frontLPower, frontRPower);
+            }
+
+            telemetry.addData("Back Motors", "%b", activateBackMotors);
+
+            if (robot.driveTrain.isAvailable) {
+                double backLPower = robot.driveTrain.backLeftMotor.getPower();
+                double backRPower = robot.driveTrain.backRightMotor.getPower();
+                telemetry.addData("Back", "L (%.2f), R (%.2f)", backLPower, backRPower);
+            }
+
+            telemetry.update();
         }
 
-        if (gamepad1.b) {
-            activateBackMotors = true;
-        }
-
-        if (gamepad1.x) {
-            activateFrontMotors = false;
-        }
-
-        if (gamepad1.a) {
-            activateBackMotors = false;
-        }
-
-        if (activateFrontMotors) {
-            robot.driveTrain.frontLeftMotor.setPower(leftY);
-            robot.driveTrain.frontRightMotor.setPower(rightY);
-        } else {
-            robot.driveTrain.frontLeftMotor.setPower(0);
-            robot.driveTrain.frontRightMotor.setPower(0);
-        }
-
-        if (activateBackMotors) {
-            robot.driveTrain.backLeftMotor.setPower(leftY);
-            robot.driveTrain.backRightMotor.setPower(rightY);
-        } else {
-            robot.driveTrain.backLeftMotor.setPower(0);
-            robot.driveTrain.backRightMotor.setPower(0);
-        }
-
-
-        // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Left", "X (%.2f), Y (%.2f)", leftX, leftY);
-        telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
-
-
-        telemetry.addData("Front Motors", "%b", activateFrontMotors);
-
-        double frontLPower = robot.driveTrain.frontLeftMotor.getPower();
-        double frontRPower = robot.driveTrain.frontRightMotor.getPower();
-        telemetry.addData("Front", "L (%.2f), R (%.2f)", frontLPower, frontRPower);
-
-        telemetry.addData("Back Motors", "%b", activateBackMotors);
-
-        double backLPower = robot.driveTrain.backLeftMotor.getPower();
-        double backRPower = robot.driveTrain.backRightMotor.getPower();
-        telemetry.addData("Back", "L (%.2f), R (%.2f)", backLPower, backRPower);
-
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
     }
 
 }

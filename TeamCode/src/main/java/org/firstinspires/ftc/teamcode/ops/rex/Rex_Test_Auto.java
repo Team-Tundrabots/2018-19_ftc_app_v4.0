@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.game;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -38,9 +38,9 @@ import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
-@Autonomous(name="Game_Auto", group="game")
+@Autonomous(name="Rex_Test_Auto", group="rex")
 //@Disabled
-public class Game_Auto extends LinearOpMode {
+public class Rex_Test_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -59,8 +59,6 @@ public class Game_Auto extends LinearOpMode {
         //robot.initAll();
         robot.gyroNavigator.init();
         robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
-        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
-        robot.goldSensor.init();
 
         robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
@@ -72,75 +70,26 @@ public class Game_Auto extends LinearOpMode {
         runtime.reset();
 
 
-        robot.logger.logInfo("runOpMode", "===== [ Lower Robot ]");
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 23000;
-        robot.hoist.rampUpDownThreshold = 1;
-        robot.hoist.power = 1;
-
-        robot.hoist.extend();
-
-        robot.logger.logInfo("runOpMode", "===== [ Look for Gold ]");
-        String goldPosition = robot.goldSensor.goldFind(5);
-
-        robot.logger.logInfo("runOpMode", "===== [ Move Off Lander ]");
-        robot.driveTrain.crabRight(0.4);
-
-       // robot.logger.logInfo("runOpMode", "===== [ Look for Gold ]");
-      //  goldPosition = robot.goldSensor.goldFind(5);
-
-      //  robot.logger.logInfo("runOpMode", "===== [ Adjust Angle ]");
-      //  robot.driveTrain.gyroRotate(0.5, 0, false);
-
-
-        robot.logger.logInfo("runOpMode", "===== [ Move Toward Gold ]");
-        robot.logger.logInfo("runOpMode", "goldPosition: %s", goldPosition);
-
-        double goldPositionOffset = 0;
-
-        switch (goldPosition) {
-            case "Right":
-
-                robot.logger.logInfo("runOpMode", "===== [ Gold on Right ]");
-                robot.driveTrain.encoderDrive(1, -13);
-                robot.driveTrain.crabLeft(1.7);
-                robot.driveTrain.encoderDrive(1, -15);
-                goldPositionOffset = 32;
-                break;
-
-            case "Center":
-
-                robot.logger.logInfo("runOpMode", "===== [ Gold in Center ]");
-                robot.driveTrain.encoderDrive(1,-20);
-                robot.driveTrain.crabLeft(0.4);
-                robot.driveTrain.encoderDrive(1, -8);
-                goldPositionOffset = 16;
-                break;
-
-            case "Left":
-
-                robot.logger.logInfo("runOpMode", "===== [ Gold on Left ]");
-                robot.driveTrain.encoderDrive(1, -13);
-                robot.driveTrain.crabRight(0.75);
-                robot.driveTrain.encoderDrive(1, -15);
-                goldPositionOffset = 0;
-                break;
-
-            default:
-                robot.logger.logInfo("runOpMode", "===== [ Gold ??? ]");
-                //                telemetry.addData("Gold:", "???");
-
-        }
-
-        robot.logger.logInfo("runOpMode", "===== [ Back up and head for Depot ]");
-        robot.driveTrain.encoderDrive(1, 10);
-        robot.driveTrain.gyroRotate(-90, 0.75, false, false);
-        robot.driveTrain.encoderDrive(1, -27.0 - goldPositionOffset);
-        robot.driveTrain.gyroRotate(-44, 0.75, true, false);
-        robot.driveTrain.encoderDrive(1, -36);
-        robot.driveTrain.encoderDrive(1, 63);
-
-
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.logger.logInfo("runOpMode", "===== [ Test Gyro: absolute(false), adjust(false) ]");
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.driveTrain.gyroRotate(180, 1, false, false);
+/*        robot.driveTrain.pause(1);
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.logger.logInfo("runOpMode", "===== [ Test Gyro: absolute(false), adjust(true) ]");
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.driveTrain.gyroRotate(90, 0.5, false, true);
+        robot.driveTrain.pause(1);
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.logger.logInfo("runOpMode", "===== [ Test Gyro: relative(true), adjust(false) ]");
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.driveTrain.gyroRotate(90, 0.5, true, false);
+        robot.driveTrain.pause(1);
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.logger.logInfo("runOpMode", "===== [ Test Gyro: relative(true), adjust(true) ]");
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.driveTrain.gyroRotate(90, 0.5, true, true);
+*/
         // Show the elapsed game time.
         robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());
         telemetry.update();

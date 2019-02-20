@@ -34,7 +34,7 @@ public class Logger {
     private TrcDbgTrace tracer;
     private OpMode opMode = null;
 
-    private int DEFAULT_DEBUG_FILTER_THRESHOLD = 10;
+    private int DEFAULT_DEBUG_FILTER_THRESHOLD = 50;
     private String DEFAULT_DEBUG_FILTER_FUNCTION = "N/A";
     private int debugFilterCount = 0;
     private int debugFilterThreshold = 0;
@@ -79,7 +79,7 @@ public class Logger {
         }
     }
 
-    public void clearDebugFilter (String functionName) {
+    public void clearDebugFilter () {
         debugFilterCount = 0;
         debugFilterThreshold = 0;
         debugFilterFunction = DEFAULT_DEBUG_FILTER_FUNCTION;
@@ -120,18 +120,18 @@ public class Logger {
 
     public void logDebug(final String funcName, final String format, Object... args) {
         if (traceEnabled) {
-            if (debugFilterFunction == funcName && debugFilterCount == debugFilterThreshold) {
-                String formatString = format;
-               if (debugFilterThreshold > 0) {
-                   formatString = formatString.concat(" [").concat(String.valueOf(debugFilterThreshold).concat("]"));
+            if (debugFilterThreshold > 0 && debugFilterFunction == funcName) {
+
+                if (debugFilterCount == 0) {
+                    String formatString = ("[").concat(String.valueOf(debugFilterThreshold)).concat("] ").concat(format);
+                    tracer.traceVerbose(funcName, formatString, args);
                 }
-                tracer.traceVerbose(funcName, formatString, args);
+
+            } else {
+                tracer.traceVerbose(funcName, format, args);
             }
         }
-        tracer.traceVerbose(funcName, format, args);
-
-        //logToTelemetry(funcName, format, args);
-    }
+     }
 
     public void close() {
         if (traceEnabled) {

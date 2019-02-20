@@ -528,6 +528,7 @@ public class DriveTrain extends BotComponent {
                 rotationComplete = true;
             }
 
+            if (rotationComplete) { logger.clearDebugFilter(); };
             logger.logDebug("gyroRotate", "currentAngle: %f, targetAngle: %f", currentAngle, targetAngle);
             logger.logDebug("gyroRotate", "rotationComplete: %b", rotationComplete);
             logger.logDebug("gyroRotate", "adjustAngle: %b", adjustAngle);

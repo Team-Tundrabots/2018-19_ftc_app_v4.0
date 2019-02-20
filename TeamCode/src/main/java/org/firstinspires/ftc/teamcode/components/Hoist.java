@@ -129,6 +129,7 @@ public class Hoist extends BotComponent {
         setTarget(targetPosition);
         crank.setPower(power);
 
+        logger.setDebugFilter("Hoist.runToTarget");
         double calcPower = 0;
 
         while (opModeIsActive() && (crank.isBusy() || opMode.gamepad1.x)) {
@@ -160,7 +161,11 @@ public class Hoist extends BotComponent {
 
             idle();
 
+            logger.incrementDebugFilterCount();
+
         }
+
+        logger.clearDebugFilter();
 
         crank.setPower(0);
         // Turn off RUN_TO_POSITION

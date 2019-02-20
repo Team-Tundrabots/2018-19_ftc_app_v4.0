@@ -94,7 +94,12 @@ public class Logger {
             tracer = new TrcDbgTrace("LOGGER", traceEnabled, TrcDbgTrace.TraceLevel.HIFREQ, TrcDbgTrace.MsgLevel.VERBOSE);
             tracer.openTraceLog("/sdcard/FIRST/tracelog", filePrefix);
             fileOpen = true;
-            logInfo("Logger.open","===== [ %s ]", filePrefix);
+            if (opMode != null) {
+                logInfo("Logger.open","===== [ %s : %s ]", filePrefix, opMode.getClass().getSimpleName());
+            } else {
+                logInfo("Logger.open","===== [ %s ]", filePrefix);
+
+            }
         }
     }
 

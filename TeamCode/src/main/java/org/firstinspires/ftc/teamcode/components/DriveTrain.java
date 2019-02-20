@@ -322,12 +322,112 @@ public class DriveTrain extends BotComponent {
 
     public void crabEncoderLeft(double power, double inches) {
         double timeoutSeconds = (1 / Math.abs(power)) * MAX_INCHES_PER_SECOND;
-        encoderDrive(power, inches, 0, timeoutSeconds, false, true);
+
+        int newTarget;
+
+        resetEncoders();
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        if (opModeIsActive()) {
+
+            if (frontMotorsEnabled) {
+                newTarget = frontRightMotor.getCurrentPosition() - (int) (inches * COUNTS_PER_INCH);
+                frontRightMotor.setTargetPosition(newTarget);
+                frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            } else {
+                newTarget = backRightMotor.getCurrentPosition() - (int) (inches * COUNTS_PER_INCH);
+                backRightMotor.setTargetPosition(newTarget);
+                backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            updateMotorsMechanumDrive(-power, 0, 0, -power);
+
+            logger.setDebugFilter("crabEncoderLeft");
+
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutSeconds) && frontRightMotor.isBusy()) {
+
+                logger.logDebug("crabEncoderLeft", "Inches: %f Target: %7d", inches, newTarget);
+                logger.logDebug("crabEncoderLeft", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+                logger.logDebug("crabEncoderLeft", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+                logger.logDebug("crabEncoderLeft", "runtime.seconds: %f timeout: %f", runtime.seconds(), timeoutSeconds);
+
+                logger.incrementDebugFilterCount();
+            }
+
+            // Stop all motion;
+            stop();
+
+            logger.clearDebugFilter();
+            logger.logDebug("crabEncoderLeft", "Inches: %f Target: %7d", inches, newTarget);
+            logger.logDebug("crabEncoderLeft", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+            logger.logDebug("crabEncoderLeft", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+            logger.logDebug("crabEncoderLeft", "runtime.seconds: %f timeout: %f", runtime.seconds(), timeoutSeconds);
+
+            disableEncoders();
+
+        }
+
+
     }
 
     public void crabEncoderRight(double power, double inches) {
         double timeoutSeconds = (1 / Math.abs(power)) * MAX_INCHES_PER_SECOND;
-        encoderDrive(power, 0, inches, timeoutSeconds, false, true);
+
+        int newTarget;
+
+        resetEncoders();
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        if (opModeIsActive()) {
+
+            if (frontMotorsEnabled) {
+                newTarget = backLeftMotor.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH);
+                backLeftMotor.setTargetPosition(newTarget);
+                backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            } else {
+                newTarget = backLeftMotor.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH);
+                backLeftMotor.setTargetPosition(newTarget);
+                backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            updateMotorsMechanumDrive(power, 0, 0, -power);
+
+
+            logger.setDebugFilter("crabEncoderLeft");
+
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutSeconds) && backLeftMotor.isBusy()) {
+
+                logger.logDebug("crabEncoderLeft", "Inches: %f Target: %7d", inches, newTarget);
+                logger.logDebug("crabEncoderLeft", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+                logger.logDebug("crabEncoderLeft", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+                logger.logDebug("crabEncoderLeft", "runtime.seconds: %f timeout: %f", runtime.seconds(), timeoutSeconds);
+
+                logger.incrementDebugFilterCount();
+            }
+
+            // Stop all motion;
+            stop();
+
+            logger.clearDebugFilter();
+            logger.logDebug("crabEncoderLeft", "Inches: %f Target: %7d", inches, newTarget);
+            logger.logDebug("crabEncoderLeft", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+            logger.logDebug("crabEncoderLeft", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+            logger.logDebug("crabEncoderLeft", "runtime.seconds: %f timeout: %f", runtime.seconds(), timeoutSeconds);
+
+
+            disableEncoders();
+
+        }
+
+
     }
 
     public void encoderDrive(double power,
@@ -351,17 +451,6 @@ public class DriveTrain extends BotComponent {
                              double leftInches, double rightInches,
                              double timeoutSeconds,
                              boolean useGyro) {
-
-        boolean crabWheels = false;
-        encoderDrive(power, leftInches, rightInches, timeoutSeconds,useGyro, crabWheels);
-
-    }
-
-    public void encoderDrive(double power,
-                             double leftInches, double rightInches,
-                             double timeoutSeconds,
-                             boolean useGyro,
-                             boolean crabWheels) {
 
         int targetAngle =0;
         if (useGyro && gyroNavigator.isAvailable) {
@@ -395,38 +484,19 @@ public class DriveTrain extends BotComponent {
             // reset the timeout time and start motion.
             runtime.reset();
 
-            if (crabWheels) {
-                if (leftInches > 0) {
-                    // crab left
-                    updateMotorsMechanumDrive(-power, 0, 0, -power);
-                } else {
-                    // crab right
-                    updateMotorsMechanumDrive(power, 0, 0, -power);
-                }
+            setLeftMotorsPower(power);
+            setRightMotorsPower(power);
 
-            } else {
-                setLeftMotorsPower(power);
-                setRightMotorsPower(power);
-            }
-
-            //setLeftMotorsPower(Math.abs(power));
-            //setRightMotorsPower(Math.abs(power));
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
             logger.setDebugFilter("encoderDrive");
 
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutSeconds) && encodersAreBusy()) {
 
+                logger.logDebug("encoderDrive", "Inches: Left:%f Right:%f", leftInches, rightInches);
                 logger.logDebug("encoderDrive", "Target: Left:%7d Right:%7d", newLeftTarget, newRightTarget);
                 logger.logDebug("encoderDrive", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
                 logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
-                logger.logDebug("encoderDrive", "runtime.seconds: %f", runtime.seconds());
+                logger.logDebug("encoderDrive", "runtime.seconds: %f timeout: %f", runtime.seconds(), timeoutSeconds);
 
                 logger.incrementDebugFilterCount();
 
@@ -441,6 +511,13 @@ public class DriveTrain extends BotComponent {
 
             // Stop all motion;
             stop();
+
+            logger.clearDebugFilter();
+            logger.logDebug("encoderDrive", "Inches: Left:%f Right:%f", leftInches, rightInches);
+            logger.logDebug("encoderDrive", "Target: Left:%7d Right:%7d", newLeftTarget, newRightTarget);
+            logger.logDebug("encoderDrive", "Front:  Left:%7d Right:%7d", getFrontLeftPosition(), getFrontRightPosition());
+            logger.logDebug("encoderDrive", "Back:   Left:%7d Right:%7d", getBackLeftPosition(), getBackRightPosition());
+            logger.logDebug("encoderDrive", "runtime.seconds: %f timeout: %f", runtime.seconds(), timeoutSeconds);
 
             disableEncoders();
 

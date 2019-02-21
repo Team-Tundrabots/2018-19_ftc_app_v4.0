@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.components.Arm;
 import org.firstinspires.ftc.teamcode.components.GyroNavigator;
+import org.firstinspires.ftc.teamcode.components.MarkerDropper;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.GoldSensor;
@@ -53,6 +54,7 @@ public class GameBot extends Bot {
     public GoldSensor goldSensor = null;
     public Arm arm = null;
     public PNP pnp = null;
+    public MarkerDropper markerDropper = null;
 
     /* Constructor */
     public GameBot() {
@@ -77,6 +79,9 @@ public class GameBot extends Bot {
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
         pnp = new PNP(logger, aOpMode, "pusher");
+
+        markerDropper = new MarkerDropper(logger, aOpMode, "markerDropper");
+
     }
 
     public void initAll() {

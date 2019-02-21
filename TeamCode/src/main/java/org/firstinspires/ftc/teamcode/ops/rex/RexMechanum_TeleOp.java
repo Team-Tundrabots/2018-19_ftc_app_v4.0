@@ -51,7 +51,7 @@ import org.firstinspires.ftc.teamcode.bots.TestBot;
  */
 
 @TeleOp(name="RexMechanum_TeleOp", group="rex")
-//@Disabled
+@Disabled
 public class RexMechanum_TeleOp extends OpMode
 {
     // Declare OpMode members.

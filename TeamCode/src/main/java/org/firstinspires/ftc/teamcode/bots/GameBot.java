@@ -32,19 +32,23 @@ package org.firstinspires.ftc.teamcode.bots;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.components.Arm;
+import org.firstinspires.ftc.teamcode.components.GyroNavigator;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.GoldSensor;
 import org.firstinspires.ftc.teamcode.components.Hoist;
 import org.firstinspires.ftc.teamcode.components.Logger;
-import org.firstinspires.ftc.teamcode.components.Navigator;
 import org.firstinspires.ftc.teamcode.components.PNP;
-
+import org.firstinspires.ftc.teamcode.components.WebCamNavigator;
 
 public class GameBot extends Bot {
 
+    /* BotComponents */
+
     public Logger logger = null;
+    public WebCamera webCamera = null;
     public DriveTrain driveTrain = null;
-    public Navigator navigator = null;
+    public GyroNavigator gyroNavigator = null;
     public Hoist hoist = null;
     public GoldSensor goldSensor = null;
     public Arm arm = null;
@@ -56,13 +60,30 @@ public class GameBot extends Bot {
     }
 
     public GameBot(OpMode aOpMode) {
-        logger = new Logger("GameBot");
-        driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor", "backLeftMotor", "backRightMotor");
-        navigator = new Navigator(aOpMode, driveTrain);
+        this(aOpMode, false, false);
+    }
+
+    public GameBot(OpMode aOpMode, boolean enableTrace, boolean enableTelemetry) {
+
+        logger = new Logger("GameBot", aOpMode, enableTrace, enableTelemetry);
+        gyroNavigator = new GyroNavigator(logger, aOpMode);
+        driveTrain = new DriveTrain(logger, aOpMode, "frontLeftMotor", "frontRightMotor",
+                                                      "backLeftMotor", "backRightMotor",
+                                                        gyroNavigator);
+
+        webCamera = new WebCamera(logger, aOpMode, "Webcam 1");
+        goldSensor = new GoldSensor(logger, aOpMode, webCamera);
+
         hoist = new Hoist(logger, aOpMode, "hoistCrank");
-        goldSensor = new GoldSensor(logger, aOpMode, "Webcam 1");
         arm = new Arm(logger, aOpMode, "arm.crank", "forwardGuardSwitch", "backwardGuardSwitch");
         pnp = new PNP(logger, aOpMode, "pusher");
+    }
+
+    public void initAll() {
+        gyroNavigator.init();
+        driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        goldSensor.init();
     }
 
 }

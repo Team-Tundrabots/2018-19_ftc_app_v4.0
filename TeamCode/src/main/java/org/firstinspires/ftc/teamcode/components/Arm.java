@@ -53,13 +53,15 @@ public class Arm extends BotComponent {
         // Define and Initialize Motors
         crank = initMotor(crankName, DcMotor.Direction.FORWARD);
 
-        // get a reference to our digitalTouch object.
-        forwardGuardSwitch = initTouchSensor(switch1Name);
-        backwardGuardSwitch = initTouchSensor(switch2Name);
+        // guard switches disabled for now as not used
+        //forwardGuardSwitch = initTouchSensor(switch1Name);
+        //backwardGuardSwitch = initTouchSensor(switch2Name);
 
         if (crank != null) {
             isAvailable = true;
         }
+
+        logger.logDebug("Arm","isAvailable:%b", isAvailable);
     }
 
     public void crankForward(double power) {

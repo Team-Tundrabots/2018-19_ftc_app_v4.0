@@ -29,55 +29,47 @@
 
 package org.firstinspires.ftc.teamcode.ops.rex;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
-@TeleOp(name="RexHoistTest_TeleOp", group="rex")
+@Autonomous(name="Rex_Hoist_Extend_Auto", group="rex")
 //@Disabled
-public class
-RexHoistTest_TeleOp extends LinearOpMode {
+public class Rex_Hoist_Extend_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
+
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
-        robot.logger.open(logEnableTrace);
 
-        telemetry.addData("Status", "Initialized");
+        robot = new GameBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
+        robot.logger.logInfo("runOpMode", "===== [ Start Autonomous ]");
         runtime.reset();
 
-        robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 20000;
-        robot.hoist.rampUpDownThreshold = 500;
-        robot.hoist.power = 9.9;
+        robot.logger.logInfo("runOpMode", "===== [ Extend Hoist ]");
 
         while (opModeIsActive()) {
-
-            if (gamepad1.dpad_down) {
-                robot.logger.logDebug("runOpMode", "dpad_down");
-                robot.hoist.extend();
-            }
-
-            if (gamepad1.dpad_up) {
-                robot.logger.logDebug("runOpMode", "dpad_up");
-                robot.hoist.contract();
-            }
+            robot.hoist.extendContinuous(1);
         }
 
         // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());
         telemetry.update();
 
     }

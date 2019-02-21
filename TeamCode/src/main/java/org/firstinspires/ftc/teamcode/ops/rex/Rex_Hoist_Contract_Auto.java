@@ -30,67 +30,48 @@
 package org.firstinspires.ftc.teamcode.ops.rex;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
-@Autonomous(name="RexEncoderTest_Auto", group="rex")
+@Autonomous(name="Rex_Hoist_Contract_Auto", group="rex")
 //@Disabled
-public class RexEncoderTest_Auto extends LinearOpMode {
+public class Rex_Hoist_Contract_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
+    private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
+
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
-        robot.navigator.init();
 
-        telemetry.addData("Status", "Initialized");
+        robot = new GameBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
+        robot.logger.logInfo("runOpMode", "===== [ Start Autonomous ]");
         runtime.reset();
 
+        robot.logger.logInfo("runOpMode", "===== [ Contract Hoist ]");
 
-        double power = .25;
-/*
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-        robot.driveTrain.moveForward(.5, power);
-        robot.navigator.rotate(-90, power);
-
-        robot.driveTrain.crabLeft(1);
-        robot.driveTrain.crabRight(1);
-*/
-/*
-        // move forward for a number of seconds at specific power
-        robot.driveTrain.moveForward(.5, power);
-        robot.driveTrain.turnLeft(.5, power);
-        robot.driveTrain.turnRight(.5, power);
-        robot.driveTrain.moveBackward(.5, power);
-*/
-        robot.driveTrain.resetEncoders();
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, 5, 5, 5);
-        robot.driveTrain.encoderDrive(.25, -5, 5, 5);
+        while (opModeIsActive()) {
+            robot.hoist.contractContinuous(5);
+        }
 
         // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());
         telemetry.update();
 
     }

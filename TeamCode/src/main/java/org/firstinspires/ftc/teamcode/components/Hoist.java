@@ -40,10 +40,15 @@ public class Hoist extends BotComponent {
     public DcMotor crank = null;
     public TouchSensor guardSwitch = null;
 
+    private int ROTATIONS_PER_INCH = 4400;
+
     private int DEFAULT_EXTENDED_POSITION = 3000;
     private int DEFAULT_CONTRACTED_POSITION = 0;
     private int DEFAULT_RAMP_UP_DOWN_THRESHOLD = 200;
     private double DEFAULT_POWER = 0.25;
+
+    public double extendedPositionInches = DEFAULT_EXTENDED_POSITION * ROTATIONS_PER_INCH;
+    public double contractedPositionInches = DEFAULT_CONTRACTED_POSITION * ROTATIONS_PER_INCH;
 
     public int extendedPosition = DEFAULT_EXTENDED_POSITION;
     public int contractedPosition = DEFAULT_CONTRACTED_POSITION;
@@ -58,38 +63,33 @@ public class Hoist extends BotComponent {
 
     public Hoist(Logger aLogger, OpMode aOpMode, String crankName) {
         super(aLogger, aOpMode);
-
-        // Define and Initialize Motors
         crank = initMotor(crankName, DcMotor.Direction.FORWARD, true);
-
-
-        reset();
-
+        init();
     }
-
 
     public void outputCrankPositions() {
-        outputCrankPositions("Crank Positions");
+        outputCrankPositions("Crank Positions", "???");
     }
 
-    public void outputCrankPositions(String label) {
-        logger.logDebug("outputCrankPositions", "Status: %s, Target: %7d, Current: %7d, Power: %f", label, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
-        opMode.telemetry.addData("Status", label);
-        opMode.telemetry.addData("Target", "%7d", crank.getTargetPosition());
-        opMode.telemetry.addData("Current", "%7d", crank.getCurrentPosition());
-        opMode.telemetry.addData("Power", crank.getPower());
-        opMode.telemetry.update();
+    public void outputCrankPositions(String funcName, String status) {
+        logger.logDebug(funcName, "Status: %s, Target: %7d, Current: %7d, Power: %f", status, crank.getTargetPosition(), crank.getCurrentPosition(), crank.getPower());
     }
 
-    public void reset() {
+    private void init() {
         try {
             crank.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            outputCrankPositions("Hoist.reset");
             isAvailable = true;
         } catch (NullPointerException err) {
-            opMode.telemetry.addData("Error", err.getMessage());
+            logger.logErr("Host.init","Error", err.getMessage());
         }
+        logger.logInfo("Hoist.init","isAvailable:%b", isAvailable);
+
+    }
+
+    public void setTargetInches(double inches) {
+        logger.logDebug("setTargetInches", "inches * ROTATIONS_PER_INCH=%f", inches * ROTATIONS_PER_INCH);
+        setTarget((int) inches * ROTATIONS_PER_INCH);
     }
 
     public void setTarget(int targetPosition) {
@@ -110,18 +110,18 @@ public class Hoist extends BotComponent {
         runToTarget(contractedPosition, power, rampUpDownThreshold);
     }
 
-    // Simple version - no ramp up or down
-    private void runToTarget(int targetPosition, double power) {
-        int startPosition = crank.getCurrentPosition();
-        setTarget(targetPosition);
+    public void extendContinuous(double power) {
+        crank.setDirection(DcMotorSimple.Direction.REVERSE);
         crank.setPower(power);
-        while (opModeIsActive() && crank.isBusy()) {
-            outputCrankPositions("Hoist.runToTarget");
-            idle();
-        }
+    }
+
+    public void contractContinuous(double power) {
+        crank.setDirection(DcMotorSimple.Direction.FORWARD);
+        crank.setPower(power);
+    }
+
+    public void stop() {
         crank.setPower(0);
-        // Turn off RUN_TO_POSITION
-        crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void runToTarget(int targetPosition, double power, int rampUpDownThreshold) {
@@ -129,6 +129,7 @@ public class Hoist extends BotComponent {
         setTarget(targetPosition);
         crank.setPower(power);
 
+        logger.setDebugFilter("Hoist.runToTarget");
         double calcPower = 0;
 
         while (opModeIsActive() && (crank.isBusy() || opMode.gamepad1.x)) {
@@ -140,32 +141,39 @@ public class Hoist extends BotComponent {
                 crank.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 if (diffTarget < rampUpDownThreshold && calcPower > .01) {
                     calcPower = power * ((double) diffTarget / rampUpDownThreshold); // calcPower - .01;
-                    logger.logDebug("outputCrankPositions", "Status: %s, diffTarget: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Down", diffTarget, rampUpDownThreshold, calcPower);
+                    logger.logDebug("Hoist.runToTarget", "Status: %s, diffTarget: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Down", diffTarget, rampUpDownThreshold, calcPower);
                     crank.setPower(calcPower);
-                    outputCrankPositions("Hoist.runToTarget:Ramp Down");
+                    outputCrankPositions("Hoist.runToTarget", "Ramp Down");
                 } else if (diffStart < rampUpDownThreshold && calcPower < power) {
                     calcPower = power * ((double) diffStart / rampUpDownThreshold) + 0.01; // calcPower + .01;
                     logger.logDebug("outputCrankPositions", "Status: %s, diffStart: %7d, rampUpDownThreshold: %7d, Power: %f", "Hoist.runToTarget:Ramp Up", diffStart, rampUpDownThreshold, calcPower);
                     crank.setPower(calcPower);
-                    outputCrankPositions("Hoist.runToTarget:Ramp Up");
+                    outputCrankPositions("Hoist.runToTarget", "Ramp Up");
                 } else {
                     crank.setPower(power);
-                    outputCrankPositions("Hoist.runToTarget:Running");
+                    outputCrankPositions("Hoist.runToTarget", "Running");
                 }
             } else {
                 crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 crank.setPower(power);
-                outputCrankPositions("Hoist.runToTarget:OVERRIDE");
+                outputCrankPositions("Hoist.runToTarget", "OVERRIDE");
             }
 
             idle();
 
+            logger.incrementDebugFilterCount();
+
         }
+
+        logger.clearDebugFilter();
 
         crank.setPower(0);
         // Turn off RUN_TO_POSITION
         crank.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
+
+
 }
 
 

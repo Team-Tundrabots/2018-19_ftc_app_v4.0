@@ -29,11 +29,17 @@
 
 package org.firstinspires.ftc.teamcode.ops.carrick;
 
+import com.qualcomm.ftccommon.SoundPlayer;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.bots.*;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
+
+import java.io.File;
 
 
 @TeleOp(name="Carrick_Game_TeleOp", group="carrick")
@@ -42,16 +48,27 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private GameBot robot = null;
+    private TestBot robot = null;
     private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
 
     @Override
     public void runOpMode() {
-        robot = new GameBot(this);
+        robot = new TestBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        //robot.gyroNavigator.init();
+        //robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        //robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        //robot.goldSensor.init();
+
         robot.logger.open(logEnableTrace);
         robot.logger.logDebug("TeleOP debug", "");
         robot.logger.logInfo("TeleOP info", "");
         //logger.logDebug("PNP.construct", "");
+
+        int silverSoundID = hardwareMap.appContext.getResources().getIdentifier("silver", "raw", hardwareMap.appContext.getPackageName());
+        int goldSoundID   = hardwareMap.appContext.getResources().getIdentifier("gold",   "raw", hardwareMap.appContext.getPackageName());
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -65,6 +82,17 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
         robot.hoist.rampUpDownThreshold = 500;
         robot.hoist.power = .50;
         telemetry.addData("firstrightsticky", gamepad1.right_stick_y);
+
+        boolean goldFound;
+        boolean silverFound;
+        int soundCounterGold = 0;
+        int soundCounterSilver = 0;
+
+        if (goldSoundID != 0)
+            goldFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, goldSoundID);
+
+        if (silverSoundID != 0)
+            silverFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, silverSoundID);
 
         while (opModeIsActive()) {
 
@@ -99,13 +127,28 @@ public class Carrick_Game_TeleOp extends LinearOpMode {
             if (robot.pnp.isAvailable){
                 if (gamepad1.right_stick_y > 0){
                     robot.pnp.extend();
+                    if(soundCounterGold == 0){
+                        SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, goldSoundID);
+                        telemetry.addData("Playing", "Resource Gold");
+                        telemetry.update();
+                    }
                 }
                 else if(gamepad1.right_stick_y < 0) {
                     robot.pnp.contract();
+                    if(soundCounterSilver == 0){
+                        SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, silverSoundID);
+                        telemetry.addData("Playing", "Resource Silver");
+                        telemetry.update();
+                    }
+
                 }
                 else{
                     robot.pnp.pusher.setPower(0.0);
                 }
+                double arm_proportion = 0.5;
+                double new_left_trigger = gamepad1.left_trigger*arm_proportion;
+                double new_right_trigger = gamepad1.right_trigger*arm_proportion;
+                robot.arm.crank.setPower(-new_left_trigger+new_right_trigger);
             }
             telemetry.addData("rightsticky", gamepad1.right_stick_y);
 

@@ -27,29 +27,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.scrimmage;
+package org.firstinspires.ftc.teamcode.ops.jonathan;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.ScrimmageBot;
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 
-@Autonomous(name="Scrimmage_Auto", group="scrimmage")
-//@Disabled
-public class Scrimmage_Auto extends LinearOpMode {
+@Autonomous(name="Game_Auto_Jonathan", group="jonathan")
+@Disabled
+public class Game_Auto_Jonathan extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private ScrimmageBot robot = null;
+    private GameBot robot = null;
     private boolean logEnableTrace = true;
 
     @Override
     public void runOpMode() {
-        robot = new ScrimmageBot(this);
+        robot = new GameBot(this);
         robot.logger.open(logEnableTrace);
 
         telemetry.addData("Status", "Initialized");
@@ -60,14 +59,43 @@ public class Scrimmage_Auto extends LinearOpMode {
         runtime.reset();
 
         robot.hoist.contractedPosition = 0;
-        robot.hoist.extendedPosition = 11000;
+        robot.hoist.extendedPosition = 24000;
         robot.hoist.rampUpDownThreshold = 1;
-        robot.hoist.power = .50;
+        robot.hoist.power = 1;
 
 
         robot.hoist.extend();
-        robot.driveTrain.crabRight(0.5);
 
+        robot.driveTrain.crabRight(0.25);
+
+        String goldPosition = robot.goldSensor.goldFind();
+        while(opModeIsActive() && goldPosition == "Unknown") {
+            goldPosition = robot.goldSensor.goldFind();
+        }
+
+        telemetry.addData("goldDirection:", goldPosition);
+        switch (goldPosition) {
+            case "Right":
+                robot.driveTrain.encoderDrive(0.25, 0.15, 0.15, 2);
+                robot.driveTrain.crabLeft(1.5);
+                //robot.driveTrain.moveForward(1,0.25);
+
+            case "Center":
+                /*robot.driveTrain.encoderDrive(0.25, 2, 2, 2); */
+                //robot.driveTrain.moveForward(0.75,0.25);
+                robot.driveTrain.crabLeft(0.4);
+                robot.driveTrain.encoderDrive(0.25, 4.5, 4.5, 1);
+                stop();
+
+            case "Left":
+                robot.driveTrain.encoderDrive(0.25, 0.12, 0.12, 2);
+                robot.driveTrain.crabRight(1);
+                //robot.driveTrain.moveForward(1,0.25);
+
+            default:
+//                telemetry.addData("Gold:", "???");
+
+        }
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

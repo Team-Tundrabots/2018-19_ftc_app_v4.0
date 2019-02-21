@@ -43,11 +43,16 @@ public class MarkerDropper extends BotComponent {
 
     }
 
-    public MarkerDropper(OpMode aOpMode, String servoName) {
-        super(aOpMode);
+    public MarkerDropper(Logger aLogger, OpMode aOpMode, String servoName) {
+        super(aLogger, aOpMode);
 
         // Define and Initialize Motors
         servo = initServo(servoName, 0.5);
+        if (servo != null) {
+            isAvailable = true;
+        }
+
+        logger.logInfo("MarkerDropper","isAvailable: %b", isAvailable);
 
     }
 

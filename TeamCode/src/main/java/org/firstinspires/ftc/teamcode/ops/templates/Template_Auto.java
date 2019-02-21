@@ -27,56 +27,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.templates;
+package org.firstinspires.ftc.teamcode.ops.rex;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
+import org.firstinspires.ftc.teamcode.components.DriveTrain;
+import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
-@Autonomous(name="Template_Auto", group="templates")
+@Autonomous(name="Template_Auto", group="template")
 @Disabled
 public class Template_Auto extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private TestBot robot = null;
+    private GameBot robot = null;
+    private boolean logEnableTrace = true;
+    private boolean logToTelemetry = true;
+
 
     @Override
     public void runOpMode() {
-        robot = new TestBot(this);
-        telemetry.addData("Status", "Initialized");
+
+        robot = new GameBot(this, logEnableTrace, logToTelemetry);
+        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
+
+        /* Use either robot.initAll or select only the components that need initializing below */
+        //robot.initAll();
+        robot.gyroNavigator.init();
+        robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
+        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
+        robot.goldSensor.init();
+
+        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
+        robot.logger.logInfo("runOpMode", "===== [ Start Autonomous ]");
         runtime.reset();
 
-/**  REPLACE THIS SECTION WITH YOUR CODE
 
-        double power = .5;
+        /********** Put Your Code Here **********/
 
-        // move forward for a number of seconds at specific power
-        robot.driveTrain.moveForward(.5, power);
-
-        // turn for a number of seconds by applying opposite power #'s for left and right motors
-        robot.driveTrain.turnLeft(.5, power);
-
-        // turn for a number of seconds by applying opposite power #'s for left and right motors
-        robot.driveTrain.turnRight(.5, power);
-
-        // move backward for a number of seconds at specific power
-        robot.driveTrain.moveBackward(.5, power);
-
-***/
 
         // Show the elapsed game time.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());
         telemetry.update();
 
     }

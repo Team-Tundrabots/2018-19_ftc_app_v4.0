@@ -136,7 +136,7 @@ public class Rex_Game_Auto extends LinearOpMode {
         robot.logger.logInfo("runOpMode", "===== [ Back up and head for Depot ]");
         robot.driveTrain.encoderDrive(1, 10);
         robot.driveTrain.gyroRotate(-90, 1, false, false);
-        robot.driveTrain.encoderDrive(1, -27.0 - goldPositionOffset);
+        robot.driveTrain.encoderDrive(1, -28.0 - goldPositionOffset);
         robot.driveTrain.gyroRotate(-44, 1, true, false);
         robot.driveTrain.encoderDrive(1, -36);
         robot.driveTrain.encoderDrive(1, 63);

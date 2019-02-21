@@ -38,9 +38,9 @@ import org.firstinspires.ftc.teamcode.components.DriveTrain;
 import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
-@Autonomous(name="Game_Auto", group="game")
+@Autonomous(name="Game_Auto_Depot", group="game")
 //@Disabled
-public class Game_Auto extends LinearOpMode {
+public class Game_Auto_Depot extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -104,7 +104,9 @@ public class Game_Auto extends LinearOpMode {
                 robot.logger.logInfo("runOpMode", "===== [ Gold on Right ]");
                 robot.driveTrain.encoderDrive(1, -13);
                 robot.driveTrain.crabLeft(1.7);
-                robot.driveTrain.encoderDrive(1, -15);
+                robot.driveTrain.encoderDrive(1, -34);
+                robot.driveTrain.gyroRotate(-47, 0.75, false, false);
+                robot.driveTrain.encoderDrive(1, 52);
                 goldPositionOffset = 32;
                 break;
 
@@ -113,7 +115,10 @@ public class Game_Auto extends LinearOpMode {
                 robot.logger.logInfo("runOpMode", "===== [ Gold in Center ]");
                 robot.driveTrain.encoderDrive(1,-15);
                 robot.driveTrain.crabLeft(0.4);
-                robot.driveTrain.encoderDrive(1, -13);
+                robot.driveTrain.encoderDrive(1, -25);
+                robot.driveTrain.encoderDrive(1, 22);
+                robot.driveTrain.gyroRotate(90, 0.75, false, false);
+                robot.driveTrain.encoderDrive(1, -53);
                 goldPositionOffset = 16;
                 break;
 
@@ -122,7 +127,13 @@ public class Game_Auto extends LinearOpMode {
                 robot.logger.logInfo("runOpMode", "===== [ Gold on Left ]");
                 robot.driveTrain.encoderDrive(1, -13);
                 robot.driveTrain.crabRight(0.75);
-                robot.driveTrain.encoderDrive(1, -15);
+                robot.driveTrain.encoderDrive(1, -30);
+                robot.driveTrain.gyroRotate(45, 0.75, false, false);
+                robot.driveTrain.gyroRotate(-45, 0.75, true, false);
+                robot.driveTrain.encoderDrive(1, 25);
+                robot.driveTrain.gyroRotate(90, 0.75, false, false);
+                robot.driveTrain.encoderDrive(1, -69);
+
                 goldPositionOffset = 0;
                 break;
 
@@ -132,13 +143,13 @@ public class Game_Auto extends LinearOpMode {
 
         }
 
-        robot.logger.logInfo("runOpMode", "===== [ Back up and head for Depot ]");
+     /*   robot.logger.logInfo("runOpMode", "===== [ Back up and head for Depot ]");
         robot.driveTrain.encoderDrive(1, 10);
         robot.driveTrain.gyroRotate(-90, 0.75, false, false);
         robot.driveTrain.encoderDrive(1, -30.0 - goldPositionOffset);
         robot.driveTrain.gyroRotate(-44, 0.75, true, false);
         robot.driveTrain.encoderDrive(1, -36);
-        robot.driveTrain.encoderDrive(1, 65);
+        robot.driveTrain.encoderDrive(1, 65); */
 
 
         // Show the elapsed game time.

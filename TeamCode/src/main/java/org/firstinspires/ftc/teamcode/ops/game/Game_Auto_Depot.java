@@ -106,7 +106,13 @@ public class Game_Auto_Depot extends LinearOpMode {
                 robot.driveTrain.crabLeft(1.7);
                 robot.driveTrain.encoderDrive(1, -34);
                 robot.driveTrain.gyroRotate(-47, 0.75, false, false);
+                if(robot.markerDropper.isAvailable){
+                    robot.markerDropper.moveDown();
+                }
                 robot.driveTrain.encoderDrive(1, 52);
+                if(robot.markerDropper.isAvailable){
+                    robot.markerDropper.moveUp();
+                }
                 goldPositionOffset = 32;
                 break;
 

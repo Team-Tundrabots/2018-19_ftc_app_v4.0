@@ -27,51 +27,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.ops.rex;
+package org.firstinspires.ftc.teamcode.bots;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.bots.GameBot;
+import org.firstinspires.ftc.teamcode.components.Logger;
+import org.firstinspires.ftc.teamcode.components.MarkerDropper;
 
+public class TestMarkerDropperBot extends Bot {
 
-@Autonomous(name="Rex_Hoist_Extend_Auto", group="rex")
-@Disabled
-public class Rex_Hoist_Extend_Auto extends LinearOpMode {
+    /* BotComponents */
 
-    // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private GameBot robot = null;
-    private boolean logEnableTrace = true;
-    private boolean logToTelemetry = true;
+    public Logger logger = null;
+    public MarkerDropper markerDropper = null;
 
 
-    @Override
-    public void runOpMode() {
-
-        robot = new GameBot(this, logEnableTrace, logToTelemetry);
-        robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
-
-        robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        robot.logger.logInfo("runOpMode", "===== [ Start Autonomous ]");
-        runtime.reset();
-
-        robot.logger.logInfo("runOpMode", "===== [ Extend Hoist ]");
-
-        while (opModeIsActive()) {
-            robot.hoist.extendContinuous(1);
-        }
-
-        // Show the elapsed game time.
-        robot.logger.logInfo("runOpMode", "===== [ Autonomous Complete ] Run Time: %s", runtime.toString());
-        telemetry.update();
+    /* Constructor */
+    public TestMarkerDropperBot() {
 
     }
+
+    public TestMarkerDropperBot(OpMode aOpMode) {
+        this(aOpMode, false, false);
+    }
+
+    public TestMarkerDropperBot(OpMode aOpMode, boolean enableTrace, boolean enableTelemetry) {
+
+        logger = new Logger("TestBot", aOpMode, enableTrace, enableTelemetry);
+        markerDropper = new MarkerDropper(logger, aOpMode, "markerDropper");
+    }
+
+    public void initAll() {
+
+    }
+
 }
+

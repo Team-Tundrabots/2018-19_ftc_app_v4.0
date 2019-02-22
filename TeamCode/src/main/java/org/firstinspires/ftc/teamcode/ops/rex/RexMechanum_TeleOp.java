@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.bots.TestBot;
+import org.firstinspires.ftc.teamcode.bots.GameBot;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -55,7 +55,7 @@ import org.firstinspires.ftc.teamcode.bots.TestBot;
 public class RexMechanum_TeleOp extends OpMode
 {
     // Declare OpMode members.
-    private TestBot robot       = null;
+    private GameBot robot       = null;
     private ElapsedTime runtime = new ElapsedTime();
 
     /*
@@ -63,7 +63,7 @@ public class RexMechanum_TeleOp extends OpMode
      */
     @Override
     public void init() {
-        robot = new TestBot(this);
+        robot = new GameBot(this);
         telemetry.addData("Status", "Initialized");
     }
 

@@ -40,7 +40,7 @@ import org.firstinspires.ftc.teamcode.components.WebCamera;
 
 
 @Autonomous(name="Rex_Test_Auto", group="rex")
-@Disabled
+//@Disabled
 public class Rex_Test_Auto extends LinearOpMode {
 
     // Declare OpMode members.
@@ -71,6 +71,26 @@ public class Rex_Test_Auto extends LinearOpMode {
         runtime.reset();
 
         robot.logger.logInfo("runOpMode", "========================================================");
+        robot.logger.logInfo("runOpMode", "===== [ markerDropper - moveDown]");
+        robot.logger.logInfo("runOpMode", "========================================================");
+        if (robot.markerDropper.isAvailable) {
+            robot.markerDropper.moveDown();
+            robot.markerDropper.pause(2);
+
+        }
+
+
+        robot.logger.logInfo("runOpMode", "========================================================");
+        robot.logger.logInfo("runOpMode", "===== [ markerDropper - moveUp]");
+        robot.logger.logInfo("runOpMode", "========================================================");
+        if (robot.markerDropper.isAvailable) {
+            robot.markerDropper.moveUp();
+            robot.markerDropper.pause(2);
+
+        }
+
+/*
+        robot.logger.logInfo("runOpMode", "========================================================");
         robot.logger.logInfo("runOpMode", "===== [ crabEncoderLeft ]");
         robot.logger.logInfo("runOpMode", "========================================================");
         robot.driveTrain.crabEncoderLeft(1, 12);
@@ -79,6 +99,7 @@ public class Rex_Test_Auto extends LinearOpMode {
         robot.logger.logInfo("runOpMode", "===== [ crabEncoderRight ]");
         robot.logger.logInfo("runOpMode", "========================================================");
         robot.driveTrain.crabEncoderRight(1, 12);
+*/
 /*
         robot.logger.logInfo("runOpMode", "========================================================");
         robot.logger.logInfo("runOpMode", "===== [ Test Gyro: absolute(false), adjust(false) ]");

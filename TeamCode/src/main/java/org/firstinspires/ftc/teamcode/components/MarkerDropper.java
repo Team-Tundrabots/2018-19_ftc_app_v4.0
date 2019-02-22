@@ -36,7 +36,8 @@ public class MarkerDropper extends BotComponent {
 
 
     public Servo servo = null;
-    boolean servoIsDown = false;
+    double SERVO_UP_POSITION = 1;
+    double SERVO_DOWN_POSITION = 0;
 
     /* Constructor */
     public MarkerDropper() {
@@ -47,7 +48,7 @@ public class MarkerDropper extends BotComponent {
         super(aLogger, aOpMode);
 
         // Define and Initialize Motors
-        servo = initServo(servoName, 0.5);
+        servo = initServo(servoName, SERVO_UP_POSITION);
         if (servo != null) {
             isAvailable = true;
         }
@@ -57,21 +58,20 @@ public class MarkerDropper extends BotComponent {
     }
 
     public void moveDown(){
-        if (!servoIsDown) {
-            servo.setPosition(0);
-            pause(400);
-            servo.setPosition(0.5);
-            servoIsDown = true;
-        }
+
+        servo.setPosition(SERVO_DOWN_POSITION);
+
+        logger.logDebug("moveDown", "servo.getPosition: %f", servo.getPosition());
+        logger.logDebug("moveDown", "Servo.getDirection: %s", servo.getDirection().toString());
+
     }
 
     public void moveUp(){
-        if (servoIsDown) {
-            servo.setPosition(1);
-            pause(400);
-            servo.setPosition(0.5);
-            servoIsDown = false;
-        }
+        servo.setPosition(SERVO_UP_POSITION);
+
+        logger.logDebug("moveUp", "servo.getPosition: %f", servo.getPosition());
+        logger.logDebug("moveUp", "Servo.getDirection: %s", servo.getDirection().toString());
+
     }
     
 }

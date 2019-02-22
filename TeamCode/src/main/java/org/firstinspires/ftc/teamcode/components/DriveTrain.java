@@ -227,7 +227,7 @@ public class DriveTrain extends BotComponent {
 
         double lX = -leftX;
         double lY = leftY;
-        double rX = -rightX;
+        double rX = -rightX / 2;
         double rY = rightY;
 
         double r = Math.hypot(lX, lY);
@@ -249,6 +249,7 @@ public class DriveTrain extends BotComponent {
         }
 
         if (!opModeIsActive()) { stop(); }
+
 
     }
 

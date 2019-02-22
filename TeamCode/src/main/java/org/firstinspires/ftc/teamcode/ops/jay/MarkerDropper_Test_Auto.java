@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.ops.jay;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,7 +40,7 @@ import org.firstinspires.ftc.teamcode.components.DriveTrain;
 
 
 @Autonomous(name="MarkerDropper_Test_Auto", group="rex")
-//@Disabled
+@Disabled
 public class MarkerDropper_Test_Auto extends LinearOpMode {
 
     // Declare OpMode members.

@@ -50,8 +50,12 @@ public class Game_TeleOp extends LinearOpMode {
     private boolean logToTelemetry = true;
 
 
+
     @Override
     public void runOpMode() {
+
+        int silverSoundID = hardwareMap.appContext.getResources().getIdentifier("silver", "raw", hardwareMap.appContext.getPackageName());
+        int goldSoundID   = hardwareMap.appContext.getResources().getIdentifier("gold",   "raw", hardwareMap.appContext.getPackageName());
 
         robot = new GameBot(this, logEnableTrace, logToTelemetry);
         robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
@@ -63,6 +67,17 @@ public class Game_TeleOp extends LinearOpMode {
 
         robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
+
+        boolean goldFound;
+        boolean silverFound;
+        int soundCounterGold = 0;
+        int soundCounterSilver = 0;
+
+        if (goldSoundID != 0)
+            goldFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, goldSoundID);
+
+        if (silverSoundID != 0)
+            silverFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, silverSoundID);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -105,12 +120,26 @@ public class Game_TeleOp extends LinearOpMode {
 
             //PNP controls
             if (robot.pnp.isAvailable){
-
                 if (gamepad1.right_stick_y > 0){
                     robot.pnp.extend();
+                    /*if(soundCounterGold == 0){
+                        SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, goldSoundID);
+                        telemetry.addData("Playing", "Resource Gold");
+                        telemetry.update();
+                        soundCounterGold = soundCounterGold + 1;
+                    }
+                    */
                 }
                 else if(gamepad1.right_stick_y < 0) {
                     robot.pnp.contract();
+                    /*if(soundCounterSilver == 0){
+                        SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, silverSoundID);
+                        telemetry.addData("Playing", "Resource Silver");
+                        telemetry.update();
+                        soundCounterSilver = soundCounterSilver + 1;
+                    }
+                    */
+
                 }
                 else{
                     robot.pnp.pusher.setPower(0.0);

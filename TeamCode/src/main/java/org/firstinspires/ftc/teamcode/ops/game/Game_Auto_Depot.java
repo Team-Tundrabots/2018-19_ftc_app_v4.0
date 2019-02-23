@@ -105,14 +105,15 @@ public class Game_Auto_Depot extends LinearOpMode {
                 robot.driveTrain.encoderDrive(1, -13);
                 robot.driveTrain.crabLeft(1.7);
                 robot.driveTrain.encoderDrive(1, -34);
-                robot.driveTrain.gyroRotate(-47, 0.75, false, false);
+                robot.driveTrain.gyroRotate(-44, 0.75, true, false);
+                robot.driveTrain.encoderDrive(1, -7);
 
                 robot.logger.logInfo("runOpMode", "===== [ Drop Marker ]");
                 if(robot.markerDropper.isAvailable){
                     robot.markerDropper.moveDown();
                 }
                 robot.driveTrain.pause(0.5);
-                robot.driveTrain.encoderDrive(1, 52);
+                robot.driveTrain.encoderDrive(1, 63);
                 if(robot.markerDropper.isAvailable){
                     robot.markerDropper.moveUp();
                 }
@@ -124,19 +125,22 @@ public class Game_Auto_Depot extends LinearOpMode {
                 robot.logger.logInfo("runOpMode", "===== [ Gold in Center ]");
                 robot.driveTrain.encoderDrive(1,-15);
                 robot.driveTrain.crabLeft(0.4);
-                robot.driveTrain.encoderDrive(1, -25);
+                robot.driveTrain.encoderDrive(1, -35);
 
                 robot.logger.logInfo("runOpMode", "===== [ Drop Marker ]");
                 if(robot.markerDropper.isAvailable){
                     robot.markerDropper.moveDown();
                 }
-                robot.driveTrain.pause(0.5);
-                robot.driveTrain.encoderDrive(1, 22);
+                robot.driveTrain.encoderDrive(1, 10);
                 if(robot.markerDropper.isAvailable){
                     robot.markerDropper.moveUp();
                 }
-                robot.driveTrain.gyroRotate(92, 0.75, false, false);
-                robot.driveTrain.encoderDrive(1, -53);
+                robot.driveTrain.encoderDrive(1, 22);
+                robot.driveTrain.gyroRotate(93, 0.75, false, false);
+                robot.driveTrain.encoderDrive(1, -52);
+                robot.driveTrain.gyroRotate(40, 0.75, true, false);
+                robot.driveTrain.encoderDrive(1, -17);
+
                 goldPositionOffset = 16;
                 break;
 
@@ -146,21 +150,23 @@ public class Game_Auto_Depot extends LinearOpMode {
                 robot.driveTrain.encoderDrive(1, -13);
                 robot.driveTrain.crabRight(0.75);
                 robot.driveTrain.encoderDrive(1, -30);
-                robot.driveTrain.gyroRotate(45, 0.75, false, false);
-                robot.driveTrain.encoderDrive(1, -2);
+                robot.driveTrain.gyroRotate(45, 0.75, true, false);
+                robot.driveTrain.encoderDrive(1, -13);
                 robot.logger.logInfo("runOpMode", "===== [ Drop Marker ]");
                 if(robot.markerDropper.isAvailable){
                     robot.markerDropper.moveDown();
                 }
                 robot.driveTrain.pause(0.5);
-                robot.driveTrain.encoderDrive(1, 2);
+                robot.driveTrain.encoderDrive(1, 13);
                 if(robot.markerDropper.isAvailable){
                     robot.markerDropper.moveUp();
                 }
                 robot.driveTrain.gyroRotate(-45, 0.75, true, false);
                 robot.driveTrain.encoderDrive(1, 25);
-                robot.driveTrain.gyroRotate(92, 0.75, false, false);
-                robot.driveTrain.encoderDrive(1, -69);
+                robot.driveTrain.gyroRotate(89, 0.75, true, false);
+                robot.driveTrain.encoderDrive(1, -59);
+                robot.driveTrain.gyroRotate(44, 0.75, true, false);
+                robot.driveTrain.encoderDrive(1, -14);
 
                 goldPositionOffset = 0;
                 break;

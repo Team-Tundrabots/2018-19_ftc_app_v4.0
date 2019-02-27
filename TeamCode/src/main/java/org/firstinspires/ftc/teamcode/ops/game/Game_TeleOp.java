@@ -54,30 +54,19 @@ public class Game_TeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        int silverSoundID = hardwareMap.appContext.getResources().getIdentifier("silver", "raw", hardwareMap.appContext.getPackageName());
-        int goldSoundID   = hardwareMap.appContext.getResources().getIdentifier("gold",   "raw", hardwareMap.appContext.getPackageName());
 
         robot = new GameBot(this, logEnableTrace, logToTelemetry);
         robot.logger.logInfo("runOpMode", "===== [ Start Initializing ]");
 
         robot.driveTrain.init(DriveTrain.InitType.INIT_4WD);
         robot.driveTrain.disableEncoders();
-        robot.webCamera.init(WebCamera.InitType.INIT_FOR_FIND_GOLD);
-        robot.goldSensor.init();
+
 
         robot.logger.logInfo("runOpMode", "===== [ Initialization Complete ]");
         telemetry.update();
 
-        boolean goldFound;
-        boolean silverFound;
-        int soundCounterGold = 0;
-        int soundCounterSilver = 0;
 
-        if (goldSoundID != 0)
-            goldFound   = SoundPlayer.getInstance().preload(hardwareMap.appContext, goldSoundID);
 
-        if (silverSoundID != 0)
-            silverFound = SoundPlayer.getInstance().preload(hardwareMap.appContext, silverSoundID);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -112,10 +101,6 @@ public class Game_TeleOp extends LinearOpMode {
                 telemetry.addData("Right", "X (%.2f), Y (%.2f)", rightX, rightY);
             }
 
-            // goldSensor detection
-            if(robot.goldSensor.isAvailable) {
-                telemetry.addData("goldDirection:", robot.goldSensor.goldFind());
-            }
 
 
             //PNP controls

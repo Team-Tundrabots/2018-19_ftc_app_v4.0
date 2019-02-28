@@ -119,7 +119,7 @@ public class Game_Auto_Depot_Safe extends LinearOpMode {
                 robot.driveTrain.gyroRotate(45, 0.75, true, false);
                 robot.driveTrain.encoderDrive(1, 25);
                 robot.driveTrain.gyroRotate(-89, 0.75, true, false);
-                robot.driveTrain.encoderDrive(1, -59);
+                robot.driveTrain.encoderDrive(1, -62);
                 robot.driveTrain.gyroRotate(-44, 0.75, true, false);
                 robot.driveTrain.encoderDrive(1, -14);
 
@@ -156,7 +156,7 @@ public class Game_Auto_Depot_Safe extends LinearOpMode {
                 robot.driveTrain.encoderDrive(1, -13);
                 robot.driveTrain.crabRight(0.75);
                 robot.driveTrain.encoderDrive(1, -30);
-                robot.driveTrain.gyroRotate(44, 0.75, true, false);
+                robot.driveTrain.gyroRotate(46, 0.75, true, false);
                 robot.driveTrain.encoderDrive(1, -13);
 
                 robot.logger.logInfo("runOpMode", "===== [ Drop Marker ]");
